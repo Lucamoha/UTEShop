@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+	version="3.0">
+<persistence-unit name="dataSource">
+<class>com.uteshop.entities.Users</class>
+<class>com.uteshop.entities.UserTokens</class>
+<class>com.uteshop.entities.Addresses</class>
+<class>com.uteshop.entities.Categories</class>
+<class>com.uteshop.entities.Attributes</class>
+<class>com.uteshop.entities.CategoryAttributes</class>
+<class>com.uteshop.entities.Products</class>
+<class>com.uteshop.entities.ProductAttributeValues</class>
+<class>com.uteshop.entities.ProductVariants</class>
+<class>com.uteshop.entities.OptionTypes</class>
+<class>com.uteshop.entities.OptionValues</class>
+<class>com.uteshop.entities.VariantOptions</class>
+<class>com.uteshop.entities.ProductImages</class>
+<class>com.uteshop.entities.Favorites</class>
+<class>com.uteshop.entities.CompareLists</class>
+<class>com.uteshop.entities.CompareItems</class>
+<class>com.uteshop.entities.Carts</class>
+<class>com.uteshop.entities.CartItems</class>
+<class>com.uteshop.entities.Orders</class>
+<class>com.uteshop.entities.OrderItems</class>
+<class>com.uteshop.entities.Shipments</class>
+<class>com.uteshop.entities.Payments</class>
+<class>com.uteshop.entities.Discounts</class>
+<class>com.uteshop.entities.Vouchers</class>
+<class>com.uteshop.entities.Reviews</class>
+<class>com.uteshop.entities.ReviewMedia</class>
+<class>com.uteshop.entities.SystemSettings</class>
+<properties>
+<property name="jakarta.persistence.jdbc.url"
+value="jdbc:sqlserver://LAPTOP-QSILSS9E\\SQLEXPRESS:1433;trustServerCertificate=true;encrypt=true;databaseName=UTESHOP" />
+<property name="jakarta.persistence.jdbc.driver"
+value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
+<property name="jakarta.persistence.jdbc.user" value="sa" />
+<property name="jakarta.persistence.jdbc.password" value="123456" />
+<property name="hibernate.show_sql" value="true" />
+<property name="hibernate.format_sql" value="true" />
+<property name="hibernate.hbm2ddl.auto" value="update" />
+<property name="hibernate.dialect"
+value="org.hibernate.dialect.SQLServer2012Dialect"/>
+</properties>
+</persistence-unit>
+</persistence>
