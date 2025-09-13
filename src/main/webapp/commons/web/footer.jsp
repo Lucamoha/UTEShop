@@ -6,7 +6,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-sm-6 col-lg-3 p-b-50">
-				<h4 class="stext-301 cl0 p-b-30">Categories</h4>
+				<h4 class="stext-301 cl0 p-b-30">Danh mục</h4>
 
 				<ul>
 					<li class="p-b-10"><a href="#"
