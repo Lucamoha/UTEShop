@@ -14,7 +14,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NamedQuery(name = "Products.findAll", query = "select p from Products p")
 public class Products implements Serializable {
@@ -35,7 +34,7 @@ public class Products implements Serializable {
 
     BigDecimal BasePrice;
 
-    int Status;
+    boolean Status;
 
     LocalDateTime CreatedAt;
     

@@ -14,7 +14,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductVariants implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -30,9 +29,9 @@ public class ProductVariants implements Serializable {
 
     BigDecimal Price;
 
-    Integer StockQty;
+    int StockQty;
 
-    Integer Status;
+    boolean Status;
 
     LocalDateTime CreatedAt;
 

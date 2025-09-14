@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderItems implements Serializable {
     private static final long serialVersionUID = 1L;

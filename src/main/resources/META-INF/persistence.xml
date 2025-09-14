@@ -33,14 +33,14 @@
 <class>com.uteshop.entities.SystemSettings</class>
 <properties>
 <property name="jakarta.persistence.jdbc.url"
-value="jdbc:sqlserver://LAPTOP-QSILSS9E\\SQLEXPRESS:1433;trustServerCertificate=true;encrypt=true;databaseName=UTESHOP" />
+value="jdbc:sqlserver://localhost:1433;trustServerCertificate=true;encrypt=true;databaseName=UTESHOP" />
 <property name="jakarta.persistence.jdbc.driver"
 value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
 <property name="jakarta.persistence.jdbc.user" value="sa" />
 <property name="jakarta.persistence.jdbc.password" value="123456" />
 <property name="hibernate.show_sql" value="true" />
 <property name="hibernate.format_sql" value="true" />
-<property name="hibernate.hbm2ddl.auto" value="update" />
+<property name="hibernate.hbm2ddl.auto" value="validate" />
 <property name="hibernate.dialect"
 value="org.hibernate.dialect.SQLServer2012Dialect"/>
 </properties>

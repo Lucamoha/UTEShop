@@ -19,13 +19,12 @@ import lombok.experimental.FieldDefaults;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Addresses {
 	@Id
     Integer Id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)//khi nào dùng đến cột thì nạp, không nạp hết cột từ đâu
     @JoinColumn(name = "UserId", nullable = false)
     Users user;
 

@@ -13,7 +13,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NamedQuery(name = "Reviews.findAll", query = "select r from Reviews r")
 public class Reviews implements Serializable {
@@ -22,13 +21,13 @@ public class Reviews implements Serializable {
     @Id
     int Id;
 
-    Integer ProductId;
+    int ProductId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "UserId", nullable = false)
     Users user;
 
-    Integer Rating; // 1..5
+    int Rating; // 1..5
 
     String Content;
 
@@ -36,7 +35,7 @@ public class Reviews implements Serializable {
 
     Boolean PurchaseVerified;
 
-    Integer Status;
+    boolean Status;
 
     LocalDateTime CreatedAt;
 

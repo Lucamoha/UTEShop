@@ -6,11 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import jakarta.persistence.OneToMany;
@@ -22,7 +19,6 @@ import lombok.experimental.FieldDefaults;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Users implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -46,6 +42,8 @@ public class Users implements Serializable {
 	
 	// Quan hệ
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    //cascade = CascadeType.ALL -> ap dung cac cascade: merge, persist, remove, refresh, detached
+    //orphanRemoval = true -> xoa cha thi xoa con
     private List<Addresses> addresses = new ArrayList<>();
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

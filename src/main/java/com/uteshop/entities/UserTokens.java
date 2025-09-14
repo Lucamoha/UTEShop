@@ -22,7 +22,6 @@ import lombok.experimental.FieldDefaults;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserTokens implements Serializable {
 	private static final long serialVersionUID = 1L;

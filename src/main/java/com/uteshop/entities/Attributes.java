@@ -10,7 +10,6 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NamedQuery(name = "Attributes.findAll", query = "select a from Attributes a")
 public class Attributes implements Serializable {
