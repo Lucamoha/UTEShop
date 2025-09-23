@@ -17,5 +17,4 @@ public class AttributesDaoImpl implements IAttributesDao {
 		TypedQuery<Attributes> query = enma.createNamedQuery("Attributes.findAll", Attributes.class);
 		return query.getResultList();
 	}
-
 }

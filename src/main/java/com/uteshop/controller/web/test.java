@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(urlPatterns = {"/test"})
+@WebServlet(urlPatterns = {"/login"})
 public class test extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	@Override
@@ -22,12 +22,7 @@ public class test extends HttpServlet {
 		 * ISystemSettingsService sysService = new SystemSettingServiceImpl();
 		 * List<SystemSettings> listSys = sysService.findAll();
 		 */
-		
-		IProductsService sysService = new ProductsServiceImpl();
-		List<Products> listSys = sysService.findAll();
-		
-		req.setAttribute("listSys", listSys);
-		RequestDispatcher dispatcher = req.getRequestDispatcher("list-test.jsp");
-		dispatcher.forward(req, resp);
+
+		req.getRequestDispatcher("/views/web/login.jsp").forward(req,resp);
 	}
 }
