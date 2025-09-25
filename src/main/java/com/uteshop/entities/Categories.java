@@ -13,6 +13,19 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@NamedQueries({
+    @NamedQuery(name = "Categories.findAll", 
+                query = "SELECT c FROM Categories c"),
+                
+    @NamedQuery(name = "Categories.findParents", 
+                query = "SELECT c FROM Categories c WHERE c.parent IS NULL"),
+                
+    @NamedQuery(name = "Categories.findChildren", 
+                query = "SELECT c FROM Categories c WHERE c.parent.id = :parentId"),
+                
+    @NamedQuery(name = "Categories.findBySlug", 
+                query = "SELECT c FROM Categories c WHERE c.Slug = :slug")
+})
 public class Categories implements Serializable {
     private static final long serialVersionUID = 1L;
 
