@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Data
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NamedQueries({
@@ -44,41 +45,41 @@ public class Categories implements Serializable {
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     List<Products> products = new ArrayList<>();
 
-	/*
-	 * public int getId() { return Id; }
-	 * 
-	 * public void setId(int id) { Id = id; }
-	 * 
-	 * public String getName() { return Name; }
-	 * 
-	 * public void setName(String name) { Name = name; }
-	 * 
-	 * public String getSlug() { return Slug; }
-	 * 
-	 * public void setSlug(String slug) { Slug = slug; }
-	 * 
-	 * public Categories getParent() { return parent; }
-	 * 
-	 * public void setParent(Categories parent) { this.parent = parent; }
-	 * 
-	 * public List<Categories> getChildren() { return children; }
-	 * 
-	 * public void setChildren(List<Categories> children) { this.children =
-	 * children; }
-	 * 
-	 * public List<Products> getProducts() { return products; }
-	 * 
-	 * public void setProducts(List<Products> products) { this.products = products;
-	 * }
-	 * 
-	 * public static long getSerialversionuid() { return serialVersionUID; }
-	 * 
-	 * public Categories(int id, String name, String slug, Categories parent,
-	 * List<Categories> children, List<Products> products) { super(); Id = id; Name
-	 * = name; Slug = slug; this.parent = parent; this.children = children;
-	 * this.products = products; }
-	 * 
-	 * public Categories() { super(); }
-	 */
+	
+	  public int getId() { return Id; }
+	  
+	  public void setId(int id) { Id = id; }
+	  
+	  public String getName() { return Name; }
+	  
+	  public void setName(String name) { Name = name; }
+	  
+	  public String getSlug() { return Slug; }
+	  
+	  public void setSlug(String slug) { Slug = slug; }
+	  
+	  public Categories getParent() { return parent; }
+	  
+	  public void setParent(Categories parent) { this.parent = parent; }
+	  
+	  public List<Categories> getChildren() { return children; }
+	  
+	  public void setChildren(List<Categories> children) { this.children =
+	  children; }
+	  
+	  public List<Products> getProducts() { return products; }
+	  
+	  public void setProducts(List<Products> products) { this.products = products;
+	  }
+	  
+	  public static long getSerialversionuid() { return serialVersionUID; }
+	  
+	  public Categories(int id, String name, String slug, Categories parent,
+	  List<Categories> children, List<Products> products) { super(); Id = id; Name
+	  = name; Slug = slug; this.parent = parent; this.children = children;
+	  this.products = products; }
+	  
+	  public Categories() { super(); }
+	 
     
 }

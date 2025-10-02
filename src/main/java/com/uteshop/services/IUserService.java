@@ -1,0 +1,13 @@
+package com.uteshop.services;
+
+import java.util.List;
+
+import com.uteshop.dao.impl.User.UserDaoImpl;
+import com.uteshop.entities.Users;
+
+public interface IUserService {
+	UserDaoImpl daoImpl = new UserDaoImpl();
+	List<Users> findAll();
+	Users findById(int id);
+	void delete(int id);
+}

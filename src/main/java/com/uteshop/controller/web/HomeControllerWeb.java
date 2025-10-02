@@ -10,9 +10,9 @@ import java.util.List;
 
 import com.uteshop.entities.Categories;
 import com.uteshop.services.ICategoriesService;
-import com.uteshop.services.IProductsService;
+import com.uteshop.services.Product.IProductsService;
 import com.uteshop.services.impl.CategoriesServiceImpl;
-import com.uteshop.services.impl.ProductsServiceImpl;
+import com.uteshop.services.impl.Product.ProductsServiceImpl;
 
 /**
  * Servlet implementation class HomeControllerWeb

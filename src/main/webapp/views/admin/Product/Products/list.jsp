@@ -5,7 +5,10 @@
 <section class="row">
 	<div class="col mt-4">
 		<div class="card">
-			<div class="card-header">List Category</div>
+			<div class="card-header d-flex justify-content-between align-items-center">
+                <h2>Products List</h2>
+                <a href="${pageContext.request.contextPath}/admin/Product/Products/add" class="btn btn-primary">Add Product</a>
+            </div>
 			<div class="card-body">
 
 				<!-- Hiển thị thông báo -->
@@ -21,7 +24,7 @@
 							<tr>
 								<!-- <th>Id</th> -->
 								<th>Category Name</th>
-								<th>Name</th>
+								<th>Product Name</th>
 								<th>Slug</th>
 								<!-- <th>Description</th> -->
 								<th>Base Price</th>
@@ -32,7 +35,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							<c:forEach items="${listSys}" var="item">
+							<c:forEach items="${productList}" var="item">
 								<tr>
 									<%-- <td>${item.id}</td> --%>
 									<td>${item.category.name}</td>
@@ -44,12 +47,12 @@
 									<%-- <td>${item.createdAt}</td>
 									<td>${item.updatedAt}</td> --%>
 									<td><a
-										href="${pageContext.request.contextPath}/admin/category/view/id=${cate.categoryId}"
+										href="${pageContext.request.contextPath}/admin/Product/Products/view?id=${item.id}"
 										class="btn btn-outline-info"><i class="fa fa-info"></i></a> <a
-										href="${pageContext.request.contextPath}/admin/category/edit/id=${cate.categoryId}"
+										href="${pageContext.request.contextPath}/admin/Product/Products/edit?id=${item.id}"
 										class="btn btn-outline-warning"><i class="fa fa-edit"></i></a>
 										<a
-										href="${pageContext.request.contextPath}/admin/category/delete/id=${cate.categoryId}"
+										href="${pageContext.request.contextPath}/admin/Product/Products/delete?id=${item.id}"
 										class="btn btn-outline-danger"><i class="fa fa-trash"></i></a>
 									</td>
 								</tr>
