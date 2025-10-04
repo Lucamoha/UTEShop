@@ -32,8 +32,8 @@
 <class>com.uteshop.entities.ReviewMedia</class>
 <class>com.uteshop.entities.SystemSettings</class>
 <properties>
-<property name="jakarta.persistence.jdbc.url"
-value="jdbc:sqlserver://localhost:1433;trustServerCertificate=true;encrypt=true;databaseName=UTESHOP" />
+<!--<property name="jakarta.persistence.jdbc.url"
+value="jdbc:sqlserver://localhost:1433;trustServerCertificate=true;encrypt=true;databaseName=UTESHOP" />-->
 <property name="jakarta.persistence.jdbc.driver"
 value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
 <property name="hibernate.show_sql" value="true" />
