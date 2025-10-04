@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 import com.uteshop.entities.Categories;
-import com.uteshop.services.ICategoriesService;
-import com.uteshop.services.impl.CategoriesServiceImpl;
+import com.uteshop.services.Category.ICategoriesService;
+import com.uteshop.services.impl.Category.CategoriesServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

@@ -1,33 +1,35 @@
 package com.uteshop.configs;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceContext;
 
 @PersistenceContext
 public class JPAConfigs {
 	public static EntityManager getEntityManager() {
-		/*
-		 * try (var is =
-		 * Thread.currentThread().getContextClassLoader().getResourceAsStream(
-		 * "config.properties")){ var props = new java.util.Properties();
-		 * props.load(is);
-		 * 
-		 * var overrides = new java.util.HashMap<String, Object>();
-		 * overrides.put("jakarta.persistence.jdbc.url", props.getProperty("db.url"));
-		 * overrides.put("jakarta.persistence.jdbc.user",
-		 * props.getProperty("db.username"));
-		 * overrides.put("jakarta.persistence.jdbc.password",
-		 * props.getProperty("db.password"));
-		 * 
-		 * return Persistence.createEntityManagerFactory("dataSource",
-		 * overrides).createEntityManager(); } catch (Exception e){ e.printStackTrace();
-		 * return null; }
-		 */
 		
-		EntityManagerFactory enmafact = Persistence.createEntityManagerFactory("dataSource");
-		return enmafact.createEntityManager();
+		  try (var is =
+		  Thread.currentThread().getContextClassLoader().getResourceAsStream(
+		  "config.properties")){ var props = new java.util.Properties();
+		  props.load(is);
+		  
+		  var overrides = new java.util.HashMap<String, Object>();
+		  overrides.put("jakarta.persistence.jdbc.url", props.getProperty("db.url"));
+		  overrides.put("jakarta.persistence.jdbc.user",
+		  props.getProperty("db.username"));
+		  overrides.put("jakarta.persistence.jdbc.password",
+		  props.getProperty("db.password"));
+		  
+		  return Persistence.createEntityManagerFactory("dataSource",
+		  overrides).createEntityManager(); } catch (Exception e){ e.printStackTrace();
+		  return null; }
+		 
+		
+		/*
+		 * EntityManagerFactory enmafact =
+		 * Persistence.createEntityManagerFactory("dataSource"); return
+		 * enmafact.createEntityManager();
+		 */
 	}
 
 	public static void main(String[] args) {

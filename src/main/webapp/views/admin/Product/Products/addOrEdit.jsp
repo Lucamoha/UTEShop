@@ -45,6 +45,7 @@
                         <input type="number" step="0.01" name="basePrice" class="form-control"
                                value="${product.basePrice}" placeholder="Enter price" />
                     </div>
+                   
 
                     <!-- Category Select -->
                     <div class="mb-3">
