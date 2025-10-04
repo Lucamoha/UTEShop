@@ -1,4 +1,4 @@
-package com.uteshop.entities;
+package com.uteshop.entity.catalog;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +10,9 @@ import java.util.List;
 
 @Entity
 @Data
-
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NamedQueries({
     @NamedQuery(name = "Categories.findAll", 
@@ -29,10 +31,13 @@ public class Categories implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    int Id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    Integer Id;
 
+	@Column(nullable = false, columnDefinition = "NVARCHAR(120)")
     String Name;
 
+	@Column(nullable = false, unique = true)
     String Slug;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -44,42 +49,4 @@ public class Categories implements Serializable {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     List<Products> products = new ArrayList<>();
-
-	
-	  public int getId() { return Id; }
-	  
-	  public void setId(int id) { Id = id; }
-	  
-	  public String getName() { return Name; }
-	  
-	  public void setName(String name) { Name = name; }
-	  
-	  public String getSlug() { return Slug; }
-	  
-	  public void setSlug(String slug) { Slug = slug; }
-	  
-	  public Categories getParent() { return parent; }
-	  
-	  public void setParent(Categories parent) { this.parent = parent; }
-	  
-	  public List<Categories> getChildren() { return children; }
-	  
-	  public void setChildren(List<Categories> children) { this.children =
-	  children; }
-	  
-	  public List<Products> getProducts() { return products; }
-	  
-	  public void setProducts(List<Products> products) { this.products = products;
-	  }
-	  
-	  public static long getSerialversionuid() { return serialVersionUID; }
-	  
-	  public Categories(int id, String name, String slug, Categories parent,
-	  List<Categories> children, List<Products> products) { super(); Id = id; Name
-	  = name; Slug = slug; this.parent = parent; this.children = children;
-	  this.products = products; }
-	  
-	  public Categories() { super(); }
-	 
-    
 }

@@ -1,4 +1,4 @@
-package com.uteshop.entities;
+package com.uteshop.entity.catalog;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,16 +10,19 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OptionValues implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    int Id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Integer Id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "OptionTypeId", nullable = false)
     OptionTypes optionType;
 
+    @Column(nullable = false, columnDefinition = "NVARCHAR(60)")
     String Value;
 }

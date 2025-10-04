@@ -1,24 +1,17 @@
-package com.uteshop.entities;
+package com.uteshop.entity.engagement;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import com.uteshop.entity.auth.Users;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 
 @Entity
 //@Table(name = "CompareLists", schema = "dbo") // nếu bảng tên CompareLists
@@ -31,6 +24,7 @@ public class CompareLists implements Serializable {
 	private static final long serialVersionUID = 1L;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer Id;
 
     @ManyToOne(fetch = FetchType.LAZY)//fetch = FetchType.LAZY -> Dữ liệu quan hệ chỉ được tải khi bạn thực sự gọi đến

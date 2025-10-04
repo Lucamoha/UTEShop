@@ -1,4 +1,4 @@
-package com.uteshop.entities;
+package com.uteshop.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

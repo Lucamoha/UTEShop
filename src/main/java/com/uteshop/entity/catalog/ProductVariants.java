@@ -1,4 +1,4 @@
-package com.uteshop.entities;
+package com.uteshop.entity.catalog;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,25 +14,29 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductVariants implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    int Id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Integer Id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ProductId", nullable = false)
     Products product;
 
+    @Column(nullable = false, unique = true)
     String SKU;
 
+    @Column(nullable = false, precision = 12, scale = 2)
     BigDecimal Price;
 
-    int StockQty;
-
+    @Column(nullable = false)
     boolean Status;
 
+    @Column(nullable = false)
     LocalDateTime CreatedAt;
 
     LocalDateTime UpdatedAt;

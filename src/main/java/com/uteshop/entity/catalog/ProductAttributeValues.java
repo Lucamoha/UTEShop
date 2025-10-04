@@ -1,4 +1,4 @@
-package com.uteshop.entities;
+package com.uteshop.entity.catalog;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,12 +11,13 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductAttributeValues implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
-    ProductAttributeId id;
+    Id id;
 
     @MapsId("productId")
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,7 +29,19 @@ public class ProductAttributeValues implements Serializable {
     @JoinColumn(name = "AttributeId", nullable = false)
     Attributes attribute;
 
+    @Column(columnDefinition = "NVARCHAR(255)")
     String ValueText;
 
+    @Column(precision = 18, scale = 4)
     BigDecimal ValueNumber;
+
+    @Embeddable
+    @Getter @Setter @NoArgsConstructor @AllArgsConstructor
+    public static class Id implements Serializable {
+        @Column(name = "ProductId")
+        private Integer productId;
+
+        @Column(name = "AttributeId")
+        private Integer attributeId;
+    }
 }

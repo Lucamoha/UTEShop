@@ -1,4 +1,4 @@
-package com.uteshop.entities;
+package com.uteshop.entity.catalog;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,20 +10,25 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductImages implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    int Id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Integer Id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ProductId", nullable = false)
     Products product;
 
-    int VariantId;
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "VariantId")
+    ProductVariants VariantId;
 
+    @Column(nullable = false)
     String ImageUrl;
 
+    @Column(nullable = false)
     int SortOrder;
 }

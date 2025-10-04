@@ -1,27 +1,18 @@
-package com.uteshop.entities;
+package com.uteshop.entity.auth;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Addresses {
 	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer Id;
 
     @ManyToOne(fetch = FetchType.LAZY)//khi nào dùng đến cột thì nạp, không nạp hết cột từ đâu
@@ -30,10 +21,13 @@ public class Addresses {
 
     String Label;
 
+    @Column(nullable = false, columnDefinition = "NVARCHAR(120)")
     String FullName;
 
+    @Column(nullable = false, length = 20)
     String Phone;
 
+    @Column(nullable = false)
     String AddressLine;
 
     String Ward;
@@ -42,5 +36,6 @@ public class Addresses {
 
     String City;
 
+    @Column(nullable = false)
     Boolean IsDefault;
 }
