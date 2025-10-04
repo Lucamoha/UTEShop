@@ -16,7 +16,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(urlPatterns =  {"/admin/Product/Products/list", "/admin/Product/Products/add", "/admin/Product/Products/edit", "/admin/Product/Products/view"})
+@WebServlet(urlPatterns = { "/admin/Product/Products/list", "/admin/Product/Products/add",
+		"/admin/Product/Products/edit", "/admin/Product/Products/view" })
 public class ProductController extends HttpServlet {
 
 	/**
@@ -75,14 +76,17 @@ public class ProductController extends HttpServlet {
 			        product.setCategory(category);
 			    }
 				
-				/*
-				 * // goi ham save trong service productService.save(entity); // dua thong bao
-				 * ve cho bien message String message = ""; if (productModel.isEdit()) { message
-				 * = "Product is Edited!!!!!"; } else { message = "Product is Saved!!!!!!"; }
-				 * model.addAttribute("message", message); // redirect về url controller return
-				 * new ModelAndView("redirect:/admin/product/searchpaginated?page=1&size=3",
-				 * model);
-				 */
+				
+				// goi ham save trong service
+				productsService.save(entity);
+				// dua thong bao ve cho bien message
+				String message = "";
+				if (productModel.isEdit()) { message
+				  = "Product is Edited!!!!!"; } else { message = "Product is Saved!!!!!!"; }
+				  model.addAttribute("message", message); // redirect về url controller return
+				  new ModelAndView("redirect:/admin/product/searchpaginated?page=1&size=3",
+				  model);
+				 
 		}
 	}
 }
