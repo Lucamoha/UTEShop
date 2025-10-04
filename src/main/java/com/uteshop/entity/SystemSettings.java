@@ -19,6 +19,6 @@ public class SystemSettings implements Serializable {
     @Column(name = "[Key]")
     String Key;
 
-    @Column(name = "[Value]")
+    @Column(name = "[Value]", columnDefinition = "NVARCHAR(MAX)")
     String Value;
 }

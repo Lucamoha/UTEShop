@@ -3,7 +3,7 @@ package com.uteshop.services.impl.Product;
 import java.util.List;
 
 import com.uteshop.dao.impl.Product.ProductsDaoImpl;
-import com.uteshop.entities.Products;
+import com.uteshop.entity.catalog.Products;
 import com.uteshop.services.Product.IProductsService;
 
 public class ProductsServiceImpl implements IProductsService {

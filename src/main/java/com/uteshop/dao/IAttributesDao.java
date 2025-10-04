@@ -1,6 +1,6 @@
 package com.uteshop.dao;
 
-import com.uteshop.entities.Attributes;
+import com.uteshop.entity.catalog.Attributes;
 import java.util.List;
 
 public interface IAttributesDao {

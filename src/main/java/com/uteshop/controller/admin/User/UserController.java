@@ -3,7 +3,7 @@ package com.uteshop.controller.admin.User;
 import java.io.IOException;
 import java.util.List;
 
-import com.uteshop.entities.Users;
+import com.uteshop.entity.auth.Users;
 import com.uteshop.services.IUserService;
 import com.uteshop.services.impl.UserServiceImpl;
 
