@@ -10,5 +10,4 @@ public interface ICategoriesDao {
     List<Categories> findChildren(int parentId);
     Categories findBySlug(String slug);
     Categories findById(int id);
-
 }

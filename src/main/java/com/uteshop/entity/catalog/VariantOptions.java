@@ -28,7 +28,7 @@ public class VariantOptions implements Serializable {
     @JoinColumn(name = "OptionTypeId", nullable = false)
     OptionTypes optionType;
 
-    @MapsId("optionValueId")
+    // Không cần field optionValueId nữa
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "OptionValueId", nullable = false)
     OptionValues optionValue;

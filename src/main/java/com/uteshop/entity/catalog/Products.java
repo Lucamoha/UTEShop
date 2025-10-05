@@ -16,7 +16,17 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@NamedQuery(name = "Products.findAll", query = "select p from Products p")
+@ToString(exclude = {"category", "images", "variants"})
+@NamedQueries({
+        @NamedQuery(name = "Products.findAll", query = "select p from Products p"),
+        @NamedQuery(
+                name = "Products.findLatestProducts",
+                query = "SELECT DISTINCT p FROM Products p " +
+                        "LEFT JOIN FETCH p.images pi " +
+                        "WHERE pi.SortOrder = 0 " +
+                        "ORDER BY p.CreatedAt DESC"
+        )
+})
 public class Products implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -51,6 +61,6 @@ public class Products implements Serializable {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     List<ProductVariants> variants = new ArrayList<>();
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     List<ProductImages> images = new ArrayList<>();
 }
