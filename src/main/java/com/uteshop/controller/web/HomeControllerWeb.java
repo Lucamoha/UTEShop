@@ -1,5 +1,6 @@
 package com.uteshop.controller.web;
 
+import com.uteshop.entity.catalog.Products;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -37,8 +38,15 @@ public class HomeControllerWeb extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+        response.setContentType("text/html;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
+
 		List<Categories> parents = categoriesService.findParents();
+        List<Products> topLatestProducts = productsService.topLatestProducts();
+
+
         request.setAttribute("parentCategories", parents);
+        request.setAttribute("topLatestProducts", topLatestProducts);
 	    
 		request.getRequestDispatcher("/views/web/home.jsp").forward(request, response);
 	}

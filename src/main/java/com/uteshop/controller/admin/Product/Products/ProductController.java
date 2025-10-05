@@ -77,15 +77,7 @@ public class ProductController extends HttpServlet {
 			    }
 				
 				
-				// goi ham save trong service
-				productsService.save(entity);
-				// dua thong bao ve cho bien message
-				String message = "";
-				if (productModel.isEdit()) { message
-				  = "Product is Edited!!!!!"; } else { message = "Product is Saved!!!!!!"; }
-				  model.addAttribute("message", message); // redirect về url controller return
-				  new ModelAndView("redirect:/admin/product/searchpaginated?page=1&size=3",
-				  model);
+
 				 
 		}
 	}

@@ -20,7 +20,7 @@ public class ProductsServiceImpl implements IProductsService {
 	}
 
     @Override
-    public List<Products> top10LatestProducts() {
+    public List<Products> topLatestProducts() {
         return productsDao.topLatestProducts();
     }
 

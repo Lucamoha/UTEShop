@@ -20,7 +20,7 @@ public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsD
         EntityManager enma = JPAConfigs.getEntityManager();
         try {
             return enma.createNamedQuery("Products.findLatestProducts", Products.class)
-                    .setMaxResults(10)   // tương ứng với TOP 10
+                    .setMaxResults(12)   // tương ứng với TOP 12
                     .getResultList();
         } finally {
             enma.close();
