@@ -2,7 +2,7 @@ package com.uteshop.dao;
 
 import java.util.List;
 
-import com.uteshop.entities.Categories;
+import com.uteshop.entity.catalog.Categories;
 
 public interface ICategoriesDao {
 	List<Categories> findAll();
@@ -10,5 +10,4 @@ public interface ICategoriesDao {
     List<Categories> findChildren(int parentId);
     Categories findBySlug(String slug);
     Categories findById(int id);
-
 }

@@ -2,7 +2,7 @@ package com.uteshop.dao.impl.User;
 
 
 import com.uteshop.dao.AbstractDao;
-import com.uteshop.entities.Users;
+import com.uteshop.entity.auth.Users;
 
 
 

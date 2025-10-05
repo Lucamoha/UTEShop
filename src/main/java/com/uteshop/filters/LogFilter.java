@@ -2,9 +2,6 @@ package com.uteshop.filters;
 
 import java.io.IOException;
 
-import com.uteshop.entities.Users;
-import com.uteshop.util.Constant;
-
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -12,9 +9,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebFilter;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 @WebFilter("/*")
 public class LogFilter implements Filter {

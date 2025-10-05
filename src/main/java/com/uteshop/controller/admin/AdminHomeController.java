@@ -1,10 +1,6 @@
 package com.uteshop.controller.admin;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.List;
-
-import com.uteshop.entities.Products;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

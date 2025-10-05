@@ -3,7 +3,7 @@ package com.uteshop.services.impl;
 import java.util.List;
 
 import com.uteshop.dao.impl.User.UserDaoImpl;
-import com.uteshop.entities.Users;
+import com.uteshop.entity.auth.Users;
 import com.uteshop.services.IUserService;
 
 public class UserServiceImpl implements IUserService{

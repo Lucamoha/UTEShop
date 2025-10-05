@@ -2,7 +2,7 @@ package com.uteshop.services.Category;
 
 import java.util.List;
 
-import com.uteshop.entities.Categories;
+import com.uteshop.entity.catalog.Categories;
 
 public interface ICategoriesService {
 	List<Categories> findAll();

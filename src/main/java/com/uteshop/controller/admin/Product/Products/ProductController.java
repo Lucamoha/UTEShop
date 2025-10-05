@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.uteshop.entities.Categories;
-import com.uteshop.entities.Products;
+import com.uteshop.entity.catalog.Categories;
+import com.uteshop.entity.catalog.Products;
 import com.uteshop.services.Category.ICategoriesService;
 import com.uteshop.services.Product.IProductsService;
 import com.uteshop.services.impl.Category.CategoriesServiceImpl;

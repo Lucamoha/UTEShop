@@ -1,10 +1,7 @@
 package com.uteshop.controller.web;
 
 import java.io.IOException;
-import java.util.List;
 
-import com.uteshop.entities.Products;
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

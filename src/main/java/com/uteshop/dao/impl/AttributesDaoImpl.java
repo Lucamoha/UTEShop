@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.uteshop.configs.JPAConfigs;
 import com.uteshop.dao.IAttributesDao;
-import com.uteshop.entities.Attributes;
+import com.uteshop.entity.catalog.Attributes;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;

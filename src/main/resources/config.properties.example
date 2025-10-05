@@ -15,7 +15,7 @@ jwt.expiration=3600000
 # User Roles
 # ========================
 users.role.user=USER
-users.role.employee=EMPLOYEE
+users.role.manager=MANAGER
 users.role.admin=ADMIN
 
 # ========================

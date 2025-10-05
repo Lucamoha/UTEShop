@@ -1,0 +1,46 @@
+package com.uteshop.entity.catalog;
+
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+import java.io.Serializable;
+
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class CategoryAttributes implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    @EmbeddedId
+    Id id;
+
+    @MapsId("categoryId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CategoryId", nullable = false)
+    Categories category;
+
+    @MapsId("attributeId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "AttributeId", nullable = false)
+    Attributes attribute;
+
+    @Column(nullable = false)
+    Boolean IsFilterable;
+
+    @Column(nullable = false)
+    Boolean IsComparable;
+
+    @Embeddable
+    @Getter @Setter @NoArgsConstructor @AllArgsConstructor
+    public static class Id implements Serializable {
+        @Column(name = "CategoryId")
+        private Integer categoryId;
+
+        @Column(name = "AttributeId")
+        private Integer attributeId;
+    }
+}

@@ -3,7 +3,7 @@ package com.uteshop.controller.web;
 import java.io.IOException;
 import java.util.List;
 
-import com.uteshop.entities.Categories;
+import com.uteshop.entity.catalog.Categories;
 import com.uteshop.services.Category.ICategoriesService;
 import com.uteshop.services.impl.Category.CategoriesServiceImpl;
 

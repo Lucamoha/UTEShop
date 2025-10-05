@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.uteshop.dao.IAttributesDao;
 import com.uteshop.dao.impl.AttributesDaoImpl;
-import com.uteshop.entities.Attributes;
+import com.uteshop.entity.catalog.Attributes;
 import com.uteshop.services.IAttributesService;
 
 public class AttributesServiceImpl implements IAttributesService {
