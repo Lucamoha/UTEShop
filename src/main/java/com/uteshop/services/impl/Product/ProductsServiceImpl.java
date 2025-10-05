@@ -2,7 +2,6 @@ package com.uteshop.services.impl.Product;
 
 import java.util.List;
 
-import com.uteshop.dao.IProductsDao;
 import com.uteshop.dao.impl.Product.ProductsDaoImpl;
 import com.uteshop.entity.catalog.Products;
 import com.uteshop.services.Product.IProductsService;
@@ -17,6 +16,22 @@ public class ProductsServiceImpl implements IProductsService {
 	@Override
 	public Products findById(int id) {
 		return productsDao.findById(id);
+	}
+	@Override
+	public void insert(Products product) {
+		productsDao.insert(product);
+	}
+	@Override
+	public void update(Products products) {
+		productsDao.update(products);
+	}
+	@Override
+	public void delete(int id) {
+		productsDao.delete(productsDao);
+	}
+	@Override
+	public List<Products> findAll(boolean all, int firstResult, int maxResult) {
+		return productsDao.findAll(all, firstResult, maxResult);
 	}
 
     @Override
