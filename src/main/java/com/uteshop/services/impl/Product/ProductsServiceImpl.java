@@ -8,13 +8,29 @@ import com.uteshop.services.Product.IProductsService;
 
 public class ProductsServiceImpl implements IProductsService {
 
-	ProductsDaoImpl productsDaoImpl = new ProductsDaoImpl();
+	ProductsDaoImpl productsDao = new ProductsDaoImpl();
 	@Override
 	public List<Products> findAll() {	
-		return productsDaoImpl.findAll();
+		return productsDao.findAll();
 	}
 	@Override
 	public Products findById(int id) {
-		return productsDaoImpl.findById(id);
+		return productsDao.findById(id);
+	}
+	@Override
+	public void insert(Products product) {
+		productsDao.insert(product);
+	}
+	@Override
+	public void update(Products products) {
+		productsDao.update(products);
+	}
+	@Override
+	public void delete(int id) {
+		productsDao.delete(productsDao);
+	}
+	@Override
+	public List<Products> findAll(boolean all, int firstResult, int maxResult) {
+		return productsDao.findAll(all, firstResult, maxResult);
 	}
 }

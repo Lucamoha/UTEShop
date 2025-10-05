@@ -18,7 +18,7 @@ public class Products implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    int Id;
+    Integer Id;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "CategoryId", nullable = false)
