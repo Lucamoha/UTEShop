@@ -80,15 +80,20 @@
 												<span class="badge bg-secondary">Inactive</span>
 											</c:otherwise>
 										</c:choose></td>
-									<td><a
-										href="${pageContext.request.contextPath}/admin/Product/Products/view?id=${product.id}"
-										class="btn btn-outline-info btn-sm">View</a> <a
-										href="${pageContext.request.contextPath}/admin/Product/Products/edit?id=${product.id}"
-										class="btn btn-outline-warning btn-sm">Edit</a> <a
-										href="javascript:void(0)"
-										class="btn btn-outline-danger btn-sm" data-id="${product.id}"
-										data-name="${product.name}" onclick="showConfirmation(this)">Delete</a>
+									<td>
+										<div class="d-flex justify-content-center gap-2">
+											<a
+												href="${pageContext.request.contextPath}/admin/Product/Products/view?id=${product.id}"
+												class="btn btn-outline-info btn-sm">View</a> <a
+												href="${pageContext.request.contextPath}/admin/Product/Products/edit?id=${product.id}"
+												class="btn btn-outline-warning btn-sm">Edit</a> <a
+												href="javascript:void(0)"
+												class="btn btn-outline-danger btn-sm"
+												data-id="${product.id}" data-name="${product.name}"
+												onclick="showConfirmation(this)">Delete</a>
+										</div>
 									</td>
+
 								</tr>
 							</c:forEach>
 						</tbody>
