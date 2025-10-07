@@ -10,6 +10,8 @@
 	href="${pageContext.request.contextPath}/templates/admin/img/kaiadmin/favicon.ico"
 	type="image/x-icon" />
 
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
 <!-- Fonts and icons -->
 <script
 	src="${pageContext.request.contextPath}/templates/admin/js/plugin/webfont/webfont.min.js"></script>

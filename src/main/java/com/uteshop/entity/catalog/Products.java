@@ -71,6 +71,8 @@ public class Products implements Serializable {
 		// Tự động cập nhật UpdatedAt khi update
 		UpdatedAt = LocalDateTime.now();
 	}
+    
+    Integer Sold = 0;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     List<ProductVariants> variants = new ArrayList<>();

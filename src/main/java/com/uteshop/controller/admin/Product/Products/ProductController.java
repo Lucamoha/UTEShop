@@ -32,7 +32,7 @@ public class ProductController extends HttpServlet {
 		String uri = req.getRequestURI();
 
 		if (uri.contains("searchpaginated")) {
-			
+
 			int page = 1;
 			int size = 6;
 
@@ -42,11 +42,11 @@ public class ProductController extends HttpServlet {
 			if (req.getParameter("size") != null) {
 				size = Integer.parseInt(req.getParameter("size"));
 			}
-			
+
 			String searchKeyword = req.getParameter("searchKeyword");
-			if(searchKeyword != null) {
+			if (searchKeyword != null) {
 				searchKeyword = searchKeyword.trim();
-				//if(searchKeyword.isEmpty()) searchKeyword = null;
+				// if(searchKeyword.isEmpty()) searchKeyword = null;
 			}
 
 			// Tính offset (vị trí bắt đầu)
@@ -55,8 +55,8 @@ public class ProductController extends HttpServlet {
 			List<Products> productList = productsService.findAll(false, firstResult, size, searchKeyword);
 
 			// Đếm tổng số bản ghi để tính tổng trang
-			//List<Products> allProducts = productsService.findAll(true, 0, 0);
-			//int totalProducts = allProducts.size();
+			// List<Products> allProducts = productsService.findAll(true, 0, 0);
+			// int totalProducts = allProducts.size();
 			int totalProducts = productsService.count(searchKeyword);
 			int totalPages = (int) Math.ceil((double) totalProducts / size);
 
@@ -104,27 +104,60 @@ public class ProductController extends HttpServlet {
 			String description = req.getParameter("description");
 			String basePriceStr = req.getParameter("basePrice");
 			String status = req.getParameter("status");
-			int categoryId = Integer.parseInt(req.getParameter("categoryId"));
+			String categoryIdStr = req.getParameter("categoryId");
 
 			// Nếu có id -> update
+			Integer id = null;
 			if (idStr != null && !idStr.isEmpty()) {
-				int id = Integer.parseInt(idStr);
+				id = Integer.parseInt(idStr);
 				product = productsService.findById(id);
 			}
 
-			// Gán giá trị
+			// Gán giá trị tạm thời để giữ lại form nếu lỗi
 			product.setName(name);
 			product.setSlug(slug);
 			product.setDescription(description);
 			product.setStatus("true".equals(status));
 
 			if (basePriceStr != null && !basePriceStr.isEmpty()) {
-				product.setBasePrice(new BigDecimal(basePriceStr));
+				try {
+					product.setBasePrice(new BigDecimal(basePriceStr));
+				} catch (NumberFormatException e) {
+					req.setAttribute("error", "Giá tiền không hợp lệ!");
+				}
 			}
 
-			Categories category = categoriesService.findById(categoryId);
-			product.setCategory(category);
+			Categories category = null;
+			try {
+				if(categoryIdStr != null && !categoryIdStr.isEmpty()) {
+					int categoryId = Integer.parseInt(categoryIdStr);
+					category = categoriesService.findById(categoryId);
+					product.setCategory(category);
+				}
+				else{
+					req.setAttribute("error", "Vui lòng chọn danh mục!");
+				}
+				
+			} catch (Exception e) {
+				req.setAttribute("error", "Danh mục không hợp lệ!");
+			}
 
+			// Kiểm tra slug trùng
+			Products existing = productsService.findBySlug(slug);
+			if (existing != null && (idStr == null || !existing.getId().equals(id))) {
+				req.setAttribute("error", "Slug đã tồn tại! Vui lòng nhập slug khác!");
+			}
+
+			// foward lại form nếu lỗi
+			if (req.getAttribute("error") != null) {
+				List<Categories> categoryList = categoriesService.findAll();
+				req.setAttribute("categoryList", categoryList);
+				req.setAttribute("product", product);
+				req.getRequestDispatcher("/views/admin/Product/Products/addOrEdit.jsp").forward(req, resp);
+				return;
+			}
+
+			//Lưu sản phẩm vào db nếu không lỗi
 			String message;
 			if (idStr != null && !idStr.isEmpty()) {
 				productsService.update(product);

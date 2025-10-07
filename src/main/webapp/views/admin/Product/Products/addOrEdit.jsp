@@ -3,6 +3,10 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 
 <section class="row">
+	<c:if test="${not empty error}">
+		<div class="alert alert-danger">${error}</div>
+	</c:if>
+
 	<div class="col-6 offset-3 mt-4">
 		<form
 			action="${pageContext.request.contextPath}/admin/Product/Products/saveOrUpdate"
@@ -32,7 +36,7 @@
 					<div class="mb-3">
 						<label class="form-label">Slug:</label> <input type="text"
 							name="slug" class="form-control" value="${product.slug}"
-							placeholder="Unique slug" />
+							placeholder="Unique slug" required />
 					</div>
 
 					<!-- Description -->
@@ -44,10 +48,10 @@
 					<!-- Base Price -->
 					<div class="mb-3">
 						<label class="form-label">Base Price:</label> <input type="number"
-							name="basePrice" step="1" min="0" class="form-control"
+							name="basePrice" min="1000" class="form-control"
 							value="${product.basePrice.intValue()}" placeholder="Enter price"
 							required />
-						<!-- step="1": yeu cau nguoi dung nhap so nguyen la bo so cua 1
+						<!--
                                product.basePrice.intValue(): chuyen sang kieu int de hien thi -->
 					</div>
 
@@ -78,10 +82,10 @@
 
 					<!-- Submit -->
 					<div class="mt-3">
-						<button type="submit" class="btn btn-primary">Save</button>
+						<button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Save</button>
 						<a
 							href="${pageContext.request.contextPath}/admin/Product/Products/searchpaginated"
-							class="btn btn-secondary">Cancel</a>
+							class="btn btn-secondary"><i class="bi bi-x-circle"></i> Cancel</a>
 					</div>
 				</div>
 			</div>

@@ -47,5 +47,9 @@ public class ProductsServiceImpl implements IProductsService {
 	public int count(String searchKeyword) {
 		return productsDao.count(searchKeyword);
 	}
+	@Override
+	public Products findBySlug(String slug) {
+		return productsDao.findBySlug(slug);
+	}
 
 }

@@ -12,6 +12,7 @@ public interface IProductsService {
 	void delete(int id);
 	List<Products> findAll(boolean all, int firstResult, int maxResult, String searchKeyword);
 	int count(String searchKeyword);
+	Products findBySlug(String slug);
     List<Products> topLatestProducts();
     List<Products> findAll(int page, int pageSize);
 }

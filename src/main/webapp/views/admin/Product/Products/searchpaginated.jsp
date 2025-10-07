@@ -6,9 +6,6 @@
 <head>
 <meta charset="UTF-8">
 <title>List Product</title>
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-	rel="stylesheet">
 </head>
 <body>
 	<div class="container mt-4">
@@ -41,8 +38,8 @@
 					<div class="col-md-6">
 						<div class="float-end">
 							<a class="btn btn-outline-success"
-								href="${pageContext.request.contextPath}/admin/Product/Products/saveOrUpdate">Add
-								New Product</a>
+								href="${pageContext.request.contextPath}/admin/Product/Products/saveOrUpdate"><i class="bi bi-plus-circle"></i> Add
+								Product</a>
 						</div>
 					</div>
 				</div>
@@ -88,14 +85,14 @@
 											<div class="btn-group" role="group">
 												<a
 													href="${pageContext.request.contextPath}/admin/Product/Products/view?id=${product.id}"
-													class="btn btn-sm btn-outline-info me-1" title="View"> <i
+													class="btn btn-outline-info me-1" title="View"> <i
 													class="bi bi-eye"></i> <!-- me-1 (margin-end) -->
 												</a> <a
 													href="${pageContext.request.contextPath}/admin/Product/Products/saveOrUpdate?id=${product.id}"
-													class="btn btn-sm btn-outline-warning me-1" title="Edit"> <i
+													class="btn btn-outline-warning me-1" title="Edit"> <i
 													class="bi bi-pencil-square"></i>
 												</a> <a href="javascript:void(0)"
-													class="btn btn-sm btn-outline-danger"
+													class="btn btn-outline-danger"
 													data-id="${product.id}" data-name="${product.name}"
 													onclick="showConfirmation(this)" title="Delete"> <i
 													class="bi bi-trash"></i>
