@@ -57,6 +57,8 @@ public class Products implements Serializable {
     LocalDateTime CreatedAt;
     
     LocalDateTime UpdatedAt;
+    
+    Integer Sold = 0;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     List<ProductVariants> variants = new ArrayList<>();
