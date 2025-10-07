@@ -45,6 +45,7 @@
 <!-- CSS Just for demo purpose, don't include it in your project -->
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/templates/admin/css/demo.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body>
 	<div class="wrapper">

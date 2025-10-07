@@ -27,11 +27,11 @@ public class ProductsServiceImpl implements IProductsService {
 	}
 	@Override
 	public void delete(int id) {
-		productsDao.delete(productsDao);
+		productsDao.delete(id);
 	}
 	@Override
-	public List<Products> findAll(boolean all, int firstResult, int maxResult) {
-		return productsDao.findAll(all, firstResult, maxResult);
+	public List<Products> findAll(boolean all, int firstResult, int maxResult, String searchKeyword) {
+		return productsDao.findAll(all, firstResult, maxResult, searchKeyword);
 	}
 
     @Override
@@ -43,5 +43,9 @@ public class ProductsServiceImpl implements IProductsService {
     public List<Products> findAll(int page, int pageSize) {
         return productsDao.findAll(page, pageSize);
     }
+	@Override
+	public int count(String searchKeyword) {
+		return productsDao.count(searchKeyword);
+	}
 
 }

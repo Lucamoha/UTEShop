@@ -59,7 +59,7 @@
             </div>
             <div class="card-footer text-right">
                 <!-- Back -->
-                <a href="${pageContext.request.contextPath}/admin/Product/Products/list"
+                <a href="${pageContext.request.contextPath}/admin/Product/Products/searchpaginated"
                    class="btn btn-secondary">Back</a>
                 
                 <!-- Edit -->

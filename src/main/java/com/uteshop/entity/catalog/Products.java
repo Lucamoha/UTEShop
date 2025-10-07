@@ -53,10 +53,24 @@ public class Products implements Serializable {
 	@Column(nullable = false)
     boolean Status;
 
-	@Column(nullable = false)
+	@Column(nullable = false, updatable = false)
     LocalDateTime CreatedAt;
     
+	@Column
     LocalDateTime UpdatedAt;
+	
+	@PrePersist
+	void onCreate() {
+		//Tự động gán giá trị khi insert mới
+		CreatedAt = LocalDateTime.now();
+		UpdatedAt = LocalDateTime.now();
+	}
+	
+	@PreUpdate
+	void onUpdate() {
+		// Tự động cập nhật UpdatedAt khi update
+		UpdatedAt = LocalDateTime.now();
+	}
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     List<ProductVariants> variants = new ArrayList<>();

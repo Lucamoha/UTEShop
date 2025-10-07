@@ -17,8 +17,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(urlPatterns = { "/admin/Product/Products/searchpaginated", "/admin/Product/Products/add",
-		"/admin/Product/Products/edit", "/admin/Product/Products/delete", "/admin/Product/Products/view"})
+@WebServlet(urlPatterns = { "/admin/Product/Products/searchpaginated", "/admin/Product/Products/saveOrUpdate",
+		"/admin/Product/Products/delete", "/admin/Product/Products/view" })
 public class ProductController extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
@@ -32,47 +32,52 @@ public class ProductController extends HttpServlet {
 		String uri = req.getRequestURI();
 
 		if (uri.contains("searchpaginated")) {
+			
 			int page = 1;
-		    int size = 6;
+			int size = 6;
 
-		    if (req.getParameter("page") != null) {
-		        page = Integer.parseInt(req.getParameter("page"));
-		    }
-		    if (req.getParameter("size") != null) {
-		        size = Integer.parseInt(req.getParameter("size"));
-		    }
+			if (req.getParameter("page") != null) {
+				page = Integer.parseInt(req.getParameter("page"));
+			}
+			if (req.getParameter("size") != null) {
+				size = Integer.parseInt(req.getParameter("size"));
+			}
+			
+			String searchKeyword = req.getParameter("searchKeyword");
+			if(searchKeyword != null) {
+				searchKeyword = searchKeyword.trim();
+				//if(searchKeyword.isEmpty()) searchKeyword = null;
+			}
 
-		    // Tính offset (vị trí bắt đầu)
-		    int firstResult = (page - 1) * size;
+			// Tính offset (vị trí bắt đầu)
+			int firstResult = (page - 1) * size;
 
-		    List<Products> productList = productsService.findAll(false, firstResult, size);
+			List<Products> productList = productsService.findAll(false, firstResult, size, searchKeyword);
 
-		    // Đếm tổng số bản ghi để tính tổng trang
-		    List<Products> allProducts = productsService.findAll(true, 0, 0);
-		    int totalProducts = allProducts.size();
-		    int totalPages = (int) Math.ceil((double) totalProducts / size);
+			// Đếm tổng số bản ghi để tính tổng trang
+			//List<Products> allProducts = productsService.findAll(true, 0, 0);
+			//int totalProducts = allProducts.size();
+			int totalProducts = productsService.count(searchKeyword);
+			int totalPages = (int) Math.ceil((double) totalProducts / size);
 
-		    req.setAttribute("productList", productList);
-		    req.setAttribute("currentPage", page);
-		    req.setAttribute("totalPages", totalPages);
-		    req.setAttribute("size", size);
+			req.setAttribute("productList", productList);
+			req.setAttribute("currentPage", page);
+			req.setAttribute("totalPages", totalPages);
+			req.setAttribute("size", size);
+			req.setAttribute("searchKeyword", searchKeyword);
 
-		    req.getRequestDispatcher("/views/admin/Product/Products/searchpaginated.jsp").forward(req, resp);
+			req.getRequestDispatcher("/views/admin/Product/Products/searchpaginated.jsp").forward(req, resp);
 
-		} else if (uri.contains("edit")) {
+		} else if (uri.contains("saveOrUpdate")) {
 			String id = req.getParameter("id");
-			Products product = productsService.findById(Integer.parseInt(id));
 			List<Categories> categoryList = categoriesService.findAll();
-
-			req.setAttribute("product", product);
+			if (id != null) {
+				// dang o che do edit -> nguoc lai la add
+				Products product = productsService.findById(Integer.parseInt(id));
+				req.setAttribute("product", product);
+			}
 			req.setAttribute("categoryList", categoryList);
 			req.getRequestDispatcher("/views/admin/Product/Products/addOrEdit.jsp").forward(req, resp);
-
-		} else if (uri.contains("add")) {
-			List<Categories> categoryList = categoriesService.findAll();
-			req.setAttribute("categoryList", categoryList);
-			req.getRequestDispatcher("/views/admin/Product/Products/addOrEdit.jsp").forward(req, resp);
-
 		} else if (uri.contains("view")) {
 			String id = req.getParameter("id");
 			Products product = productsService.findById(Integer.parseInt(id));
@@ -81,7 +86,7 @@ public class ProductController extends HttpServlet {
 		} else if (uri.contains("delete")) {
 			String id = req.getParameter("id");
 			productsService.delete(Integer.parseInt(id));
-			req.getRequestDispatcher("/views/admin/Product/Products/searchpaginated.jsp");
+			resp.sendRedirect(req.getContextPath() + "/admin/Product/Products/searchpaginated");
 		}
 	}
 

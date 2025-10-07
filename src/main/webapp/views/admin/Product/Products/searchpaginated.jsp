@@ -22,6 +22,7 @@
 					<div class="alert alert-primary" role="alert">
 						<i>${message}</i>
 					</div>
+					<c:remove var="message" scope="session" /> <!-- xóa message sau khi da thong bao tranh trung lai khi chuyen trang -->
 				</c:if>
 
 				<div class="row mt-2 mb-3">
@@ -30,8 +31,8 @@
 							action="${pageContext.request.contextPath}/admin/Product/Products/searchpaginated"
 							method="get">
 							<div class="input-group">
-								<input type="text" class="form-control" name="name"
-									placeholder="Nhập từ khóa để tìm" value="${param.name}">
+								<input type="text" class="form-control" name="searchKeyword"
+									placeholder="Nhập từ khóa tên để tìm" value="${searchKeyword}">
 								<button class="btn btn-outline-primary">Search</button>
 							</div>
 						</form>
@@ -40,7 +41,7 @@
 					<div class="col-md-6">
 						<div class="float-end">
 							<a class="btn btn-outline-success"
-								href="${pageContext.request.contextPath}/admin/Product/Products/add">Add
+								href="${pageContext.request.contextPath}/admin/Product/Products/saveOrUpdate">Add
 								New Product</a>
 						</div>
 					</div>
@@ -51,53 +52,61 @@
 				</c:if>
 
 				<c:if test="${not empty productList}">
-					<table class="table table-striped align-middle text-center">
-						<thead class="table-dark">
-							<tr>
-								<th>ID</th>
-								<th>Product Name</th>
-								<th>Slug</th>
-								<th>Price</th>
-								<th>Category</th>
-								<th>Status</th>
-								<th>Action</th>
-							</tr>
-						</thead>
-						<tbody>
-							<c:forEach var="product" items="${productList}">
+					<div class="table-responsive">
+						<table class="table table-striped align-middle text-center">
+							<thead class="table-dark">
 								<tr>
-									<td>${product.id}</td>
-									<td>${product.name}</td>
-									<td>${product.slug}</td>
-									<td><fmt:formatNumber value="${product.basePrice}"
-											type="number" pattern="#,##0.000" /> VNĐ</td>
-									<td>${product.category.name}</td>
-									<td><c:choose>
-											<c:when test="${product.status}">
-												<span class="badge bg-success">Active</span>
-											</c:when>
-											<c:otherwise>
-												<span class="badge bg-secondary">Inactive</span>
-											</c:otherwise>
-										</c:choose></td>
-									<td>
-										<div class="d-flex justify-content-center gap-2">
-											<a
-												href="${pageContext.request.contextPath}/admin/Product/Products/view?id=${product.id}"
-												class="btn btn-outline-info btn-sm">View</a> <a
-												href="${pageContext.request.contextPath}/admin/Product/Products/edit?id=${product.id}"
-												class="btn btn-outline-warning btn-sm">Edit</a> <a
-												href="javascript:void(0)"
-												class="btn btn-outline-danger btn-sm"
-												data-id="${product.id}" data-name="${product.name}"
-												onclick="showConfirmation(this)">Delete</a>
-										</div>
-									</td>
-
+									<th>Product Name</th>
+									<th>Slug</th>
+									<th>Price</th>
+									<th>Category</th>
+									<th>Status</th>
+									<th>Action</th>
 								</tr>
-							</c:forEach>
-						</tbody>
-					</table>
+							</thead>
+							<tbody>
+								<c:forEach var="product" items="${productList}">
+									<tr>
+										<td>${product.name}</td>
+										<td>${product.slug}</td>
+										<td><fmt:formatNumber value="${product.basePrice}"
+												type="number" maxFractionDigits="0" groupingUsed="true" />VND</td>
+										<!-- maxFractionDigits="0": khong lay phan thap phan
+										groupingUsed="true": dung dau phan cach hang nghin
+									-->
+										<td>${product.category.name}</td>
+										<td><c:choose>
+												<c:when test="${product.status}">
+													<span class="badge bg-success">Active</span>
+												</c:when>
+												<c:otherwise>
+													<span class="badge bg-secondary">Inactive</span>
+												</c:otherwise>
+											</c:choose></td>
+
+										<td>
+											<div class="btn-group" role="group">
+												<a
+													href="${pageContext.request.contextPath}/admin/Product/Products/view?id=${product.id}"
+													class="btn btn-sm btn-outline-info me-1" title="View"> <i
+													class="bi bi-eye"></i> <!-- me-1 (margin-end) -->
+												</a> <a
+													href="${pageContext.request.contextPath}/admin/Product/Products/saveOrUpdate?id=${product.id}"
+													class="btn btn-sm btn-outline-warning me-1" title="Edit"> <i
+													class="bi bi-pencil-square"></i>
+												</a> <a href="javascript:void(0)"
+													class="btn btn-sm btn-outline-danger"
+													data-id="${product.id}" data-name="${product.name}"
+													onclick="showConfirmation(this)" title="Delete"> <i
+													class="bi bi-trash"></i>
+												</a>
+											</div>
+										</td>
+									</tr>
+								</c:forEach>
+							</tbody>
+						</table>
+					</div>
 				</c:if>
 
 				<!-- Phân trang -->
