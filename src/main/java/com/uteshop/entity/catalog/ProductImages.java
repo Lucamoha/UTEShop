@@ -28,7 +28,4 @@ public class ProductImages implements Serializable {
 
     @Column(nullable = false)
     String ImageUrl;
-
-    @Column(nullable = false)
-    int SortOrder;
 }

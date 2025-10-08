@@ -22,8 +22,6 @@ import java.util.List;
         @NamedQuery(
                 name = "Products.findLatestProducts",
                 query = "SELECT DISTINCT p FROM Products p " +
-                        "LEFT JOIN FETCH p.images pi " +
-                        "WHERE pi.SortOrder = 0 " +
                         "ORDER BY p.CreatedAt DESC"
         )
 })

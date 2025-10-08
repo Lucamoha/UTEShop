@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ include file="/commons/taglib.jsp"%>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/templates/css/home.css">
 <!-- Slider -->
 <section class="section-slide">
@@ -158,7 +158,7 @@
                 <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item">
                     <div class="block2">
                         <div class="block2-pic hov-img0">
-                            <c:url value="/image?fname=${product.getImages().get(0).getImageUrl()}" var="imgUrl"></c:url>
+                            <c:url value="/image?fname=${product.getImages()[0].getImageUrl()}" var="imgUrl"></c:url>
                             <img class="product-img" src="${imgUrl}" alt="${product.name}">
 
                             <!-- Nút Yêu thích và Giỏ hàng -->
@@ -185,7 +185,7 @@
                                         ${product.name}
                                 </a>
                                 <span class="stext-105 cl3">
-                                    ${product.basePrice} VNĐ
+                                    <fmt:formatNumber value="${product.basePrice}" type="number" /> VND
                                 </span>
                             </div>
                         </div>
