@@ -37,12 +37,14 @@ public class ProductController extends HttpServlet {
                 int productId = Integer.parseInt(id);
 
                 Products product = productsService.findById(productId);
+                List<Products> relevantProducts = productsService.getRelevantProducts(productId);
                 List<OptionDto> options = optionsService.getOptionsByProduct(productId);
 
                 req.setAttribute("product", product);
                 req.setAttribute("options", options);
+                req.setAttribute("relevantProducts", relevantProducts);
 
-                req.getRequestDispatcher("/views/web/product-detail.jsp").forward(req, resp);
+                req.getRequestDispatcher("/views/web/productDetail.jsp").forward(req, resp);
 
                 break;
         }

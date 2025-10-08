@@ -11,12 +11,13 @@ public interface IProductsDao {
 
 	Products findBySlug(String slug);
 
-	List<Products> findByCategoryId(int catId, int page, int pageSize);
+    List<Products> getRelativeProducts(int productId);
+
+    List<Products> findByCategoryId(int catId, int page, int pageSize);
 
 	long countByCategoryId(int catId);
 
 	List<Products> findByCategoryIds(List<Integer> catIds, int page, int pageSize);
 
 	long countByCategoryIds(List<Integer> catIds);
-
 }

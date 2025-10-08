@@ -50,7 +50,12 @@ public class ProductsServiceImpl implements IProductsService {
 		return productsDao.findAll(page, pageSize);
 	}
 
-	@Override
+    @Override
+    public List<Products> getRelevantProducts(int productId) {
+        return productsDao.getRelativeProducts(productId);
+    }
+
+    @Override
 	public int count(String searchKeyword) {
 		return productsDao.count(searchKeyword);
 	}

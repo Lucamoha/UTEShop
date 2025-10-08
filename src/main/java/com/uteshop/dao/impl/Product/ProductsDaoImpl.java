@@ -44,9 +44,9 @@ public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsD
 
 	public static void main(String[] args) {
 		ProductsDaoImpl dao = new ProductsDaoImpl();
-		List<Products> products = dao.findAll(2, 10);
+		List<Products> products = dao.getRelativeProducts(1);
 		for (Products p : products) {
-			System.out.println(p.getImages().get(0).getImageUrl());
+			System.out.println(p);
 		}
 	}
 
@@ -61,7 +61,38 @@ public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsD
 		}
 	}
 
-	@Override
+    @Override
+    public List<Products> getRelativeProducts(int productId) {
+        EntityManager enma = JPAConfigs.getEntityManager();
+        try {
+            Integer categoryId = enma.createQuery(
+                            "SELECT p.category.id FROM Products p WHERE p.id = :productId", Integer.class)
+                    .setParameter("productId", productId)
+                    .getSingleResult();
+
+            if (categoryId == null) {
+                return List.of();
+            }
+
+            String jpql = """
+            SELECT p FROM Products p
+            WHERE p.category.id = :categoryId AND p.id <> :productId
+            ORDER BY p.CreatedAt DESC
+            """;
+
+            return enma.createQuery(jpql, Products.class)
+                    .setParameter("categoryId", categoryId)
+                    .setParameter("productId", productId)
+                    .getResultList();
+
+        } catch (NoResultException e) {
+            return List.of();
+        } finally {
+            enma.close();
+        }
+    }
+
+    @Override
 	public List<Products> findByCategoryId(int catId, int page, int pageSize) {
 		EntityManager enma = JPAConfigs.getEntityManager();
 		try {
@@ -112,5 +143,4 @@ public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsD
 			enma.close();
 		}
 	}
-
 }

@@ -17,7 +17,9 @@ public interface IProductsService {
 
 	List<Products> findAll(boolean all, int firstResult, int maxResult, String searchKeyword);
 
-	int count(String searchKeyword);
+    List<Products> getRelevantProducts(int productId);
+
+    int count(String searchKeyword);
 
 	Products findBySlug(String slug);
 
