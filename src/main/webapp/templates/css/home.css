@@ -219,3 +219,8 @@
 .main-menu>li.active-menu>a::after {
 	width: 100%;
 }
+
+/* font chữ tiếng Việt */
+body, html, h1, h2, h3, h4, h5, h6, p, a, span {
+    font-family: "Roboto", "Segoe UI", "Helvetica Neue", Arial, sans-serif !important;
+}
