@@ -37,4 +37,10 @@ public class UserTokens implements Serializable {
 
     @Column(nullable = false)
     LocalDateTime CreatedAt;
+    
+    @PrePersist
+	void onCreate() {
+		//Tự động gán giá trị khi insert mới
+		CreatedAt = LocalDateTime.now();
+	}
 }

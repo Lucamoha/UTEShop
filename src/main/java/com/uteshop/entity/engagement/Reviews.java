@@ -50,6 +50,13 @@ public class Reviews implements Serializable {
 
     @Column(nullable = false)
     LocalDateTime CreatedAt;
+    
+    @PrePersist
+	void onCreate() {
+		//Tự động gán giá trị khi insert mới
+		CreatedAt = LocalDateTime.now();
+	}
+	
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     List<ReviewMedia> media = new ArrayList<>();

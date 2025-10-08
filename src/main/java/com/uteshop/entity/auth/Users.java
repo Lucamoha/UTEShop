@@ -51,6 +51,19 @@ public class Users implements Serializable {
 	@Column(nullable = false)
 	LocalDateTime UpdatedAt;
 	
+	@PrePersist
+	void onCreate() {
+		//Tự động gán giá trị khi insert mới
+		CreatedAt = LocalDateTime.now();
+		UpdatedAt = LocalDateTime.now();
+	}
+	
+	@PreUpdate
+	void onUpdate() {
+		// Tự động cập nhật UpdatedAt khi update
+		UpdatedAt = LocalDateTime.now();
+	}
+	
 	// Quan hệ
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     //cascade = CascadeType.ALL -> ap dung cac cascade: merge, persist, remove, refresh, detached

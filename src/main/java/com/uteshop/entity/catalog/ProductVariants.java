@@ -40,6 +40,19 @@ public class ProductVariants implements Serializable {
     LocalDateTime CreatedAt;
 
     LocalDateTime UpdatedAt;
+    
+    @PrePersist
+	void onCreate() {
+		//Tự động gán giá trị khi insert mới
+		CreatedAt = LocalDateTime.now();
+		UpdatedAt = LocalDateTime.now();
+	}
+	
+	@PreUpdate
+	void onUpdate() {
+		// Tự động cập nhật UpdatedAt khi update
+		UpdatedAt = LocalDateTime.now();
+	}
 
     @OneToMany(mappedBy = "variant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     List<VariantOptions> options = new ArrayList<>();
