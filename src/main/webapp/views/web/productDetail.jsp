@@ -20,77 +20,85 @@
                         <div class="wrap-slick3-arrows flex-sb-m flex-w"></div>
 
                         <div class="slick3 gallery-lb">
-                            <c:forEach var
-                            <div
-                                    class="item-slick3"
-                                    data-thumb="images/product-detail-01.jpg"
-                            >
-                                <div class="wrap-pic-w pos-relative">
-                                    <img
-                                            src="images/product-detail-01.jpg"
-                                            alt="IMG-PRODUCT"
-                                    />
+                            <c:forEach var="img" items="${product.getImages()}">
+                                <c:url value="/image" var="imgUrl">
+                                    <c:param name="fname" value="${img.imageUrl}" />
+                                </c:url>
 
-                                    <a
-                                            class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04"
-                                            href="images/product-detail-01.jpg"
-                                    >
-                                        <i class="fa fa-expand"></i>
-                                    </a>
+                                <div class="item-slick3" data-thumb="${imgUrl}">
+                                    <div class="wrap-pic-w pos-relative">
+                                        <img src="${imgUrl}" alt="${product.name}" />
+
+                                        <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04"
+                                           href="${imgUrl}">
+                                            <i class="fa fa-expand"></i>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
+                            </c:forEach>
                         </div>
                     </div>
                 </div>
+            </div>
 
             <div class="col-md-6 col-lg-5 p-b-30">
                 <div class="p-r-50 p-t-5 p-lr-0-lg">
                     <h4 class="mtext-105 cl2 js-name-detail p-b-14">
-                        Lightweight Jacket
+                        ${product.name}
                     </h4>
 
-                    <span class="mtext-106 cl2"> $58.79 </span>
+                    <span class="mtext-106 cl2">
+                         <fmt:formatNumber value="${product.basePrice}" type="number" /> VND
+                    </span>
 
                     <p class="stext-102 cl3 p-t-23">
-                        Nulla eget sem vitae eros pharetra viverra. Nam vitae luctus
-                        ligula. Mauris consequat ornare feugiat.
+                        ${product.description}
                     </p>
 
                     <!--  -->
                     <div class="p-t-33">
-                        <div class="flex-w flex-r-m p-b-10">
-                            <div class="size-203 flex-c-m respon6">Size</div>
+                        <!-- Duyệt qua danh sách OptionDto -->
+                        <c:set var="prevType" value="" />
 
-                            <div class="size-204 respon6-next">
-                                <div class="rs1-select2 bor8 bg0">
-                                    <select class="js-select2" name="time">
-                                        <option>Choose an option</option>
-                                        <option>Size S</option>
-                                        <option>Size M</option>
-                                        <option>Size L</option>
-                                        <option>Size XL</option>
-                                    </select>
-                                    <div class="dropDownSelect2"></div>
-                                </div>
-                            </div>
-                        </div>
+                        <c:forEach var="opt" items="${options}">
+                        <!-- Khi gặp optionTypeCode mới, mở select mới -->
+                        <c:if test="${opt.optionTypeCode ne prevType}">
+                        <!-- Đóng select cũ nếu có -->
+                        <c:if test="${not empty prevType}">
+                        </select>
+                        <div class="dropDownSelect2"></div>
+                    </div>
+                </div>
+            </div>
+            </c:if>
 
-                        <div class="flex-w flex-r-m p-b-10">
-                            <div class="size-203 flex-c-m respon6">Color</div>
+            <!-- Hiển thị tiêu đề của nhóm -->
+            <div class="flex-w flex-r-m p-b-10">
+                <div class="size-203 flex-c-m respon6">${opt.optionTypeCode}</div>
+                <div class="size-204 respon6-next">
+                    <div class="rs1-select2 bor8 bg0">
+                        <select class="js-select2" name="${opt.optionTypeCode}">
+                            <option>Choose an option</option>
+                            </c:if>
 
-                            <div class="size-204 respon6-next">
-                                <div class="rs1-select2 bor8 bg0">
-                                    <select class="js-select2" name="time">
-                                        <option>Choose an option</option>
-                                        <option>Red</option>
-                                        <option>Blue</option>
-                                        <option>White</option>
-                                        <option>Grey</option>
-                                    </select>
-                                    <div class="dropDownSelect2"></div>
-                                </div>
-                            </div>
-                        </div>
+                            <!-- Thêm từng optionValue -->
+                            <option value="${opt.optionValueId}">${opt.optionValue}</option>
+
+                            <!-- Cập nhật prevType -->
+                            <c:set var="prevType" value="${opt.optionTypeCode}" />
+                            </c:forEach>
+
+                            <!-- Đóng thẻ cuối cùng -->
+                            <c:if test="${not empty prevType}">
+                        </select>
+                        <div class="dropDownSelect2"></div>
+                    </div>
+                </div>
+            </div>
+            </c:if>
+            <!----->
+
+
 
                         <div class="flex-w flex-r-m p-b-10">
                             <div class="size-204 flex-w flex-m respon6-next">

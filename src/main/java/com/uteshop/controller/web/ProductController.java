@@ -1,9 +1,12 @@
 package com.uteshop.controller.web;
 
 import com.uteshop.dto.web.OptionDto;
+import com.uteshop.entity.catalog.Categories;
 import com.uteshop.entity.catalog.Products;
+import com.uteshop.services.Category.ICategoriesService;
 import com.uteshop.services.Option.IOptionsService;
 import com.uteshop.services.Product.IProductsService;
+import com.uteshop.services.impl.Category.CategoriesServiceImpl;
 import com.uteshop.services.impl.Option.OptionsServiceImpl;
 import com.uteshop.services.impl.Product.ProductsServiceImpl;
 import jakarta.servlet.ServletException;
@@ -19,10 +22,10 @@ import java.util.List;
 public class ProductController extends HttpServlet {
     IProductsService productsService = new ProductsServiceImpl();
     IOptionsService optionsService = new OptionsServiceImpl();
+    ICategoriesService categoriesService = new CategoriesServiceImpl();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doGet(req, resp);
         req.setCharacterEncoding("UTF-8");
         resp.setContentType("text/html;charset=UTF-8");
 
@@ -36,10 +39,12 @@ public class ProductController extends HttpServlet {
                 String id = req.getParameter("id");
                 int productId = Integer.parseInt(id);
 
+                List<Categories> parents = categoriesService.findParents();
                 Products product = productsService.findById(productId);
                 List<Products> relevantProducts = productsService.getRelevantProducts(productId);
                 List<OptionDto> options = optionsService.getOptionsByProduct(productId);
 
+                req.setAttribute("parentCategories", parents);
                 req.setAttribute("product", product);
                 req.setAttribute("options", options);
                 req.setAttribute("relevantProducts", relevantProducts);
