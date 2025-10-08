@@ -6,6 +6,7 @@ import com.uteshop.dao.IProductsDao;
 import com.uteshop.entity.catalog.Products;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
 
 import java.util.List;
 
@@ -59,4 +60,57 @@ public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsD
 			return null;
 		}
 	}
+
+	@Override
+	public List<Products> findByCategoryId(int catId, int page, int pageSize) {
+		EntityManager enma = JPAConfigs.getEntityManager();
+		try {
+			TypedQuery<Products> query = enma.createNamedQuery("Products.findByCategoryId", Products.class);
+			query.setParameter("catId", catId);
+			query.setFirstResult((page - 1) * pageSize);
+			query.setMaxResults(pageSize);
+			return query.getResultList();
+		} finally {
+			enma.close();
+		}
+	}
+
+	@Override
+	public long countByCategoryId(int catId) {
+		EntityManager enma = JPAConfigs.getEntityManager();
+		try {
+			TypedQuery<Long> query = enma.createNamedQuery("Products.countByCategoryId", Long.class);
+			query.setParameter("catId", catId);
+			return query.getSingleResult();
+		} finally {
+			enma.close();
+		}
+	}
+
+	@Override
+	public List<Products> findByCategoryIds(List<Integer> catIds, int page, int pageSize) {
+		EntityManager enma = JPAConfigs.getEntityManager();
+		try {
+			TypedQuery<Products> query = enma.createNamedQuery("Products.findByCategoryIds", Products.class);
+			query.setParameter("catIds", catIds);
+			query.setFirstResult((page - 1) * pageSize);
+			query.setMaxResults(pageSize);
+			return query.getResultList();
+		} finally {
+			enma.close();
+		}
+	}
+
+	@Override
+	public long countByCategoryIds(List<Integer> catIds) {
+		EntityManager enma = JPAConfigs.getEntityManager();
+		try {
+			TypedQuery<Long> query = enma.createNamedQuery("Products.countByCategoryIds", Long.class);
+			query.setParameter("catIds", catIds);
+			return query.getSingleResult();
+		} finally {
+			enma.close();
+		}
+	}
+
 }

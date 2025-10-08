@@ -24,28 +24,32 @@
 
 				<!-- Logo desktop -->
 				<a href="#" class="logo"> <img
-					src="${pageContext.request.contextPath}/templates/images/icons/logo-01.png" alt="IMG-LOGO">
+					src="${pageContext.request.contextPath}/templates/images/icons/logo-01.png"
+					alt="IMG-LOGO">
 				</a>
 
 				<!-- Menu desktop -->
 				<div class="menu-desktop">
 					<ul class="main-menu">
-						<li class="active-menu"><a
+						<!-- Trang chủ -->
+						<li class="${empty selectedParent ? 'active-menu' : ''}"><a
 							href="${pageContext.request.contextPath}/">Trang chủ</a></li>
 
+						<!-- Danh mục cha -->
 						<c:forEach var="cate" items="${parentCategories}">
-							<li><a
-								href="${pageContext.request.contextPath}/category/${cate.slug}">${cate.name}</a></li>
+							<li
+								class="${not empty selectedParent and selectedParent.id == cate.id ? 'active-menu' : ''}">
+								<a
+								href="${pageContext.request.contextPath}/category/${cate.slug}">
+									${cate.name} </a>
+							</li>
 						</c:forEach>
 
-
-						<li class="label1" data-label1="hot"><a
-							href="${pageContext.request.contextPath}/shoping-cart">Sản
-								phẩm</a></li>
-
-						<li><a href="${pageContext.request.contextPath}/login">Đăng
-								nhập</a></li>
+						<!-- Đăng nhập -->
+						<li class="${pageName eq 'login' ? 'active-menu' : ''}"><a
+							href="${pageContext.request.contextPath}/login">Đăng nhập</a></li>
 					</ul>
+
 				</div>
 
 

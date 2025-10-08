@@ -23,6 +23,28 @@ import java.util.List;
                 name = "Products.findLatestProducts",
                 query = "SELECT DISTINCT p FROM Products p " +
                         "ORDER BY p.CreatedAt DESC"
+        ),
+        @NamedQuery(name = "Products.findByCategoryId",
+        query = "SELECT DISTINCT p FROM Products p " +
+                "LEFT JOIN FETCH p.images pi " +
+                "WHERE p.category.id = :catId AND p.Status = true " +
+                "ORDER BY p.CreatedAt DESC"),
+
+        @NamedQuery(name = "Products.countByCategoryId",
+        query = "SELECT COUNT(p) FROM Products p " +
+                "WHERE p.category.id = :catId AND p.Status = true"
+        	),
+        @NamedQuery(
+                name = "Products.findByCategoryIds",
+                query = "SELECT DISTINCT p FROM Products p " +
+                        "LEFT JOIN FETCH p.images pi " +
+                        "WHERE p.category.id IN :catIds AND p.Status = true " +
+                        "ORDER BY p.CreatedAt DESC"
+        ),
+        @NamedQuery(
+                name = "Products.countByCategoryIds",
+                query = "SELECT COUNT(p) FROM Products p " +
+                        "WHERE p.category.id IN :catIds AND p.Status = true"
         )
 })
 public class Products implements Serializable {
