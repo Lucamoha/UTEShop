@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 import com.uteshop.entity.auth.Users;
-import com.uteshop.services.IUserService;
-import com.uteshop.services.impl.UserServiceImpl;
+import com.uteshop.services.admin.IUsersService;
+import com.uteshop.services.impl.admin.UsersServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -28,7 +28,7 @@ public class UserController extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String url = req.getRequestURI();
-		IUserService userService = new UserServiceImpl();
+		IUsersService userService = new UsersServiceImpl();
 		
 		if(url.contains("admin/User/Users/list")) {
 			List<Users> listUser = userService.findAll();
