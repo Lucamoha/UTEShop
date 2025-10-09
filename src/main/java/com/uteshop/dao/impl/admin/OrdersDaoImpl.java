@@ -1,0 +1,123 @@
+package com.uteshop.dao.impl.admin;
+
+import java.math.BigDecimal;
+import java.time.YearMonth;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.uteshop.configs.JPAConfigs;
+import com.uteshop.dao.AbstractDao;
+import com.uteshop.dao.admin.IOrdersDao;
+import com.uteshop.entity.order.Orders;
+
+import jakarta.persistence.EntityManager;
+
+public class OrdersDaoImpl extends AbstractDao<Orders> implements IOrdersDao {
+	public OrdersDaoImpl() {
+		super(Orders.class);
+	}
+
+	@Override
+	public BigDecimal getRevenueThisMonth() {
+		EntityManager enma = JPAConfigs.getEntityManager();
+		try {
+			String jpql = """
+					SELECT COALESCE(SUM(o.TotalAmount), 0) 
+					FROM Orders o 
+					WHERE o.PaymentStatus = 1 
+					AND MONTH(o.UpdatedAt) = MONTH(CURRENT_DATE) 
+					AND YEAR(o.UpdatedAt) = YEAR(CURRENT_DATE)
+					""";
+			return (BigDecimal) enma.createQuery(jpql, BigDecimal.class).getSingleResult();
+		} finally {
+			enma.close();
+		}
+	}
+
+	@Override
+	public long getOrderCountThisMonth() {
+		EntityManager enma = JPAConfigs.getEntityManager();
+		try {
+			String jpql = """
+					SELECT COUNT(o) 
+					FROM Orders o  
+					WHERE MONTH(o.UpdatedAt) = MONTH(CURRENT_DATE) 
+					AND YEAR(o.UpdatedAt) = YEAR(CURRENT_DATE)
+					""";
+			return (Long) enma.createQuery(jpql, Long.class).getSingleResult();
+		} finally {
+			enma.close();
+		}
+	}
+
+	@Override
+	public Map<String, BigDecimal> getMonthlyRevenueByYear(int year) {
+		EntityManager enma = JPAConfigs.getEntityManager();
+		Map<String, BigDecimal> result = new LinkedHashMap<>();
+		try {
+			String sql = """
+					SELECT  MONTH(o.UpdatedAt) AS MonthNum,
+					DATENAME(MONTH, o.UpdatedAt) AS MonthLabel, 
+					SUM(o.TotalAmount) AS Revenue
+					FROM Orders o
+					WHERE YEAR(o.UpdatedAt) = :year 
+					AND o.PaymentStatus = 1
+					GROUP BY MONTH(o.UpdatedAt), DATENAME(MONTH, o.UpdatedAt) 
+					ORDER BY MONTH(o.UpdatedAt)
+
+					""";
+			List<Object[]> rows = enma.createNativeQuery(sql).setParameter("year", year).getResultList();
+
+			for (int i = 1; i <= 12; i++) {
+				result.put(String.format("%02d", i), BigDecimal.ZERO);
+			}
+
+			for (Object[] row : rows) {
+				int month = ((Number) row[0]).intValue();
+				BigDecimal revenue = (BigDecimal) row[2];
+				result.put(String.format("%02d", month), revenue);
+			}
+		} catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+			enma.close();
+		}
+		return result;
+	}
+
+	@Override
+	public Map<String, BigDecimal> getDailySalesOfMonth(int year, int month) {
+		EntityManager enma = JPAConfigs.getEntityManager();
+		Map<String, BigDecimal> result = new LinkedHashMap<>();
+		try {
+			String sql = """
+					SELECT DAY(o.UpdatedAt) AS DayNum, SUM(o.TotalAmount) AS Revenue  
+					FROM Orders o
+					WHERE YEAR(o.UpdatedAt) = :year 
+					AND MONTH (o.UpdatedAt) = :month
+					AND o.PaymentStatus = 1
+					GROUP BY DAY(o.UpdatedAt)
+					""";
+			List<Object[]> rows = enma.createNativeQuery(sql).setParameter("year", year).setParameter("month", month)
+					.getResultList();
+			
+			YearMonth yearMonth = YearMonth.of(year, month);
+			int daysInMonth = yearMonth.lengthOfMonth();
+			for(int i = 1; i<= daysInMonth; i++) {
+				result.put(String.format("%02d", i), BigDecimal.ZERO);
+			}
+
+			for (Object[] row : rows) {
+				String day = String.format("%02d", ((Number) row[0]).intValue());
+				BigDecimal revenue = (BigDecimal) row[1];
+				result.put(day, revenue);
+			}
+
+			return result;
+
+		} finally {
+			enma.close();
+		}
+	}
+}

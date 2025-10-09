@@ -4,38 +4,12 @@
 <nav
 	class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
 	<div class="container-fluid">
-		<nav
-			class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex">
-			<div class="input-group">
-				<div class="input-group-prepend">
-					<button type="submit" class="btn btn-search pe-1">
-						<i class="fa fa-search search-icon"></i>
-					</button>
-				</div>
-				<input type="text" placeholder="Search ..." class="form-control" />
-			</div>
-		</nav>
 
 		<ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
-			<li
-				class="nav-item topbar-icon dropdown hidden-caret d-flex d-lg-none">
-				<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
-				href="#" role="button" aria-expanded="false" aria-haspopup="true">
-					<i class="fa fa-search"></i>
-			</a>
-				<ul class="dropdown-menu dropdown-search animated fadeIn">
-					<form class="navbar-left navbar-form nav-search">
-						<div class="input-group">
-							<input type="text" placeholder="Search ..." class="form-control" />
-						</div>
-					</form>
-				</ul>
-			</li>
 			<li class="nav-item topbar-icon dropdown hidden-caret"><a
 				class="nav-link dropdown-toggle" href="#" id="messageDropdown"
 				role="button" data-bs-toggle="dropdown" aria-haspopup="true"
-				aria-expanded="false"> <i
-					class="fa fa-envelope"></i>
+				aria-expanded="false"> <i class="fa fa-envelope"></i>
 			</a>
 				<ul class="dropdown-menu messages-notif-box animated fadeIn"
 					aria-labelledby="messageDropdown">
@@ -50,7 +24,9 @@
 							<div class="notif-center">
 								<a href="#">
 									<div class="notif-img">
-										<img src="${pageContext.request.contextPath}/templates/admin/img/jm_denis.jpg" alt="Img Profile" />
+										<img
+											src="${pageContext.request.contextPath}/templates/admin/img/jm_denis.jpg"
+											alt="Img Profile" />
 									</div>
 									<div class="notif-content">
 										<span class="subject">Jimmy Denis</span> <span class="block">
@@ -58,7 +34,9 @@
 									</div>
 								</a> <a href="#">
 									<div class="notif-img">
-										<img src="${pageContext.request.contextPath}/templates/admin/img/chadengle.jpg" alt="Img Profile" />
+										<img
+											src="${pageContext.request.contextPath}/templates/admin/img/chadengle.jpg"
+											alt="Img Profile" />
 									</div>
 									<div class="notif-content">
 										<span class="subject">Chad</span> <span class="block">
@@ -66,7 +44,9 @@
 									</div>
 								</a> <a href="#">
 									<div class="notif-img">
-										<img src="${pageContext.request.contextPath}/templates/admin/img/mlane.jpg" alt="Img Profile" />
+										<img
+											src="${pageContext.request.contextPath}/templates/admin/img/mlane.jpg"
+											alt="Img Profile" />
 									</div>
 									<div class="notif-content">
 										<span class="subject">Jhon Doe</span> <span class="block">
@@ -75,7 +55,9 @@
 									</div>
 								</a> <a href="#">
 									<div class="notif-img">
-										<img src="${pageContext.request.contextPath}/templates/admin/img/talha.jpg" alt="Img Profile" />
+										<img
+											src="${pageContext.request.contextPath}/templates/admin/img/talha.jpg"
+											alt="Img Profile" />
 									</div>
 									<div class="notif-content">
 										<span class="subject">Talha</span> <span class="block">
@@ -85,15 +67,15 @@
 							</div>
 						</div>
 					</li>
-					<li><a class="see-all" href="javascript:void(0);">See
-							all messages<i class="fa fa-angle-right"></i>
+					<li><a class="see-all" href="javascript:void(0);">See all
+							messages<i class="fa fa-angle-right"></i>
 					</a></li>
 				</ul></li>
 			<li class="nav-item topbar-icon dropdown hidden-caret"><a
 				class="nav-link dropdown-toggle" href="#" id="notifDropdown"
 				role="button" data-bs-toggle="dropdown" aria-haspopup="true"
-				aria-expanded="false"> <i class="fa fa-bell"></i>
-					<span class="notification">4</span>
+				aria-expanded="false"> <i class="fa fa-bell"></i> <span
+					class="notification">4</span>
 			</a>
 				<ul class="dropdown-menu notif-box animated fadeIn"
 					aria-labelledby="notifDropdown">
@@ -121,7 +103,9 @@
 									</div>
 								</a> <a href="#">
 									<div class="notif-img">
-										<img src="${pageContext.request.contextPath}/templates/admin/img/profile2.jpg" alt="Img Profile" />
+										<img
+											src="${pageContext.request.contextPath}/templates/admin/img/profile2.jpg"
+											alt="Img Profile" />
 									</div>
 									<div class="notif-content">
 										<span class="block"> Reza send messages to you </span> <span
@@ -139,14 +123,13 @@
 							</div>
 						</div>
 					</li>
-					<li><a class="see-all" href="javascript:void(0);">See
-							all notifications<i class="fa fa-angle-right"></i>
+					<li><a class="see-all" href="javascript:void(0);">See all
+							notifications<i class="fa fa-angle-right"></i>
 					</a></li>
 				</ul></li>
 			<li class="nav-item topbar-icon dropdown hidden-caret"><a
 				class="nav-link" data-bs-toggle="dropdown" href="#"
-				aria-expanded="false"> <i
-					class="fas fa-layer-group"></i>
+				aria-expanded="false"> <i class="fas fa-layer-group"></i>
 			</a>
 				<div class="dropdown-menu quick-actions animated fadeIn">
 					<div class="quick-actions-header">
@@ -208,8 +191,9 @@
 				class="dropdown-toggle profile-pic" data-bs-toggle="dropdown"
 				href="#" aria-expanded="false">
 					<div class="avatar-sm">
-						<img src="${pageContext.request.contextPath}/templates/admin/img/profile.jpg" alt="..."
-							class="avatar-img rounded-circle" />
+						<img
+							src="${pageContext.request.contextPath}/templates/admin/img/profile.jpg"
+							alt="..." class="avatar-img rounded-circle" />
 					</div> <span class="profile-username"> <span class="op-7">Hi,</span>
 						<span class="fw-bold">Hizrian</span>
 				</span>
@@ -219,8 +203,9 @@
 						<li>
 							<div class="user-box">
 								<div class="avatar-lg">
-									<img src="${pageContext.request.contextPath}/templates/admin/img/profile.jpg" alt="image profile"
-										class="avatar-img rounded" />
+									<img
+										src="${pageContext.request.contextPath}/templates/admin/img/profile.jpg"
+										alt="image profile" class="avatar-img rounded" />
 								</div>
 								<div class="u-text">
 									<h4>Hizrian</h4>

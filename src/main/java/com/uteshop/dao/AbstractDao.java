@@ -150,25 +150,6 @@ public abstract class AbstractDao<T> {
 			em.close();
 		}
 	}
-	/*
-	 * public List<T> findAll(boolean all, int firstResult, int maxResult, String
-	 * searchKeyword){ EntityManager enma = JPAConfigs.getEntityManager(); try {
-	 * CriteriaBuilder cb = enma.getCriteriaBuilder(); CriteriaQuery<T> cq =
-	 * cb.createQuery(entityClass); Root<T> root = cq.from(entityClass);
-	 * cq.select(root);
-	 * 
-	 * // build predicate nếu có searchKeyword if (searchKeyword != null &&
-	 * !searchKeyword.trim().isEmpty()) { String pattern = "%" +
-	 * searchKeyword.toLowerCase() + "%"; Predicate pName =
-	 * cb.like(cb.lower(root.get("name").as(String.class)), pattern);
-	 * cq.where(cb.or(pName)); }
-	 * 
-	 * TypedQuery<T> q = enma.createQuery(cq); if(!all) {
-	 * q.setFirstResult(firstResult); q.setMaxResults(maxResult); } return
-	 * q.getResultList(); } finally { enma.close(); }
-	 * 
-	 * }
-	 */
 
 	public List<T> findByNameContaining(String name) {
 		List<T> list = new ArrayList<>();
