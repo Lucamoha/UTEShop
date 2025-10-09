@@ -11,6 +11,7 @@ import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
@@ -128,6 +129,42 @@ public abstract class AbstractDao<T> {
 			em.close();
 		}
 	}
+	
+	public List<T> findAllFetchParent(boolean all, int firstResult, int maxResult, String searchKeyword, String fetchColumnName) { 
+	    EntityManager em = JPAConfigs.getEntityManager();
+	    try {
+	        CriteriaBuilder cb = em.getCriteriaBuilder();
+	        CriteriaQuery<T> cq = cb.createQuery(entityClass);
+	        Root<T> root = cq.from(entityClass);
+
+	        //Nạp cột parent nếu entity có field này
+	        try {
+	            root.fetch(fetchColumnName, JoinType.LEFT);
+	        } catch (IllegalArgumentException e) {
+	            // Entity không có thuộc tính cần nạp -> bỏ qua
+	        }
+
+	        //cq.select(root).distinct(true); // tránh trùng dòng khi JOIN FETCH
+
+	        // Tìm kiếm theo tên
+	        if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
+	            String pattern = "%" + searchKeyword.toLowerCase() + "%";
+	            Predicate pName = cb.like(cb.lower(root.get("Name").as(String.class)), pattern);
+	            cq.where(pName);
+	        }
+
+	        TypedQuery<T> q = em.createQuery(cq);
+	        if (!all) {
+	            q.setFirstResult(firstResult);
+	            q.setMaxResults(maxResult);
+	        }
+
+	        return q.getResultList();
+	    } finally {
+	        em.close();
+	    }
+	}
+
 
 	public int count(String searchKeyword) {
 		EntityManager em = JPAConfigs.getEntityManager();

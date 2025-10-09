@@ -5,10 +5,10 @@ import java.util.List;
 
 import com.uteshop.entity.catalog.Categories;
 import com.uteshop.entity.catalog.Products;
-import com.uteshop.services.Category.ICategoriesService;
-import com.uteshop.services.Product.IProductsService;
-import com.uteshop.services.impl.Category.CategoriesServiceImpl;
-import com.uteshop.services.impl.Product.ProductsServiceImpl;
+import com.uteshop.services.admin.ICategoriesService;
+import com.uteshop.services.admin.IProductsService;
+import com.uteshop.services.impl.admin.CategoriesServiceImpl;
+import com.uteshop.services.impl.admin.ProductsServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -22,9 +22,9 @@ public class CategoriesController extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	private ICategoriesService categoriesService = new CategoriesServiceImpl();
-	
-	private IProductsService productsService = new ProductsServiceImpl();
+	ICategoriesService categoriesService = new CategoriesServiceImpl();
+
+	IProductsService productsService = new ProductsServiceImpl();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -51,7 +51,8 @@ public class CategoriesController extends HttpServlet {
 			// Tính offset (vị trí bắt đầu)
 			int firstResult = (page - 1) * size;
 
-			List<Categories> categoryList = categoriesService.findAll(false, firstResult, size, searchKeyword);
+			List<Categories> categoryList = categoriesService.findAllFetchParent(false, firstResult, size,
+					searchKeyword, "parent");
 
 			// Đếm tổng số bản ghi để tính tổng trang
 			int totalCategories = categoriesService.count(searchKeyword);
@@ -77,12 +78,12 @@ public class CategoriesController extends HttpServlet {
 			req.getRequestDispatcher("/views/admin/Catalog/Categories/addOrEdit.jsp").forward(req, resp);
 		} else if (uri.contains("view")) {
 			String id = req.getParameter("id");
-			Products product = productsService.findById(Integer.parseInt(id));
-			req.setAttribute("product", product);
+			Categories category = categoriesService.findById(Integer.parseInt(id));
+			req.setAttribute("category", category);
 			req.getRequestDispatcher("/views/admin/Catalog/Categories/view.jsp").forward(req, resp);
 		} else if (uri.contains("delete")) {
 			String id = req.getParameter("id");
-			productsService.delete(Integer.parseInt(id));
+			categoriesService.delete(Integer.parseInt(id));
 			resp.sendRedirect(req.getContextPath() + "/admin/Catalog/Categories/searchpaginated");
 		}
 	}
@@ -112,18 +113,13 @@ public class CategoriesController extends HttpServlet {
 			category.setSlug(slug);
 
 			Categories parent = null;
-			try {
-				if(parentIdStr != null && !parentIdStr.isEmpty()) {
-					int parentId = Integer.parseInt(parentIdStr);
-					parent = categoriesService.findById(parentId);
-					category.setParent(parent);
-				}
-				else{
-					req.setAttribute("error", "Vui lòng chọn danh mục cha!");
-				}
-				
-			} catch (Exception e) {
-				req.setAttribute("error", "Danh mục cha không hợp lệ!");
+			if (parentIdStr != null && !parentIdStr.isEmpty()) {
+				int parentId = Integer.parseInt(parentIdStr);
+				parent = categoriesService.findById(parentId);
+				category.setParent(parent);
+			}
+			else {
+				category.setParent(null);
 			}
 
 			// Kiểm tra slug trùng
@@ -141,7 +137,7 @@ public class CategoriesController extends HttpServlet {
 				return;
 			}
 
-			//Lưu danh mục vào db nếu không lỗi
+			// Lưu danh mục vào db nếu không lỗi
 			String message;
 			if (idStr != null && !idStr.isEmpty()) {
 				categoriesService.update(category);
