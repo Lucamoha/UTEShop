@@ -23,9 +23,6 @@ public class ProductImages implements Serializable {
     @JoinColumn(name = "ProductId", nullable = false)
     Products product;
 
-    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "VariantId")
-    ProductVariants VariantId;
-
     @Column(nullable = false)
     String ImageUrl;
 }
