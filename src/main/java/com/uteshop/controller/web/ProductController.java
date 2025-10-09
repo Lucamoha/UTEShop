@@ -43,12 +43,22 @@ public class ProductController extends HttpServlet {
                 Products product = productsService.findById(productId);
                 List<Products> relevantProducts = productsService.getRelevantProducts(productId);
                 List<OptionDto> options = optionsService.getOptionsByProduct(productId);
+                
+             // Lấy danh mục hiện tại và danh mục cha
+                Categories selectedCategory = product.getCategory();
+                Categories selectedParent = null;
+                if (selectedCategory != null && selectedCategory.getParent() != null) {
+                	   selectedParent = categoriesService.findById(selectedCategory.getParent().getId());
+
+                }
 
                 req.setAttribute("parentCategories", parents);
                 req.setAttribute("product", product);
                 req.setAttribute("options", options);
                 req.setAttribute("relevantProducts", relevantProducts);
-
+                req.setAttribute("selectedCategory", selectedCategory);
+                req.setAttribute("selectedParent", selectedParent);
+                
                 req.getRequestDispatcher("/views/web/productDetail.jsp").forward(req, resp);
 
                 break;
