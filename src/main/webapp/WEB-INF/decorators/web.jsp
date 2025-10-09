@@ -70,14 +70,14 @@
 	</div>
 
 	<!--===============================================================================================-->
-	<script src="templates/vendor/jquery/jquery-3.2.1.min.js"></script>
+	<script src="${pageContext.request.contextPath}/templates/vendor/jquery/jquery-3.2.1.min.js"></script>
 	<!--===============================================================================================-->
-	<script src="templates/vendor/animsition/js/animsition.min.js"></script>
+	<script src="${pageContext.request.contextPath}/templates/vendor/animsition/js/animsition.min.js"></script>
 	<!--===============================================================================================-->
-	<script src="templates/vendor/bootstrap/js/popper.js"></script>
-	<script src="templates/vendor/bootstrap/js/bootstrap.min.js"></script>
+	<script src="${pageContext.request.contextPath}/templates/vendor/bootstrap/js/popper.js"></script>
+	<script src="${pageContext.request.contextPath}/templates/vendor/bootstrap/js/bootstrap.min.js"></script>
 	<!--===============================================================================================-->
-	<script src="templates/vendor/select2/select2.min.js"></script>
+	<script src="${pageContext.request.contextPath}/templates/vendor/select2/select2.min.js"></script>
 	<script>
 		$(".js-select2").each(function() {
 			$(this).select2({
@@ -87,19 +87,19 @@
 		});
 	</script>
 	<!--===============================================================================================-->
-	<script src="templates/vendor/daterangepicker/moment.min.js"></script>
-	<script src="templates/vendor/daterangepicker/daterangepicker.js"></script>
+	<script src="${pageContext.request.contextPath}/templates/vendor/daterangepicker/moment.min.js"></script>
+	<script src="${pageContext.request.contextPath}/templates/vendor/daterangepicker/daterangepicker.js"></script>
 	<!--===============================================================================================-->
-	<script src="templates/vendor/slick/slick.min.js"></script>
-	<script src="templates/js/slick-custom.js"></script>
+	<script src="${pageContext.request.contextPath}/templates/vendor/slick/slick.min.js"></script>
+	<script src="${pageContext.request.contextPath}/templates/js/slick-custom.js"></script>
 	<!--===============================================================================================-->
-	<script src="templates/vendor/parallax100/parallax100.js"></script>
+	<script src="${pageContext.request.contextPath}/templates/vendor/parallax100/parallax100.js"></script>
 	<script>
 		$(".parallax100").parallax100();
 	</script>
 	<!--===============================================================================================-->
 	<script
-		src="templates/vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
+		src="${pageContext.request.contextPath}/templates/vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
 	<script>
 		$(".gallery-lb").each(function() {
 			$(this).magnificPopup({
@@ -113,9 +113,9 @@
 		});
 	</script>
 	<!--===============================================================================================-->
-	<script src="templates/vendor/isotope/isotope.pkgd.min.js"></script>
+	<script src="${pageContext.request.contextPath}/templates/vendor/isotope/isotope.pkgd.min.js"></script>
 	<!--===============================================================================================-->
-	<script src="templates/vendor/sweetalert/sweetalert.min.js"></script>
+	<script src="${pageContext.request.contextPath}/templates/vendor/sweetalert/sweetalert.min.js"></script>
 	<script>
 		$(".js-addwish-b2").on("click", function(e) {
 			e.preventDefault();
@@ -158,7 +158,7 @@
 	</script>
 	<!--===============================================================================================-->
 	<script
-		src="templates/vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+		src="${pageContext.request.contextPath}/templates/vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
 	<script>
 		$(".js-pscroll").each(function() {
 			$(this).css("position", "relative");
@@ -175,7 +175,7 @@
 		});
 	</script>
 	<!--===============================================================================================-->
-	<script src="templates/js/main.js"></script>
+	<script src="${pageContext.request.contextPath}/templates/js/main.js"></script>
 
 </body>
 </html>
