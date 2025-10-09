@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
-import com.uteshop.services.Product.IProductsService;
 import com.uteshop.services.admin.IOrdersService;
+import com.uteshop.services.admin.IProductsService;
 import com.uteshop.services.admin.IProductsVariantsService;
 import com.uteshop.services.admin.IUsersService;
-import com.uteshop.services.impl.Product.ProductsServiceImpl;
 import com.uteshop.services.impl.admin.OrdersServiceImpl;
 import com.uteshop.services.impl.admin.ProductVariantsServiceImpl;
+import com.uteshop.services.impl.admin.ProductsServiceImpl;
 import com.uteshop.services.impl.admin.UsersServiceImpl;
 
 import jakarta.servlet.ServletException;
@@ -60,6 +60,12 @@ public class DashboardController extends HttpServlet {
 		req.setAttribute("dailyLabels", gson.toJson(new ArrayList<>(dailySalesMap.keySet())));
 		req.setAttribute("dailyValues", gson.toJson(new ArrayList<>(dailySalesMap.values())));
 		req.setAttribute("currentMonth", currentMonth);
+		
+		List<Object[]> lowStockList = productsVariantsService.getLowStockProducts(10, 10);
+		req.setAttribute("lowStockList", lowStockList);
+		
+		List<Object[]> topSellingList = productsService.getTopSellingProducts(10);
+		req.setAttribute("topSellingList", topSellingList);
 		
 		req.getRequestDispatcher("/views/admin/home.jsp").forward(req, resp);
 	}

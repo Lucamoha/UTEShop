@@ -2,9 +2,9 @@ package com.uteshop.services.impl.admin;
 
 import java.util.List;
 
-import com.uteshop.dao.impl.Product.ProductsDaoImpl;
+import com.uteshop.dao.impl.admin.ProductsDaoImpl;
 import com.uteshop.entity.catalog.Products;
-import com.uteshop.services.Product.IProductsService;
+import com.uteshop.services.admin.IProductsService;
 
 public class ProductsServiceImpl implements IProductsService {
 
@@ -34,15 +34,6 @@ public class ProductsServiceImpl implements IProductsService {
 		return productsDao.findAll(all, firstResult, maxResult, searchKeyword);
 	}
 
-    @Override
-    public List<Products> topLatestProducts() {
-        return productsDao.topLatestProducts();
-    }
-
-    @Override
-    public List<Products> findAll(int page, int pageSize) {
-        return productsDao.findAll(page, pageSize);
-    }
 	@Override
 	public int count(String searchKeyword) {
 		return productsDao.count(searchKeyword);
@@ -51,5 +42,8 @@ public class ProductsServiceImpl implements IProductsService {
 	public Products findBySlug(String slug) {
 		return productsDao.findBySlug(slug);
 	}
-
+	@Override
+	public List<Object[]> getTopSellingProducts(int limit) {
+		return productsDao.getTopSellingProducts(limit);
+	}
 }

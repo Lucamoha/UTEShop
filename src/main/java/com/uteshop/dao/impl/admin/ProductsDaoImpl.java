@@ -3,13 +3,17 @@ package com.uteshop.dao.impl.admin;
 import java.util.List;
 
 import com.uteshop.configs.JPAConfigs;
+import com.uteshop.dao.AbstractDao;
 import com.uteshop.dao.admin.IProductsDao;
 import com.uteshop.entity.catalog.Products;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
-public class ProductsDaoImpl implements IProductsDao {
+public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsDao {
+	public ProductsDaoImpl() {
+		super(Products.class);
+	}
 
 	@Override
 	public Products findBySlug(String slug) {
@@ -23,11 +27,16 @@ public class ProductsDaoImpl implements IProductsDao {
 	}
 
 	@Override
-	public List<Products> getTopSellingProducts(int limit) {
+	public List<Object[]> getTopSellingProducts(int limit) {
 		EntityManager enma = JPAConfigs.getEntityManager();
 		try {
-			String jpql = "SELECT ot.product.name, SUM(ot.quantity) AS totalSold FROM OrderItems ot GROUP BY ot.product.name ORDER BY totalSold DESC";
-			return enma.createQuery(jpql, Products.class).setMaxResults(limit).getResultList();
+			String jpql = """
+							SELECT ot.product.Name, SUM(ot.Quantity) AS totalSold
+							FROM OrderItems ot
+							GROUP BY ot.product.Name
+							ORDER BY totalSold DESC
+					""";
+			return enma.createQuery(jpql, Object[].class).setMaxResults(limit).getResultList();
 		} finally {
 			enma.close();
 		}

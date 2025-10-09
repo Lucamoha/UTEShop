@@ -13,6 +13,5 @@ public interface IProductsService {
 	List<Products> findAll(boolean all, int firstResult, int maxResult, String searchKeyword);
 	int count(String searchKeyword);
 	Products findBySlug(String slug);
-    List<Products> topLatestProducts();
-    List<Products> findAll(int page, int pageSize);
+    List<Object[]> getTopSellingProducts(int limit);
 }

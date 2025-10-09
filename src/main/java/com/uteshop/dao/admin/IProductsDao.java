@@ -6,5 +6,5 @@ import com.uteshop.entity.catalog.Products;
 
 public interface IProductsDao {
 	Products findBySlug(String slug);
-	List<Products> getTopSellingProducts(int limit);
+	List<Object[]> getTopSellingProducts(int limit);
 }

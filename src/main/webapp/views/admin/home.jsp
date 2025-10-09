@@ -1,11 +1,25 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<div
-	class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
-	<div>
-		<h3 class="fw-bold mb-3">Dashboard</h3>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+
+<div class="d-flex align-items-center justify-content-between pt-2 pb-4 flex-wrap">
+	<h1 class="fw-bold mb-3 mb-md-0">DASHBOARD</h1>
+
+	<div class="col-md-4 col-sm-12">
+		<div class="card card-round mb-0">
+			<div class="card-body pb-0">
+				<h2 class="mb-2">Doanh thu tháng ${currentMonth}</h2>
+				<p class="text-muted">
+					<fmt:formatNumber value="${revenue.intValue()}" type="number"
+						groupingUsed="true" />
+					VND
+				</p>
+			</div>
+		</div>
 	</div>
 </div>
+
 <div class="row">
 	<div class="col-sm-6 col-md-3">
 		<div class="card card-stats card-round">
@@ -102,12 +116,30 @@
 	</div>
 	<div class="col-md-4">
 		<div class="card card-round">
-			<div class="card-body pb-0">
-				<!-- <div class="h1 fw-bold float-end text-primary">+5%</div> -->
-				<h2 class="mb-2">Danh thu tháng ${currentMonth}</h2>
-				<p class="text-muted">${revenue.intValue()}VND</p>
-				<div class="pull-in sparkline-fix">
-					<div id="lineChart"></div>
+			<div class="card-header">
+				<div class="card-head-row card-tools-still-right">
+					<div class="card-title">10 sản phẩm sắp hết</div>
+				</div>
+			</div>
+			<div class="card-body p-0">
+				<div class="table-responsive">
+					<!-- Projects table -->
+					<table class="table align-items-center mb-0">
+						<thead class="thead-light">
+							<tr>
+								<th scope="col">Tên sản phẩm</th>
+								<th scope="col">Tồn kho</th>
+							</tr>
+						</thead>
+						<tbody>
+							<c:forEach var="item" items="${lowStockList}">
+								<tr>
+									<th>${item[1]}</th>
+									<th>${item[2]}</th>
+								</tr>
+							</c:forEach>
+						</tbody>
+					</table>
 				</div>
 			</div>
 		</div>
@@ -128,60 +160,94 @@
 			</div>
 		</div>
 	</div>
+	<div class="col-md-4">
+		<div class="card card-round">
+			<div class="card-header">
+				<div class="card-head-row card-tools-still-right">
+					<div class="card-title">10 sản phẩm bán chạy</div>
+				</div>
+			</div>
+			<div class="card-body p-0">
+				<div class="table-responsive">
+					<!-- Projects table -->
+					<table class="table align-items-center mb-0">
+						<thead class="thead-light">
+							<tr>
+								<th scope="col">Tên sản phẩm</th>
+								<th scope="col">Số lượng đã bán</th>
+							</tr>
+						</thead>
+						<tbody>
+							<c:forEach var="sellingProduct" items="${topSellingList}">
+								<tr>
+									<th>${sellingProduct[0]}</th>
+									<th>${sellingProduct[1]}</th>
+								</tr>
+							</c:forEach>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-const revenueLabels = ${revenueLabels != null ? revenueLabels : '[]'};
-const revenueValues = ${revenueValues != null ? revenueValues : '[]'};
-const dailyLabels = ${dailyLabels != null ? dailyLabels : '[]'};
-const dailyValues = ${dailyValues != null ? dailyValues : '[]'};
+	const revenueLabels = ${revenueLabels != null ? revenueLabels : '[]'};
+	const revenueValues = ${revenueValues != null ? revenueValues : '[]'};
+	const dailyLabels   = ${dailyLabels != null ? dailyLabels : '[]'};
+	const dailyValues   = ${dailyValues != null ? dailyValues : '[]'};
 
-document.addEventListener("DOMContentLoaded", function() {
-    // BIỂU ĐỒ DOANH THU THEO THÁNG
-    const ctxRevenue = document.getElementById('revenueChart');
-    new Chart(ctxRevenue, {
-        type: 'line',
-        data: {
-            labels: revenueLabels,
-            datasets: [{
-                label: 'Doanh thu (VND)',
-                data: revenueValues,
-                borderWidth: 2,
-                borderColor: '#007bff',
-                fill: false,
-                tension: 0.3
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: { beginAtZero: true }
-            }
-        }
-    });
+	document.addEventListener("DOMContentLoaded", function() {
+		// BIỂU ĐỒ DOANH THU THEO THÁNG
+		const ctxRevenue = document.getElementById('revenueChart');
+		new Chart(ctxRevenue, {
+			type : 'line',
+			data : {
+				labels : revenueLabels,
+				datasets : [ {
+					label : 'Doanh thu (VND)',
+					data : revenueValues,
+					borderWidth : 2,
+					borderColor : '#007bff',
+					fill : false,
+					tension : 0.3
+				} ]
+			},
+			options : {
+				responsive : true,
+				scales : {
+					y : {
+						beginAtZero : true
+					}
+				}
+			}
+		});
 
-    // BIỂU ĐỒ DOANH THU THEO NGÀY
-    const ctxDaily = document.getElementById('dayRevenueChart');
-    new Chart(ctxDaily, {
-        type: 'line',
-        data: {
-            labels: dailyLabels,
-            datasets: [{
-                label: 'Doanh thu (VND)',
-                data: dailyValues,
-                borderWidth: 2,
-                borderColor: '#28a745',
-                fill: false,
-                tension: 0.3
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: { beginAtZero: true }
-            }
-        }
-    });
-});
+		// BIỂU ĐỒ DOANH THU THEO NGÀY
+		const ctxDaily = document.getElementById('dayRevenueChart');
+		new Chart(ctxDaily, {
+			type : 'line',
+			data : {
+				labels : dailyLabels,
+				datasets : [ {
+					label : 'Doanh thu (VND)',
+					data : dailyValues,
+					borderWidth : 2,
+					borderColor : '#28a745',
+					fill : false,
+					tension : 0.3
+				} ]
+			},
+			options : {
+				responsive : true,
+				scales : {
+					y : {
+						beginAtZero : true
+					}
+				}
+			}
+		});
+	});
 </script>
