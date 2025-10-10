@@ -1,8 +1,8 @@
-package com.uteshop.dao.impl.Product;
+package com.uteshop.dao.impl.web;
 
 import com.uteshop.configs.JPAConfigs;
 import com.uteshop.dao.AbstractDao;
-import com.uteshop.dao.IProductsDao;
+import com.uteshop.dao.web.IProductsDao;
 import com.uteshop.entity.catalog.Products;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;

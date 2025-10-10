@@ -10,10 +10,10 @@ import java.io.IOException;
 import java.util.List;
 
 import com.uteshop.entity.catalog.Categories;
-import com.uteshop.services.Category.ICategoriesService;
-import com.uteshop.services.Product.IProductsService;
-import com.uteshop.services.impl.Category.CategoriesServiceImpl;
-import com.uteshop.services.impl.Product.ProductsServiceImpl;
+import com.uteshop.services.impl.web.CategoriesServiceImpl;
+import com.uteshop.services.impl.web.ProductsServiceImpl;
+import com.uteshop.services.web.ICategoriesService;
+import com.uteshop.services.web.IProductsService;
 
 /**
  * Servlet implementation class HomeControllerWeb

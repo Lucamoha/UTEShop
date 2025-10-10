@@ -1,7 +1,7 @@
-package com.uteshop.dao.impl.Option;
+package com.uteshop.dao.impl.web;
 
 import com.uteshop.configs.JPAConfigs;
-import com.uteshop.dao.IOptionsDao;
+import com.uteshop.dao.web.IOptionsDao;
 import com.uteshop.dto.web.OptionDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;

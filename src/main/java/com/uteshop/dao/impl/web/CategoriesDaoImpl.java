@@ -1,22 +1,21 @@
-package com.uteshop.dao.impl;
+package com.uteshop.dao.impl.web;
 
 import java.util.List;
 
 import com.uteshop.configs.JPAConfigs;
-import com.uteshop.dao.ICategoriesDao;
+import com.uteshop.dao.AbstractDao;
+import com.uteshop.dao.web.ICategoriesDao;
 import com.uteshop.entity.catalog.Categories;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
-public class CategoriesDaoImpl implements ICategoriesDao {
-	@Override
-	public List<Categories> findAll() {
-		EntityManager enma = JPAConfigs.getEntityManager();
-		TypedQuery<Categories> query = enma.createNamedQuery("Categories.findAll", Categories.class);
-		return query.getResultList();
-	}
+public class CategoriesDaoImpl extends AbstractDao<Categories> implements ICategoriesDao{
 
+	public CategoriesDaoImpl() {
+		super(Categories.class);
+	}
+	
 	@Override
 	public List<Categories> findParents() {
 		EntityManager enma = JPAConfigs.getEntityManager();

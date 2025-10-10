@@ -1,9 +1,9 @@
-package com.uteshop.services.impl.Option;
+package com.uteshop.services.impl.web;
 
-import com.uteshop.dao.IOptionsDao;
-import com.uteshop.dao.impl.Option.OptionsDaoImpl;
+import com.uteshop.dao.impl.web.OptionsDaoImpl;
+import com.uteshop.dao.web.IOptionsDao;
 import com.uteshop.dto.web.OptionDto;
-import com.uteshop.services.Option.IOptionsService;
+import com.uteshop.services.web.IOptionsService;
 
 import java.util.List;
 

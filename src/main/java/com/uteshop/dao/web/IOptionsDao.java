@@ -1,9 +1,9 @@
-package com.uteshop.services.Option;
+package com.uteshop.dao.web;
 
 import com.uteshop.dto.web.OptionDto;
 
 import java.util.List;
 
-public interface IOptionsService {
+public interface IOptionsDao {
     List<OptionDto> getOptionsByProduct(int productId);
 }

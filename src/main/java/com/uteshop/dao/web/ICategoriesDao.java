@@ -1,4 +1,4 @@
-package com.uteshop.dao;
+package com.uteshop.dao.web;
 
 import java.util.List;
 

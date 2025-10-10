@@ -1,10 +1,10 @@
-package com.uteshop.services.impl.Category;
+package com.uteshop.services.impl.web;
 
 import java.util.List;
 
-import com.uteshop.dao.impl.Category.CategoriesDaoImpl;
+import com.uteshop.dao.impl.web.CategoriesDaoImpl;
 import com.uteshop.entity.catalog.Categories;
-import com.uteshop.services.Category.ICategoriesService;
+import com.uteshop.services.web.ICategoriesService;
 
 public class CategoriesServiceImpl implements ICategoriesService {
 

@@ -1,10 +1,10 @@
-package com.uteshop.services.impl.Product;
+package com.uteshop.services.impl.web;
 
 import java.util.List;
 
-import com.uteshop.dao.impl.Product.ProductsDaoImpl;
+import com.uteshop.dao.impl.web.ProductsDaoImpl;
 import com.uteshop.entity.catalog.Products;
-import com.uteshop.services.Product.IProductsService;
+import com.uteshop.services.web.IProductsService;
 
 public class ProductsServiceImpl implements IProductsService {
 

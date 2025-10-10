@@ -6,10 +6,10 @@ import java.util.List;
 
 import com.uteshop.entity.catalog.Categories;
 import com.uteshop.entity.catalog.Products;
-import com.uteshop.services.Category.ICategoriesService;
-import com.uteshop.services.Product.IProductsService;
-import com.uteshop.services.impl.Category.CategoriesServiceImpl;
-import com.uteshop.services.impl.Product.ProductsServiceImpl;
+import com.uteshop.services.impl.web.CategoriesServiceImpl;
+import com.uteshop.services.impl.web.ProductsServiceImpl;
+import com.uteshop.services.web.ICategoriesService;
+import com.uteshop.services.web.IProductsService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

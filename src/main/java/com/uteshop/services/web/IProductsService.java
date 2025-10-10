@@ -1,4 +1,4 @@
-package com.uteshop.services.Product;
+package com.uteshop.services.web;
 
 import java.util.List;
 
