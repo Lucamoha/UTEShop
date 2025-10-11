@@ -1,8 +1,8 @@
 package com.uteshop.controller.web;
 
 import com.uteshop.entity.auth.Users;
-import com.uteshop.services.IUserService;
-import com.uteshop.services.impl.UserServiceImpl;
+import com.uteshop.services.web.IUsersService;
+import com.uteshop.services.impl.web.UsersServiceImpl;
 import com.uteshop.util.JWTUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -11,12 +11,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.mindrot.jbcrypt.BCrypt;
 
-
 import java.io.IOException;
 
 @WebServlet(urlPatterns = {"/login"})
 public class LoginController extends HttpServlet {
-    IUserService userService = new UserServiceImpl();
+    IUsersService userService = new UsersServiceImpl();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -39,9 +38,37 @@ public class LoginController extends HttpServlet {
 
         Users user = userService.findByEmail(email);
         if (user != null && BCrypt.checkpw(password, user.getPasswordHash())){
-            String token = JWTUtil.generateToken(email, "USER");
-            resp.addHeader("Authorization", "Bearer " + token);
-            resp.sendRedirect(req.getContextPath() + "/home");
+            // Lấy role thực tế từ database
+            String role = user.getUserRole() != null ? user.getUserRole() : "USER";
+            
+            // Tạo JWT token
+            String token = JWTUtil.generateToken(email, role);
+            
+            System.out.println("=== LOGIN SUCCESS ===");
+            System.out.println("Email: " + email);
+            System.out.println("Role: " + role);
+            System.out.println("Token: " + token);
+            
+            // Kiểm tra checkbox "remember me"
+            String remember = req.getParameter("remember");
+            boolean rememberMe = (remember != null);
+            
+            // Lưu token vào Cookie
+            JWTUtil.addTokenToCookie(resp, token, rememberMe);
+            
+            // Lưu thông tin vào session
+            req.getSession().setAttribute("user", user);
+            req.getSession().setAttribute("email", email);
+            req.getSession().setAttribute("role", role);
+            
+            // Redirect dựa vào role
+            if ("ADMIN".equals(role)) {
+                resp.sendRedirect(req.getContextPath() + "/admin/dashboard");
+            } else if ("MANAGER".equals(role)) {
+                resp.sendRedirect(req.getContextPath() + "/manager/dashboard");
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/home");
+            }
         } else {
             req.setAttribute("error", "Email hoặc mật khẩu không đúng!");
             req.getRequestDispatcher("/views/web/login.jsp").forward(req, resp);

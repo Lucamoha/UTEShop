@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8"%>
-
+<%@ include file="/commons/taglib.jsp"%>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -38,12 +38,13 @@
         <div class="form-section">
             <h3>Đăng nhập tài khoản</h3>
 
-            <form id="loginForm">
+            <form id="loginForm" action="login" method="post">
                 <div class="form-group">
                     <input
                             type="email"
                             class="form-input"
-                            placeholder="Email hoặc số điện thoại"
+                            placeholder="Email"
+                            name="email"
                             required
                     />
                 </div>
@@ -53,9 +54,31 @@
                             type="password"
                             class="form-input"
                             placeholder="Mật khẩu"
+                            name="password"
                             required
                     />
                 </div>
+
+                <div class="form-group" style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <input type="checkbox" name="remember" id="rememberMe" style="margin-right: 8px;">
+                    <label for="rememberMe" style="margin: 0; cursor: pointer;">Ghi nhớ đăng nhập (7 ngày)</label>
+                </div>
+
+                <%-- Hiển thị thông báo từ session (redirect từ protected page) --%>
+                <c:if test="${not empty sessionScope.loginMessage}">
+                    <div style="color: #ff9800; text-align: center; margin-bottom: 10px;">
+                            ${sessionScope.loginMessage}
+                    </div>
+                    <%-- Xóa message sau khi hiển thị --%>
+                    <c:remove var="loginMessage" scope="session"/>
+                </c:if>
+
+                <%-- Hiển thị thông báo lỗi (nếu có) --%>
+                <c:if test="${not empty error}">
+                    <div style="color: red; text-align: center; margin-bottom: 10px;">
+                            ${error}
+                    </div>
+                </c:if>
 
                 <button type="submit" class="login-button" id="loginBtn">
                     <span class="btn-text">Đăng Nhập</span>
@@ -91,85 +114,5 @@
     </div>
 </div>
 
-<script>
-    // Login form handling
-    document.getElementById("loginForm").addEventListener("submit", function (e) {
-        e.preventDefault();
-
-        const loginBtn = document.getElementById("loginBtn");
-        const btnText = loginBtn.querySelector(".btn-text");
-
-        // Show loading state
-        btnText.innerHTML = '<div class="loading"></div>';
-        loginBtn.disabled = true;
-
-        // Simulate login process
-        setTimeout(() => {
-            btnText.textContent = "Đăng Nhập Thành Công!";
-            loginBtn.style.background = "linear-gradient(135deg, #28a745 0%, #20c997 100%)";
-
-            setTimeout(() => {
-                alert("Đăng nhập thành công! Chào mừng bạn đến với Apple Store.");
-                // Reset button
-                btnText.textContent = "Đăng Nhập";
-                loginBtn.style.background = "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)";
-                loginBtn.disabled = false;
-            }, 1500);
-        }, 2000);
-    });
-
-    // Input focus effects
-    document.querySelectorAll(".form-input").forEach((input) => {
-        input.addEventListener("focus", function () {
-            this.parentElement.style.transform = "scale(1.02)";
-        });
-
-        input.addEventListener("blur", function () {
-            this.parentElement.style.transform = "scale(1)";
-        });
-    });
-
-    // Social button animations
-    document.querySelectorAll(".social-button").forEach((btn) => {
-        btn.addEventListener("mouseenter", function () {
-            this.style.transform = "translateY(-2px) scale(1.05)";
-        });
-
-        btn.addEventListener("mouseleave", function () {
-            this.style.transform = "translateY(0) scale(1)";
-        });
-    });
-
-    // Utility function for alerts
-    function showAlert(message) {
-        alert(message);
-    }
-
-    // Add some interactive particles
-    function createParticle() {
-        const particle = document.createElement("div");
-        particle.style.cssText = `
-                position: absolute;
-                width: 4px;
-                height: 4px;
-                background: rgba(26, 26, 26, 0.1);
-                border-radius: 50%;
-                pointer-events: none;
-                animation: particleFloat 8s linear infinite;
-            `;
-
-        particle.style.left = Math.random() * 100 + "%";
-        particle.style.top = "110%";
-
-        document.body.appendChild(particle);
-
-        setTimeout(() => {
-            particle.remove();
-        }, 8000);
-    }
-
-    // Create particles periodically
-    setInterval(createParticle, 3000);
-</script>
 </body>
 </html>

@@ -1,9 +1,9 @@
-package com.uteshop.dao.impl.User;
+package com.uteshop.dao.impl.web;
 
 
 import com.uteshop.configs.JPAConfigs;
 import com.uteshop.dao.AbstractDao;
-import com.uteshop.dao.IUsersDao;
+import com.uteshop.dao.web.IUsersDao;
 import com.uteshop.entity.auth.Users;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
