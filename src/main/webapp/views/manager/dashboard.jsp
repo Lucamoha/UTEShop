@@ -135,9 +135,16 @@
     <div class="col-12 col-lg-6 mb-3">
       <div class="card">
         <div class="card-header">
-          <div class="card-title">
-            <h5 class="mb-0 fw-bold">Doanh thu theo <span id="title-bucket">ngày</span></h5>
-            <small class="text-muted">Tổng: <span id="total-revenue">—</span></small>
+          <div class="card-head-row">
+            <div class="card-title">
+              <h5 class="mb-0 fw-bold">Doanh thu theo <span id="title-bucket">ngày</span></h5>
+              <small class="text-muted">Tổng: <span id="total-revenue">—</span></small>
+            </div>
+            <div class="card-tools">
+              <button id="btn-export-revenue" type="button" class="btn btn-sm btn-outline-secondary">
+                Xuất ảnh
+              </button>
+            </div>
           </div>
         </div>
         <div class="card-body">
@@ -152,9 +159,16 @@
     <div class="col-12 col-lg-6 mb-3">
       <div class="card">
         <div class="card-header">
-          <div class="card-title">
-            <h5 class="mb-0 fw-bold">Top sản phẩm bán chạy</h5>
-            <small class="text-muted"><span id="range-top">—</span></small>
+          <div class="card-head-row">
+            <div class="card-title">
+              <h5 class="mb-0 fw-bold">Top sản phẩm bán chạy</h5>
+              <small class="text-muted"><span id="range-top">—</span></small>
+            </div>
+            <div class="card-tools">
+              <button id="btn-export-top" type="button" class="btn btn-sm btn-outline-secondary">
+                Xuất ảnh
+              </button>
+            </div>
           </div>
         </div>
         <div class="card-body">
@@ -327,6 +341,70 @@
         loadCharts();
         loadKpis();
         qs("loadBtn").addEventListener("click", loadCharts, loadKpis);
+      });
+    </script>
+    <script>
+      // Helper: tải dataURL thành file
+      function downloadURI(uri, filename) {
+        const link = document.createElement('a');
+        link.href = uri;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      // Helper: chuyển text -> slug gọn gàng cho tên file
+      function slugify(text) {
+        return (text || '')
+                .toString()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-zA-Z0-9]+/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-|-$/g, '')
+                .toLowerCase();
+      }
+
+      // Xuất ảnh từ canvas, giữ nền trắng, tăng độ phân giải (scale)
+      function exportChartAsImage(canvasId, filenameBase, scale = 2) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+
+        const w = canvas.width;
+        const h = canvas.height;
+
+        const off = document.createElement('canvas');
+        off.width = Math.max(1, Math.round(w * (scale)));
+        off.height = Math.max(1, Math.round(h * (scale)));
+        const ctx = off.getContext('2d');
+
+        // Nền trắng (tránh nền trong suốt khi dán vào tài liệu)
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, off.width, off.height);
+
+        // Vẽ ảnh từ canvas gốc lên (scale lên)
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(canvas, 0, 0, off.width, off.height);
+
+        const dataURL = off.toDataURL('image/png');
+        downloadURI(dataURL, filenameBase + '.png');
+      }
+
+      // Gắn sự kiện cho nút doanh thu
+      document.getElementById('btn-export-revenue')?.addEventListener('click', () => {
+        const bucket = document.getElementById('title-bucket')?.textContent?.trim() || 'bucket';
+        const range = document.getElementById('range-revenue')?.textContent?.trim() || '';
+        const total = document.getElementById('total-revenue')?.textContent?.trim() || '';
+        const name = 'revenue-' + slugify(bucket) + '-' + slugify(range || 'range') + (total ? '_' + slugify(total) : '');
+        exportChartAsImage('revenueChart', name);
+      });
+
+      // Gắn sự kiện cho nút top sản phẩm
+      document.getElementById('btn-export-top')?.addEventListener('click', () => {
+        const range = document.getElementById('range-top')?.textContent?.trim() || '';
+        const name = 'top-products-' + slugify(range || 'range');
+        exportChartAsImage('topChart', name);
       });
     </script>
   </div>

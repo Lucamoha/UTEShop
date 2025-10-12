@@ -1,4 +1,4 @@
-package com.uteshop.dao.manager.impl;
+package com.uteshop.dao.impl.manager;
 
 import com.uteshop.configs.JPAConfigs;
 import com.uteshop.dao.AbstractDao;

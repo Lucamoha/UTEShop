@@ -53,6 +53,14 @@
         </div>
         <div class="modal-body">
           <p class="text-muted mb-2">Mỗi dòng: <code>SKU|số_lượng_±</code></p>
+          <!-- ====== NHẬP BẰNG EXCEL ====== -->
+          <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+            <input id="bulkFile" type="file"
+                   accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                   class="form-control" style="max-width:320px;">
+            <button type="button" id="btnBulkTemplate" class="btn btn-outline-secondary btn-sm">Tải file mẫu</button>
+            <span class="small text-muted">Cột bắt buộc: <code>SKU</code>, <code>Delta</code> (số dương = nhập, âm = xuất)</span>
+          </div>
           <textarea id="bulkText" class="form-control" rows="8" placeholder="SKU001|10&#10;SKU002|-5"></textarea>
           <div class="small text-muted mt-2">Chỉ số nguyên. Dòng không hợp lệ sẽ bị bỏ qua.</div>
           <pre id="bulkResult" class="mt-3" style="white-space:pre-wrap;"></pre>
@@ -207,13 +215,51 @@
           <small class="text-muted ms-2">
             Trang <%=pageNow%>/<%=totalPages%> • Tổng <%=pageRes.getTotal()%> biến thể
           </small>
+          <div class="d-flex align-items-center justify-content-between mt-2">
+            <div></div>
+            <div>
+              <button id="btnExportExcel" type="button" class="btn btn-success">
+                Xuất tồn ra Excel
+              </button>
+            </div>
+          </div>
         </nav>
       </div>
     </c:if>
   </div>
 </div>
 
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script>
+  // ===== EXPORT EXCEL =====
+  async function downloadExcel() {
+    const url = "${pageContext.request.contextPath}/api/manager/inventory/export-excel"
+
+    const btn = document.getElementById("btnExportExcel");
+    btn.disabled = true; btn.textContent = "Đang xuất dữ liệu...";
+
+    const res = await fetch(url, {
+      method: "GET",
+      credentials: "same-origin"
+    });
+
+    if (!res.ok) {
+      const txt = await res.text().catch(() => "");
+      alert("Export lỗi: " + res.status + " " + txt);
+      return;
+    }
+
+    const blob = await res.blob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "inventory.xlsx";
+    a.click();
+    URL.revokeObjectURL(a.href);
+
+    btn.disabled = false; btn.textContent = "Xuất tồn ra Excel";
+  }
+  document.getElementById("btnExportExcel")?.addEventListener("click", downloadExcel);
+
   (() => {
     const ctx = "${pageContext.request.contextPath}";
     const API_BULK = ctx + "/api/manager/inventory/bulk-import";
@@ -307,6 +353,86 @@
     }
 
     // ===== BULK =====
+    // ===== EXCEL → TEXTAREA =====
+    const inputBulkFile = document.getElementById("bulkFile");
+    const btnBulkTemplate = document.getElementById("btnBulkTemplate");
+
+    btnBulkTemplate?.addEventListener("click", () => {
+      // Tạo file mẫu .xlsx (SKU, Delta)
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet([
+        ["SKU", "Delta"],
+        ["SKU001", 10],
+        ["SKU002", -5]
+      ]);
+      XLSX.utils.book_append_sheet(wb, ws, "Bulk");
+      const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "bulk-template.xlsx";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    inputBulkFile?.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const ta = document.getElementById("bulkText");
+      const out = document.getElementById("bulkResult");
+      out.textContent = "";
+
+      try {
+        const data = await file.arrayBuffer();
+        const wb = XLSX.read(data, { type: "array" });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, blankrows: false, raw: true });
+
+        if (!rows.length) { out.textContent = "File rỗng."; return; }
+
+        // Tìm cột "SKU" và "Delta" (không phân biệt hoa thường)
+        const header = rows[0].map(h => String(h || "").trim().toLowerCase());
+        const skuIdx = header.indexOf("sku");
+        const deltaIdx = header.indexOf("delta");
+
+        if (skuIdx < 0 || deltaIdx < 0) {
+          out.textContent = "Không tìm thấy cột SKU và Delta trong sheet đầu.";
+          return;
+        }
+
+        const lines = [];
+        const errors = [];
+        for (let i = 1; i < rows.length; i++) {
+          const r = rows[i] || [];
+          const sku = String(r[skuIdx] ?? "").trim();
+          const deltaStr = String(r[deltaIdx] ?? "").trim();
+          const deltaNum = parseInt(deltaStr, 10);
+
+          if (deltaNum === 0) { continue; } // Bỏ qua dòng có delta bằng 0
+          if (!sku) { errors.push(`Dòng ${i+1}: thiếu SKU`); continue; }
+          if (!/^[A-Za-z0-9._-]{1,80}$/.test(sku)) { errors.push(`Dòng ${i+1}: SKU không hợp lệ`); continue; }
+          if (!/^[+-]?\d+$/.test(deltaStr)) { errors.push(`Dòng ${i+1}: Delta không hợp lệ`); continue; }
+
+          lines.push(sku + `|` + deltaStr);
+        }
+
+        // Đổ vào textarea để vẫn có thể chỉnh tay nếu muốn
+        ta.value = lines.join("\n");
+
+        // Hiển thị lỗi (nếu có)
+        if (errors.length) {
+          out.textContent = "Một số dòng bị bỏ qua:\n" + errors.join("\n");
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById("bulkResult").textContent = "Không thể đọc file: " + err.message;
+      } finally {
+        // reset để lần sau có thể chọn lại cùng file
+        e.target.value = "";
+      }
+    });
+
+
     const btnBulkImport = $("#btnBulkImport");
     const btnBulkClose  = $("#btnBulkClose");
 

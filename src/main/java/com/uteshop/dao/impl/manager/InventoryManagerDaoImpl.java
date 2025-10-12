@@ -1,4 +1,4 @@
-package com.uteshop.dao.manager.impl;
+package com.uteshop.dao.impl.manager;
 
 import com.uteshop.configs.JPAConfigs;
 import com.uteshop.dao.AbstractDao;
@@ -202,31 +202,48 @@ public class InventoryManagerDaoImpl extends AbstractDao<BranchInventory> implem
         }
     }
 
-//    @Override
-//    public BranchInventory addStock(Integer branchId, Integer variantId, int delta) {
-//        EntityManager em = JPAConfigs.getEntityManager();
-//
-//        BranchInventory.Id key = new BranchInventory.Id(branchId, variantId);
-//        BranchInventory inv = em.find(BranchInventory.class, key);
-//
-//        if (inv == null) {
-//            // tạo mới với tồn ban đầu = 0 rồi cộng delta
-//            inv = new BranchInventory();
-//            inv.setId(key);
-//            inv.setBranch(em.getReference(Branches.class, branchId));
-//            inv.setVariant(em.getReference(ProductVariants.class, variantId));
-//            inv.setBranchStock(0);
-//            insert(inv);
-//        }
-//
-//        int after = (inv.getBranchStock() == null ? 0 : inv.getBranchStock()) + delta;
-//        if (after < 0) after = 0; // không cho âm
-//
-//        inv.setBranchStock(after);
-//        update(inv);
-//
-//        return inv;
-//    }
+    @Override
+    public List<InventoryRow> findAllForExport(Integer branchId) {
+        EntityManager em = JPAConfigs.getEntityManager();
+
+        // Một dòng cho mỗi variant; tồn lấy theo chi nhánh 'branchId' (null -> 0)
+        final String jpql = """
+            select
+                p.Id,
+                p.Name,
+                v.Id,
+                v.SKU,
+                coalesce(
+                  (select s.BranchStock from BranchInventory s
+                   where s.variant.Id = v.Id and s.branch.Id = :b),
+                  0
+                ),
+                v.Price
+            from ProductVariants v
+                join v.product p
+            where v.Status = true
+              and p.Status = true
+            order by p.Name asc, v.SKU asc
+            """;
+
+        TypedQuery<Object[]> q = em.createQuery(jpql, Object[].class)
+                .setParameter("b", branchId);
+
+        List<Object[]> raw = q.getResultList();
+        List<InventoryRow> out = new ArrayList<>(raw.size());
+        for (Object[] r : raw) {
+            Integer productId   = (Integer) r[0];
+            String  productName = (String)  r[1];
+            Integer variantId   = (Integer) r[2];
+            String  sku         = (String)  r[3];
+            Number  qtyNum      = (Number)  r[4];
+            int     qty         = qtyNum == null ? 0 : qtyNum.intValue();
+            java.math.BigDecimal price = (java.math.BigDecimal) r[5];
+
+            out.add(new InventoryRow(productId, productName, variantId, sku, qty, price));
+        }
+        return out;
+    }
 
     public Integer findVariantIdBySku(String sku) {
         EntityManager em = JPAConfigs.getEntityManager();
@@ -240,26 +257,4 @@ public class InventoryManagerDaoImpl extends AbstractDao<BranchInventory> implem
                 .getResultList();
         return ids.isEmpty() ? null : ids.get(0);
     }
-//
-//    @Override
-//    public Map<String, Integer> bulkAddStockBySku(Integer branchId, Map<String, Integer> skuToDelta) {
-//        EntityManager em = JPAConfigs.getEntityManager();
-//
-//        Map<String, Integer> result = new HashMap<>();
-//        if (skuToDelta == null || skuToDelta.isEmpty()) return result;
-//
-//        for (Map.Entry<String, Integer> e : skuToDelta.entrySet()) {
-//            String sku = e.getKey();
-//            int delta = e.getValue() == null ? 0 : e.getValue();
-//            Integer vid = findVariantIdBySku(sku);
-//            if (vid == null) {
-//                // không tồn tại SKU -> gắn giá trị null để báo lỗi phía trên
-//                result.put(sku, null);
-//                continue;
-//            }
-//            BranchInventory after = addStock(branchId, vid, delta);
-//            result.put(sku, after.getBranchStock());
-//        }
-//        return result;
-//    }
 }

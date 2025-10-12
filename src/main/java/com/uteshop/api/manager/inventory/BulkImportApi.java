@@ -3,7 +3,8 @@ package com.uteshop.api.manager.inventory;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.uteshop.dao.manager.impl.InventoryManagerDaoImpl;
+import com.uteshop.services.impl.manager.InventoryManagerServiceImpl;
+import com.uteshop.services.manager.IInventoryManagerService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 @WebServlet(urlPatterns = "/api/manager/inventory/bulk-import")
 public class BulkImportApi extends HttpServlet {
 
-    private final InventoryManagerDaoImpl inventoryManagerDao = new InventoryManagerDaoImpl();
+    private final IInventoryManagerService iInventoryManagerService = new InventoryManagerServiceImpl();
     private static final ObjectMapper MAPPER = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     private static final Pattern LINE = Pattern.compile(
@@ -130,7 +131,7 @@ public class BulkImportApi extends HttpServlet {
         }
 
         // Gọi DAO
-        Map<String, Integer> result = inventoryManagerDao.bulkAdjustBySku(branchId, deltaBySku);
+        Map<String, Integer> result = iInventoryManagerService.bulkAdjustBySku(branchId, deltaBySku);
 
         // Xây not_found (những sku gửi lên nhưng DAO không trả về)
         Set<String> requested = deltaBySku.keySet();

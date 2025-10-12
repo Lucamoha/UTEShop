@@ -1,21 +1,22 @@
-package com.uteshop.services.manager;
+package com.uteshop.services.impl.manager;
 
 import com.uteshop.dao.manager.IOrdersManagerDao;
-import com.uteshop.dao.manager.impl.OrdersManagerDaoImpl;
+import com.uteshop.dao.impl.manager.OrdersManagerDaoImpl;
 import com.uteshop.dto.manager.reports.RevenuePoint;
 import com.uteshop.dto.manager.reports.RevenueSeriesResponse;
+import com.uteshop.services.manager.IRevenueService;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class RevenueService {
+public class RevenueServiceImpl implements IRevenueService {
     IOrdersManagerDao ordersDao = new OrdersManagerDaoImpl();
 
+    @Override
     public RevenueSeriesResponse buildSeries(Integer branchId,
                                              LocalDate from, LocalDate to,
                                              String bucket) {

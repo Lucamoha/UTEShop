@@ -1,10 +1,11 @@
 package com.uteshop.controller.manager;
 
 import com.uteshop.dao.manager.common.PageResult;
-import com.uteshop.dao.manager.impl.EntityDao;
-import com.uteshop.dao.manager.impl.InventoryManagerDaoImpl;
+import com.uteshop.dao.impl.manager.EntityDaoImpl;
 import com.uteshop.dto.manager.inventory.InventoryRow;
 import com.uteshop.entity.catalog.Categories;
+import com.uteshop.services.impl.manager.InventoryManagerServiceImpl;
+import com.uteshop.services.manager.IInventoryManagerService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,8 +18,8 @@ import java.util.List;
 @WebServlet(urlPatterns = "/manager/inventory")
 public class InventoryController extends HttpServlet {
 
-    private final InventoryManagerDaoImpl dao = new InventoryManagerDaoImpl();
-    private final EntityDao<Categories> categoriesDao = new EntityDao<>(Categories.class);
+    private final IInventoryManagerService iInventoryManagerService = new InventoryManagerServiceImpl();
+    private final EntityDaoImpl<Categories> categoriesDao = new EntityDaoImpl<>(Categories.class);
 
     private Integer branchId(HttpServletRequest req){ return (Integer) req.getSession().getAttribute("branchId"); }
     private Integer parseInt(String s){ try { return (s==null||s.isBlank())? null : Integer.valueOf(s);} catch(Exception e){return null;}}
@@ -37,7 +38,7 @@ public class InventoryController extends HttpServlet {
         String sort        = req.getParameter("sort");
         String dir         = req.getParameter("dir");
 
-        PageResult<InventoryRow> result = dao.search(branchId, categoryId, keyword, page, size, sort, dir);
+        PageResult<InventoryRow> result = iInventoryManagerService.search(branchId, categoryId, keyword, page, size, sort, dir);
 
         List<Categories> categories = categoriesDao.findAll();
 

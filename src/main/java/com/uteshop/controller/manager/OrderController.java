@@ -1,15 +1,14 @@
 package com.uteshop.controller.manager;
 
 import com.uteshop.dao.manager.common.PageResult;
-import com.uteshop.dao.manager.impl.OrdersManagerDaoImpl;
 import com.uteshop.entity.order.Orders;
+import com.uteshop.services.impl.manager.OrdersManagerServiceImpl;
 import com.uteshop.util.AppConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
@@ -18,7 +17,7 @@ import java.io.IOException;
         "/manager/orders/detail"
 })
 public class OrderController extends HttpServlet {
-    OrdersManagerDaoImpl ordersManagerDao = new OrdersManagerDaoImpl();
+    OrdersManagerServiceImpl ordersManagerService = new OrdersManagerServiceImpl();
 
     private Integer branchId(HttpServletRequest req) {
         return (Integer) req.getSession().getAttribute("branchId");
@@ -54,7 +53,7 @@ public class OrderController extends HttpServlet {
             int page = parseInt(req.getParameter("page"), 1);
             int size = parseInt(req.getParameter("size"), 10);
 
-            PageResult<Orders> result = ordersManagerDao.searchPaged(bId, orderStatus, paymentStatus, q, page, size);
+            PageResult<Orders> result = ordersManagerService.searchPaged(bId, orderStatus, paymentStatus, q, page, size);
 
             req.setAttribute("q", q);
             req.setAttribute("status", orderStatus);
@@ -73,7 +72,7 @@ public class OrderController extends HttpServlet {
                 return;
             }
 
-            Orders orders = ordersManagerDao.findByIdWithItems(id, bId);
+            Orders orders = ordersManagerService.findByIdWithItems(id, bId);
             if (orders == null) {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return;
@@ -121,7 +120,7 @@ public class OrderController extends HttpServlet {
                 return;
             }
 
-            Orders orders = ordersManagerDao.findById(id);
+            Orders orders = ordersManagerService.findById(id);
             if (orders == null) {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return;
@@ -182,7 +181,7 @@ public class OrderController extends HttpServlet {
                 }
 
                 if (changed) {
-                    ordersManagerDao.update(orders);
+                    ordersManagerService.update(orders);
                 }
 
                 req.getSession().setAttribute("flash_ok", true);

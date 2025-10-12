@@ -1,6 +1,8 @@
 package com.uteshop.controller.web;
 
+import com.uteshop.dao.impl.manager.EntityDaoImpl;
 import com.uteshop.entity.auth.Users;
+import com.uteshop.entity.branch.Branches;
 import com.uteshop.services.web.IUsersService;
 import com.uteshop.services.impl.web.UsersServiceImpl;
 import com.uteshop.util.JWTUtil;
@@ -65,6 +67,16 @@ public class LoginController extends HttpServlet {
             if ("ADMIN".equals(role)) {
                 resp.sendRedirect(req.getContextPath() + "/admin/dashboard");
             } else if ("MANAGER".equals(role)) {
+                EntityDaoImpl<Branches> branchesEntityDaoImpl = new EntityDaoImpl<>(Branches.class);
+                Branches branches = branchesEntityDaoImpl.findByUnique("manager", user).orElse(null);
+
+                if (branches == null) {
+                    resp.sendRedirect(req.getContextPath() + "/home");
+                    return;
+                }
+
+                req.getSession().setAttribute("branchId", branches.getId());
+                req.getSession().setAttribute("branchName", branches.getName());
                 resp.sendRedirect(req.getContextPath() + "/manager/dashboard");
             } else {
                 resp.sendRedirect(req.getContextPath() + "/home");

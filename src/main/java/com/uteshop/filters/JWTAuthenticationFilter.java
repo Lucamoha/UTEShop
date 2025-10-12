@@ -34,7 +34,8 @@ public class JWTAuthenticationFilter implements Filter {
         "/profile",
         "/cart",
         "/checkout",
-        "/orders"
+        "/orders",
+        "/api/manager"
     );
 
     @Override
@@ -79,7 +80,6 @@ public class JWTAuthenticationFilter implements Filter {
                 // Lưu thông tin user vào request attribute
                 req.setAttribute("authenticatedEmail", email);
                 req.setAttribute("authenticatedRole", role);
-
 
                 // Kiểm tra quyền truy cập dựa trên role
                 if (path.startsWith("/admin/") && !"ADMIN".equals(role)) {

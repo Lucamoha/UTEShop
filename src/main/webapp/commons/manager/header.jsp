@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<c:set var="currentUserEmail" value="${authenticatedEmail}" />
 
 <div class="main-header-logo">
   <!-- Logo Header -->
@@ -20,6 +21,9 @@
 </div>
 <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
   <div class="container-fluid">
+    <nav class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex">
+      <span class="fw-bold">${sessionScope.branchName}</span>
+    </nav>
     <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
       <li class="nav-item topbar-user dropdown hidden-caret submenu">
         <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#" aria-expanded="false">
@@ -28,7 +32,7 @@
           </div>
           <span class="profile-username">
                       <span class="op-7">Hi,</span>
-                      <span class="fw-bold">${managerUsername}</span>
+                      <span class="fw-bold">${authenticatedEmail}</span>
                     </span>
         </a>
         <ul class="dropdown-menu dropdown-user animated fadeIn">
@@ -36,7 +40,7 @@
             <li>
               <a class="dropdown-item" href="#">My Profile</a>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">Logout</a>
+              <a class="dropdown-item" href="${pageContext.request.contextPath}/logout">Logout</a>
             </li>
           </div><div class="scroll-element scroll-x"><div class="scroll-element_outer"><div class="scroll-element_size"></div><div class="scroll-element_track"></div><div class="scroll-bar" style="width: 0px;"></div></div></div><div class="scroll-element scroll-y"><div class="scroll-element_outer"><div class="scroll-element_size"></div><div class="scroll-element_track"></div><div class="scroll-bar" style="height: 0px;"></div></div></div></div>
         </ul>
