@@ -52,8 +52,12 @@
 <link rel="stylesheet" type="text/css"
 	href="${pageContext.request.contextPath}/templates/vendor/perfect-scrollbar/perfect-scrollbar.css">
 <!--===============================================================================================-->
+<!-- noUiSlider CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
+<!--===============================================================================================-->
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/templates/css/util.css">
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/templates/css/main.css">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/templates/css/price-slider.css">
 
 <!--===============================================================================================-->
 
@@ -174,6 +178,9 @@
 			});
 		});
 	</script>
+	<!--===============================================================================================-->
+	<!-- noUiSlider JS -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
 	<!--===============================================================================================-->
 	<script src="${pageContext.request.contextPath}/templates/js/main.js"></script>
 

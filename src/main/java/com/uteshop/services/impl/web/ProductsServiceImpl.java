@@ -1,8 +1,10 @@
 package com.uteshop.services.impl.web;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.uteshop.dao.impl.web.ProductsDaoImpl;
+import com.uteshop.dto.web.FilterOptionsDto;
 import com.uteshop.entity.catalog.Products;
 import com.uteshop.services.web.IProductsService;
 
@@ -83,6 +85,34 @@ public class ProductsServiceImpl implements IProductsService {
 	@Override
 	public long countByCategoryIds(List<Integer> categoryIds) {
 		return productsDao.countByCategoryIds(categoryIds);
+	}
+
+	@Override
+	public List<Products> searchAndFilter(List<Integer> categoryIds, String keyword, 
+	                                       List<Integer> colorIds, BigDecimal minPrice, 
+	                                       BigDecimal maxPrice, String sortBy, 
+	                                       int page, int pageSize) {
+		return productsDao.searchAndFilter(categoryIds, keyword, colorIds, minPrice, maxPrice, sortBy, page, pageSize);
+	}
+
+	@Override
+	public long countSearchAndFilter(List<Integer> categoryIds, String keyword, 
+	                                  List<Integer> colorIds, BigDecimal minPrice, 
+	                                  BigDecimal maxPrice) {
+		return productsDao.countSearchAndFilter(categoryIds, keyword, colorIds, minPrice, maxPrice);
+	}
+
+	@Override
+	public FilterOptionsDto getFilterOptions(List<Integer> categoryIds) {
+		FilterOptionsDto filterOptions = new FilterOptionsDto();
+		
+		// Get price range only (no colors)
+		BigDecimal minPrice = productsDao.getMinPriceByCategoryIds(categoryIds);
+		BigDecimal maxPrice = productsDao.getMaxPriceByCategoryIds(categoryIds);
+		filterOptions.setMinPrice(minPrice);
+		filterOptions.setMaxPrice(maxPrice);
+		
+		return filterOptions;
 	}
 
 }
