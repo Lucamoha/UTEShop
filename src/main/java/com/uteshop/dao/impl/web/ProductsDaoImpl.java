@@ -143,4 +143,160 @@ public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsD
 			enma.close();
 		}
 	}
+
+	@Override
+	public List<Products> searchAndFilter(List<Integer> categoryIds, String keyword, 
+	                                       List<Integer> colorIds, java.math.BigDecimal minPrice, 
+	                                       java.math.BigDecimal maxPrice, String sortBy, 
+	                                       int page, int pageSize) {
+		EntityManager enma = JPAConfigs.getEntityManager();
+		try {
+			StringBuilder jpql = new StringBuilder(
+				"SELECT DISTINCT p FROM Products p " +
+				"LEFT JOIN FETCH p.images pi " +
+				"WHERE p.Status = true "
+			);
+			
+			// Filter by category
+			if (categoryIds != null && !categoryIds.isEmpty()) {
+				jpql.append("AND p.category.id IN :categoryIds ");
+			}
+			
+			// Search by keyword
+			if (keyword != null && !keyword.trim().isEmpty()) {
+				jpql.append("AND LOWER(p.Name) LIKE :keyword ");
+			}
+			
+			// Filter by price range
+			if (minPrice != null) {
+				jpql.append("AND p.BasePrice >= :minPrice ");
+			}
+			if (maxPrice != null) {
+				jpql.append("AND p.BasePrice <= :maxPrice ");
+			}
+			
+			// Sorting
+			if (sortBy != null) {
+				switch (sortBy) {
+					case "price_asc":
+						jpql.append("ORDER BY p.BasePrice ASC");
+						break;
+					case "price_desc":
+						jpql.append("ORDER BY p.BasePrice DESC");
+						break;
+					case "name_asc":
+						jpql.append("ORDER BY p.Name ASC");
+						break;
+					case "name_desc":
+						jpql.append("ORDER BY p.Name DESC");
+						break;
+					case "popularity":
+						jpql.append("ORDER BY p.Sold DESC");
+						break;
+					default:
+						jpql.append("ORDER BY p.CreatedAt DESC");
+				}
+			} else {
+				jpql.append("ORDER BY p.CreatedAt DESC");
+			}
+			
+			TypedQuery<Products> query = enma.createQuery(jpql.toString(), Products.class);
+			
+			// Set parameters
+			if (categoryIds != null && !categoryIds.isEmpty()) {
+				query.setParameter("categoryIds", categoryIds);
+			}
+			if (keyword != null && !keyword.trim().isEmpty()) {
+				query.setParameter("keyword", "%" + keyword.toLowerCase() + "%");
+			}
+			if (minPrice != null) {
+				query.setParameter("minPrice", minPrice);
+			}
+			if (maxPrice != null) {
+				query.setParameter("maxPrice", maxPrice);
+			}
+			
+			query.setFirstResult((page - 1) * pageSize);
+			query.setMaxResults(pageSize);
+			
+			return query.getResultList();
+		} finally {
+			enma.close();
+		}
+	}
+
+	@Override
+	public long countSearchAndFilter(List<Integer> categoryIds, String keyword, 
+	                                  List<Integer> colorIds, java.math.BigDecimal minPrice, 
+	                                  java.math.BigDecimal maxPrice) {
+		EntityManager enma = JPAConfigs.getEntityManager();
+		try {
+			StringBuilder jpql = new StringBuilder(
+				"SELECT COUNT(DISTINCT p) FROM Products p " +
+				"WHERE p.Status = true "
+			);
+			
+			if (categoryIds != null && !categoryIds.isEmpty()) {
+				jpql.append("AND p.category.id IN :categoryIds ");
+			}
+			if (keyword != null && !keyword.trim().isEmpty()) {
+				jpql.append("AND LOWER(p.Name) LIKE :keyword ");
+			}
+			if (minPrice != null) {
+				jpql.append("AND p.BasePrice >= :minPrice ");
+			}
+			if (maxPrice != null) {
+				jpql.append("AND p.BasePrice <= :maxPrice ");
+			}
+			
+			TypedQuery<Long> query = enma.createQuery(jpql.toString(), Long.class);
+			
+			if (categoryIds != null && !categoryIds.isEmpty()) {
+				query.setParameter("categoryIds", categoryIds);
+			}
+			if (keyword != null && !keyword.trim().isEmpty()) {
+				query.setParameter("keyword", "%" + keyword.toLowerCase() + "%");
+			}
+			if (minPrice != null) {
+				query.setParameter("minPrice", minPrice);
+			}
+			if (maxPrice != null) {
+				query.setParameter("maxPrice", maxPrice);
+			}
+			
+			return query.getSingleResult();
+		} finally {
+			enma.close();
+		}
+	}
+
+	@Override
+	public java.math.BigDecimal getMinPriceByCategoryIds(List<Integer> categoryIds) {
+		EntityManager enma = JPAConfigs.getEntityManager();
+		try {
+			String jpql = "SELECT MIN(p.BasePrice) FROM Products p " +
+			             "WHERE p.category.id IN :categoryIds AND p.Status = true";
+			TypedQuery<java.math.BigDecimal> query = enma.createQuery(jpql, java.math.BigDecimal.class);
+			query.setParameter("categoryIds", categoryIds);
+			java.math.BigDecimal result = query.getSingleResult();
+			return result != null ? result : java.math.BigDecimal.ZERO;
+		} finally {
+			enma.close();
+		}
+	}
+
+	@Override
+	public java.math.BigDecimal getMaxPriceByCategoryIds(List<Integer> categoryIds) {
+		EntityManager enma = JPAConfigs.getEntityManager();
+		try {
+			String jpql = "SELECT MAX(p.BasePrice) FROM Products p " +
+			             "WHERE p.category.id IN :categoryIds AND p.Status = true";
+			TypedQuery<java.math.BigDecimal> query = enma.createQuery(jpql, java.math.BigDecimal.class);
+			query.setParameter("categoryIds", categoryIds);
+			java.math.BigDecimal result = query.getSingleResult();
+			return result != null ? result : java.math.BigDecimal.ZERO;
+		} finally {
+			enma.close();
+		}
+	}
 }
