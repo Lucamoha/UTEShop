@@ -15,6 +15,8 @@ import com.uteshop.services.impl.web.ProductsServiceImpl;
 import com.uteshop.services.web.ICategoriesService;
 import com.uteshop.services.web.IProductsService;
 
+import static org.hibernate.sql.ast.SqlTreeCreationLogger.LOGGER;
+
 /**
  * Servlet implementation class HomeControllerWeb
  */
@@ -30,21 +32,18 @@ public class HomeControllerWeb extends HttpServlet {
      */
     public HomeControllerWeb() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
 
 		List<Categories> parents = categoriesService.findParents();
         List<Products> topLatestProducts = productsService.topLatestProducts();
-
-
+        
         request.setAttribute("parentCategories", parents);
         request.setAttribute("topLatestProducts", topLatestProducts);
 	    
@@ -55,7 +54,6 @@ public class HomeControllerWeb extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 
