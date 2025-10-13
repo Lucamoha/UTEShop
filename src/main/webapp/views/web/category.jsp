@@ -1,8 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ include file="/commons/taglib.jsp"%>
-<link rel="stylesheet"
-	href="${pageContext.request.contextPath}/templates/css/home.css">
 
 <!-- Page title / breadcrumb -->
 <div class="container p-t-60 p-b-30">
@@ -49,12 +47,12 @@
 					class="flex-c-m stext-106 cl6 size-104 bor4 pointer hov-btn3 trans-04 m-r-8 m-tb-4 js-show-filter">
 					<i
 						class="icon-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-filter-list"></i>
-					Filter
+					Lọc
 				</div>
 				<div
 					class="flex-c-m stext-106 cl6 size-105 bor4 pointer hov-btn3 trans-04 m-tb-4 js-show-search">
 					<i class="icon-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-search"></i>
-					Search
+					Tìm kiếm
 				</div>
 			</div>
 		</div>
@@ -146,6 +144,98 @@
                     
                   </div>
                 </div>
+                
+                <!-- Attribute Filters -->
+                <c:if test="${not empty filterOptions.attributes}">
+                  <c:forEach var="attrEntry" items="${filterOptions.attributes}">
+                    <c:set var="attr" value="${attrEntry.value}" />
+                    
+                    <div class="filter-col3 p-r-15 p-b-27">
+                      <div class="mtext-102 cl2 p-b-15">${attr.name}</div>
+                      
+                      <c:choose>
+                        <%-- TEXT type: Pill buttons for multiple selection --%>
+                        <c:when test="${attr.dataType == 1}">
+                          <div class="filter-pills-container">
+                            <c:forEach var="value" items="${attr.possibleValues}">
+                              <label class="filter-pill">
+                                <input type="checkbox" 
+                                       name="attr_${attr.id}" 
+                                       value="${value}"
+                                       <c:if test="${currentAttributeFilters[attr.id] != null}">
+                                         <c:forEach var="selectedVal" items="${currentAttributeFilters[attr.id]}">
+                                           ${selectedVal == value ? 'checked' : ''}
+                                         </c:forEach>
+                                       </c:if>
+                                       class="filter-pill-input">
+                                <span class="filter-pill-text">${value}</span>
+                              </label>
+                            </c:forEach>
+                          </div>
+                        </c:when>
+                        
+                        <%-- NUMBER type: Pill buttons for multiple selection --%>
+                        <c:when test="${attr.dataType == 2}">
+                          <div class="filter-pills-container">
+                            <c:forEach var="value" items="${attr.possibleNumberValues}">
+                              <label class="filter-pill">
+                                <input type="checkbox" 
+                                       name="attr_${attr.id}" 
+                                       value="${value}"
+                                       <c:if test="${currentAttributeFilters[attr.id] != null}">
+                                         <c:forEach var="selectedVal" items="${currentAttributeFilters[attr.id]}">
+                                           ${selectedVal == value.toString() ? 'checked' : ''}
+                                         </c:forEach>
+                                       </c:if>
+                                       class="filter-pill-input">
+                                <span class="filter-pill-text">
+                                  <c:choose>
+                                    <c:when test="${value % 1 == 0}">
+                                      ${value.intValue()}${attr.unit != null ? ' ' : ''}${attr.unit != null ? attr.unit : ''}
+                                    </c:when>
+                                    <c:otherwise>
+                                      ${value}${attr.unit != null ? ' ' : ''}${attr.unit != null ? attr.unit : ''}
+                                    </c:otherwise>
+                                  </c:choose>
+                                </span>
+                              </label>
+                            </c:forEach>
+                          </div>
+                        </c:when>
+                        
+                        <%-- BOOLEAN type: Yes/No pill buttons (single selection) --%>
+                        <c:when test="${attr.dataType == 3}">
+                          <div class="filter-pills-container">
+                            <label class="filter-pill">
+                              <input type="radio" 
+                                     name="attr_${attr.id}" 
+                                     value="1"
+                                     <c:if test="${currentAttributeFilters[attr.id] != null}">
+                                       <c:forEach var="selectedVal" items="${currentAttributeFilters[attr.id]}">
+                                         ${selectedVal == '1' ? 'checked' : ''}
+                                       </c:forEach>
+                                     </c:if>
+                                     class="filter-pill-input">
+                              <span class="filter-pill-text">Có</span>
+                            </label>
+                            <label class="filter-pill">
+                              <input type="radio" 
+                                     name="attr_${attr.id}" 
+                                     value="0"
+                                     <c:if test="${currentAttributeFilters[attr.id] != null}">
+                                       <c:forEach var="selectedVal" items="${currentAttributeFilters[attr.id]}">
+                                         ${selectedVal == '0' ? 'checked' : ''}
+                                       </c:forEach>
+                                     </c:if>
+                                     class="filter-pill-input">
+                              <span class="filter-pill-text">Không</span>
+                            </label>
+                          </div>
+                        </c:when>
+                      </c:choose>
+                    </div>
+                  </c:forEach>
+                </c:if>
 
                 <!-- Hidden inputs for maintaining state -->
                 <input type="hidden" name="sortBy" id="sortByInput" value="${currentSortBy}">
@@ -240,6 +330,7 @@
               document.getElementById('filterForm').submit();
             }
           </script>
+          
 
 		<!-- Products grid -->
 		<div class="row isotope-grid">

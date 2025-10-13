@@ -9,6 +9,7 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 
 import java.util.List;
+import java.util.Map;
 
 public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsDao {
 
@@ -148,6 +149,7 @@ public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsD
 	public List<Products> searchAndFilter(List<Integer> categoryIds, String keyword, 
 	                                       List<Integer> colorIds, java.math.BigDecimal minPrice, 
 	                                       java.math.BigDecimal maxPrice, String sortBy, 
+	                                       Map<Integer, Object> attributeFilters,
 	                                       int page, int pageSize) {
 		EntityManager enma = JPAConfigs.getEntityManager();
 		try {
@@ -173,6 +175,59 @@ public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsD
 			}
 			if (maxPrice != null) {
 				jpql.append("AND p.BasePrice <= :maxPrice ");
+			}
+			
+			// Filter by attributes
+			if (attributeFilters != null && !attributeFilters.isEmpty()) {
+				int attrIndex = 0;
+				for (Map.Entry<Integer, Object> entry : attributeFilters.entrySet()) {
+					Integer attributeId = entry.getKey();
+					Object value = entry.getValue();
+					
+					if (value instanceof List) {
+						// Multiple values (TEXT or NUMBER) - use OR conditions
+						@SuppressWarnings("unchecked")
+						List<String> values = (List<String>) value;
+						
+						jpql.append("AND EXISTS (SELECT 1 FROM ProductAttributeValues pav" + attrIndex + " ");
+						jpql.append("WHERE pav" + attrIndex + ".product.Id = p.Id ");
+						jpql.append("AND pav" + attrIndex + ".attribute.Id = :attrId" + attrIndex + " ");
+						jpql.append("AND (");
+						
+						// Build OR conditions for each value
+						for (int i = 0; i < values.size(); i++) {
+							if (i > 0) jpql.append(" OR ");
+							jpql.append("(pav" + attrIndex + ".ValueText = :attrValText" + attrIndex + "_" + i + " ");
+							jpql.append("OR (pav" + attrIndex + ".ValueNumber >= :attrValNumMin" + attrIndex + "_" + i + " ");
+							jpql.append("AND pav" + attrIndex + ".ValueNumber <= :attrValNumMax" + attrIndex + "_" + i + "))");
+						}
+						
+						jpql.append(")) ");
+					} else if (value instanceof String) {
+						// Single value (backward compatibility)
+						jpql.append("AND EXISTS (SELECT 1 FROM ProductAttributeValues pav" + attrIndex + " ");
+						jpql.append("WHERE pav" + attrIndex + ".product.Id = p.Id ");
+						jpql.append("AND pav" + attrIndex + ".attribute.Id = :attrId" + attrIndex + " ");
+						jpql.append("AND (pav" + attrIndex + ".ValueText = :attrValText" + attrIndex + " ");
+						jpql.append("OR (pav" + attrIndex + ".ValueNumber >= :attrValNumMin" + attrIndex + " ");
+						jpql.append("AND pav" + attrIndex + ".ValueNumber <= :attrValNumMax" + attrIndex + "))) ");
+					} else if (value instanceof Map) {
+						// NUMBER range filter (deprecated, kept for compatibility)
+						@SuppressWarnings("unchecked")
+						Map<String, Double> range = (Map<String, Double>) value;
+						jpql.append("AND EXISTS (SELECT 1 FROM ProductAttributeValues pav" + attrIndex + " ");
+						jpql.append("WHERE pav" + attrIndex + ".product.Id = p.Id ");
+						jpql.append("AND pav" + attrIndex + ".attribute.Id = :attrId" + attrIndex + " ");
+						if (range.containsKey("min")) {
+							jpql.append("AND pav" + attrIndex + ".ValueNumber >= :attrMin" + attrIndex + " ");
+						}
+						if (range.containsKey("max")) {
+							jpql.append("AND pav" + attrIndex + ".ValueNumber <= :attrMax" + attrIndex + " ");
+						}
+						jpql.append(") ");
+					}
+					attrIndex++;
+				}
 			}
 			
 			// Sorting
@@ -216,8 +271,70 @@ public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsD
 				query.setParameter("maxPrice", maxPrice);
 			}
 			
+			// Set attribute filter parameters
+			if (attributeFilters != null && !attributeFilters.isEmpty()) {
+				int attrIndex = 0;
+				for (Map.Entry<Integer, Object> entry : attributeFilters.entrySet()) {
+					Integer attributeId = entry.getKey();
+					Object value = entry.getValue();
+					
+					query.setParameter("attrId" + attrIndex, attributeId);
+					
+					if (value instanceof List) {
+						// Multiple values - set parameters for each value
+						@SuppressWarnings("unchecked")
+						List<String> values = (List<String>) value;
+						
+						for (int i = 0; i < values.size(); i++) {
+							String strValue = values.get(i);
+							query.setParameter("attrValText" + attrIndex + "_" + i, strValue);
+							
+							// Try to parse as BigDecimal for number comparison
+							try {
+								java.math.BigDecimal numValue = new java.math.BigDecimal(strValue);
+								java.math.BigDecimal epsilon = new java.math.BigDecimal("0.0001");
+								query.setParameter("attrValNumMin" + attrIndex + "_" + i, numValue.subtract(epsilon));
+								query.setParameter("attrValNumMax" + attrIndex + "_" + i, numValue.add(epsilon));
+							} catch (NumberFormatException e) {
+								// Not a number, set a range that won't match
+								query.setParameter("attrValNumMin" + attrIndex + "_" + i, new java.math.BigDecimal("-999999999"));
+								query.setParameter("attrValNumMax" + attrIndex + "_" + i, new java.math.BigDecimal("-999999998"));
+							}
+						}
+					} else if (value instanceof String) {
+						// Single value (backward compatibility)
+						String strValue = (String) value;
+						query.setParameter("attrValText" + attrIndex, strValue);
+						// Try to parse as BigDecimal for number comparison
+						try {
+							java.math.BigDecimal numValue = new java.math.BigDecimal(strValue);
+							// Use a small epsilon for floating point comparison
+							java.math.BigDecimal epsilon = new java.math.BigDecimal("0.0001");
+							query.setParameter("attrValNumMin" + attrIndex, numValue.subtract(epsilon));
+							query.setParameter("attrValNumMax" + attrIndex, numValue.add(epsilon));
+						} catch (NumberFormatException e) {
+							// Not a number, set a range that won't match
+							query.setParameter("attrValNumMin" + attrIndex, new java.math.BigDecimal("-999999999"));
+							query.setParameter("attrValNumMax" + attrIndex, new java.math.BigDecimal("-999999998"));
+						}
+					} else if (value instanceof Map) {
+						@SuppressWarnings("unchecked")
+						Map<String, Double> range = (Map<String, Double>) value;
+						if (range.containsKey("min")) {
+							query.setParameter("attrMin" + attrIndex, range.get("min"));
+						}
+						if (range.containsKey("max")) {
+							query.setParameter("attrMax" + attrIndex, range.get("max"));
+						}
+					}
+					attrIndex++;
+				}
+			}
+			
 			query.setFirstResult((page - 1) * pageSize);
 			query.setMaxResults(pageSize);
+			
+			System.out.println("DEBUG DAO - Final JPQL: " + jpql.toString());
 			
 			return query.getResultList();
 		} finally {
@@ -228,7 +345,8 @@ public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsD
 	@Override
 	public long countSearchAndFilter(List<Integer> categoryIds, String keyword, 
 	                                  List<Integer> colorIds, java.math.BigDecimal minPrice, 
-	                                  java.math.BigDecimal maxPrice) {
+	                                  java.math.BigDecimal maxPrice,
+	                                  Map<Integer, Object> attributeFilters) {
 		EntityManager enma = JPAConfigs.getEntityManager();
 		try {
 			StringBuilder jpql = new StringBuilder(
@@ -249,6 +367,59 @@ public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsD
 				jpql.append("AND p.BasePrice <= :maxPrice ");
 			}
 			
+			// Filter by attributes
+			if (attributeFilters != null && !attributeFilters.isEmpty()) {
+				int attrIndex = 0;
+				for (Map.Entry<Integer, Object> entry : attributeFilters.entrySet()) {
+					Integer attributeId = entry.getKey();
+					Object value = entry.getValue();
+					
+					if (value instanceof List) {
+						// Multiple values (TEXT or NUMBER) - use OR conditions
+						@SuppressWarnings("unchecked")
+						List<String> values = (List<String>) value;
+						
+						jpql.append("AND EXISTS (SELECT 1 FROM ProductAttributeValues pav" + attrIndex + " ");
+						jpql.append("WHERE pav" + attrIndex + ".product.Id = p.Id ");
+						jpql.append("AND pav" + attrIndex + ".attribute.Id = :attrId" + attrIndex + " ");
+						jpql.append("AND (");
+						
+						// Build OR conditions for each value
+						for (int i = 0; i < values.size(); i++) {
+							if (i > 0) jpql.append(" OR ");
+							jpql.append("(pav" + attrIndex + ".ValueText = :attrValText" + attrIndex + "_" + i + " ");
+							jpql.append("OR (pav" + attrIndex + ".ValueNumber >= :attrValNumMin" + attrIndex + "_" + i + " ");
+							jpql.append("AND pav" + attrIndex + ".ValueNumber <= :attrValNumMax" + attrIndex + "_" + i + "))");
+						}
+						
+						jpql.append(")) ");
+					} else if (value instanceof String) {
+						// TEXT or NUMBER filter (single value)
+						jpql.append("AND EXISTS (SELECT 1 FROM ProductAttributeValues pav" + attrIndex + " ");
+						jpql.append("WHERE pav" + attrIndex + ".product.Id = p.Id ");
+						jpql.append("AND pav" + attrIndex + ".attribute.Id = :attrId" + attrIndex + " ");
+						jpql.append("AND (pav" + attrIndex + ".ValueText = :attrValText" + attrIndex + " ");
+						jpql.append("OR (pav" + attrIndex + ".ValueNumber >= :attrValNumMin" + attrIndex + " ");
+						jpql.append("AND pav" + attrIndex + ".ValueNumber <= :attrValNumMax" + attrIndex + "))) ");
+					} else if (value instanceof Map) {
+						// NUMBER range filter (deprecated, kept for compatibility)
+						@SuppressWarnings("unchecked")
+						Map<String, Double> range = (Map<String, Double>) value;
+						jpql.append("AND EXISTS (SELECT 1 FROM ProductAttributeValues pav" + attrIndex + " ");
+						jpql.append("WHERE pav" + attrIndex + ".product.Id = p.Id ");
+						jpql.append("AND pav" + attrIndex + ".attribute.Id = :attrId" + attrIndex + " ");
+						if (range.containsKey("min")) {
+							jpql.append("AND pav" + attrIndex + ".ValueNumber >= :attrMin" + attrIndex + " ");
+						}
+						if (range.containsKey("max")) {
+							jpql.append("AND pav" + attrIndex + ".ValueNumber <= :attrMax" + attrIndex + " ");
+						}
+						jpql.append(") ");
+					}
+					attrIndex++;
+				}
+			}
+			
 			TypedQuery<Long> query = enma.createQuery(jpql.toString(), Long.class);
 			
 			if (categoryIds != null && !categoryIds.isEmpty()) {
@@ -262,6 +433,65 @@ public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsD
 			}
 			if (maxPrice != null) {
 				query.setParameter("maxPrice", maxPrice);
+			}
+			
+			// Set attribute filter parameters
+			if (attributeFilters != null && !attributeFilters.isEmpty()) {
+				int attrIndex = 0;
+				for (Map.Entry<Integer, Object> entry : attributeFilters.entrySet()) {
+					Integer attributeId = entry.getKey();
+					Object value = entry.getValue();
+					
+					query.setParameter("attrId" + attrIndex, attributeId);
+					
+					if (value instanceof List) {
+						// Multiple values - set parameters for each value
+						@SuppressWarnings("unchecked")
+						List<String> values = (List<String>) value;
+						
+						for (int i = 0; i < values.size(); i++) {
+							String strValue = values.get(i);
+							query.setParameter("attrValText" + attrIndex + "_" + i, strValue);
+							
+							// Try to parse as BigDecimal for number comparison
+							try {
+								java.math.BigDecimal numValue = new java.math.BigDecimal(strValue);
+								java.math.BigDecimal epsilon = new java.math.BigDecimal("0.0001");
+								query.setParameter("attrValNumMin" + attrIndex + "_" + i, numValue.subtract(epsilon));
+								query.setParameter("attrValNumMax" + attrIndex + "_" + i, numValue.add(epsilon));
+							} catch (NumberFormatException e) {
+								// Not a number, set a range that won't match
+								query.setParameter("attrValNumMin" + attrIndex + "_" + i, new java.math.BigDecimal("-999999999"));
+								query.setParameter("attrValNumMax" + attrIndex + "_" + i, new java.math.BigDecimal("-999999998"));
+							}
+						}
+					} else if (value instanceof String) {
+						String strValue = (String) value;
+						query.setParameter("attrValText" + attrIndex, strValue);
+						// Try to parse as BigDecimal for number comparison
+						try {
+							java.math.BigDecimal numValue = new java.math.BigDecimal(strValue);
+							// Use a small epsilon for floating point comparison
+							java.math.BigDecimal epsilon = new java.math.BigDecimal("0.0001");
+							query.setParameter("attrValNumMin" + attrIndex, numValue.subtract(epsilon));
+							query.setParameter("attrValNumMax" + attrIndex, numValue.add(epsilon));
+						} catch (NumberFormatException e) {
+							// Not a number, set a range that won't match
+							query.setParameter("attrValNumMin" + attrIndex, new java.math.BigDecimal("-999999999"));
+							query.setParameter("attrValNumMax" + attrIndex, new java.math.BigDecimal("-999999998"));
+						}
+					} else if (value instanceof Map) {
+						@SuppressWarnings("unchecked")
+						Map<String, Double> range = (Map<String, Double>) value;
+						if (range.containsKey("min")) {
+							query.setParameter("attrMin" + attrIndex, range.get("min"));
+						}
+						if (range.containsKey("max")) {
+							query.setParameter("attrMax" + attrIndex, range.get("max"));
+						}
+					}
+					attrIndex++;
+				}
 			}
 			
 			return query.getSingleResult();
