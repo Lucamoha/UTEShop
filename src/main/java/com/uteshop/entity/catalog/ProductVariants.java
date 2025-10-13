@@ -34,7 +34,7 @@ public class ProductVariants implements Serializable {
     BigDecimal Price;
 
     @Column(nullable = false)
-    boolean Status;
+    boolean Status = true;
 
     @Column(nullable = false)
     LocalDateTime CreatedAt;

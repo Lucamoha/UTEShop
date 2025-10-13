@@ -29,7 +29,7 @@ public class Branches {
     String Phone;
 
     @Column(nullable = false)
-    Boolean IsActive;
+    Boolean IsActive = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ManagerId")

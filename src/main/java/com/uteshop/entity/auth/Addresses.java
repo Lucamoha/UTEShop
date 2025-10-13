@@ -37,5 +37,5 @@ public class Addresses {
     String City;
 
     @Column(nullable = false)
-    Boolean IsDefault;
+    Boolean IsDefault = false;
 }

@@ -29,10 +29,10 @@ public class CategoryAttributes implements Serializable {
     Attributes attribute;
 
     @Column(nullable = false)
-    Boolean IsFilterable;
+    Boolean IsFilterable = true;
 
     @Column(nullable = false)
-    Boolean IsComparable;
+    Boolean IsComparable = true;
 
     @Embeddable
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor

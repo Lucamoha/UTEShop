@@ -31,7 +31,7 @@ public class BranchInventory {
 
 
     @Column(nullable = false)
-    Integer BranchStock;
+    Integer BranchStock = 0;
 
 
     @Embeddable

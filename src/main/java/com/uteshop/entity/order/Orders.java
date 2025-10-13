@@ -31,19 +31,19 @@ public class Orders implements Serializable {
     Users user;
 
     @Column(nullable = false)
-    int OrderStatus;
+    int OrderStatus = 0;
 
     @Column(nullable = false)
-    int PaymentStatus;
+    int PaymentStatus = 0;
 
     @Column(nullable = false, precision = 12, scale = 2)
     BigDecimal Subtotal;
 
     @Column(nullable = false, precision = 12, scale = 2)
-    BigDecimal DiscountAmount;
+    BigDecimal DiscountAmount = BigDecimal.valueOf(0);
 
     @Column(nullable = false, precision = 12, scale = 2)
-    BigDecimal ShippingFee;
+    BigDecimal ShippingFee = BigDecimal.valueOf(0);
 
     @Column(nullable = false, precision = 12, scale = 2)
     BigDecimal TotalAmount;
@@ -95,5 +95,8 @@ public class Orders implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BranchId")
     Branches branch;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    List<Payments> payments = new ArrayList<>();
 }
 
