@@ -5,6 +5,7 @@ import com.uteshop.dao.AbstractDao;
 import com.uteshop.dao.manager.IOrdersManagerDao;
 import com.uteshop.dao.manager.common.PageResult;
 import com.uteshop.entity.order.Orders;
+import com.uteshop.entity.order.Payments;
 import com.uteshop.util.AppConfig;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -212,5 +213,19 @@ public class OrdersManagerDaoImpl extends AbstractDao<Orders> implements IOrders
                 .setParameter("b", branchId)
                 .getResultList();
         return list.isEmpty() ? null : list.get(0);
+    }
+
+    @Override
+    public Payments getPaymentByOrderId(Integer orderId) {
+        EntityManager em = JPAConfigs.getEntityManager();
+        try {
+            Orders order = em.find(Orders.class, orderId);
+            if (order == null) {
+                return null;
+            }
+            return order.getPayment();
+        } finally {
+            em.close();
+        }
     }
 }

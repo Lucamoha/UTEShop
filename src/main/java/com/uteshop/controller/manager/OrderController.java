@@ -1,5 +1,6 @@
 package com.uteshop.controller.manager;
 
+import com.uteshop.dao.impl.manager.EntityDaoImpl;
 import com.uteshop.dao.manager.common.PageResult;
 import com.uteshop.entity.order.Orders;
 import com.uteshop.services.impl.manager.OrdersManagerServiceImpl;
@@ -18,6 +19,7 @@ import java.io.IOException;
 })
 public class OrderController extends HttpServlet {
     OrdersManagerServiceImpl ordersManagerService = new OrdersManagerServiceImpl();
+    EntityDaoImpl<Orders> ordersDao = new EntityDaoImpl<>(Orders.class);
 
     private Integer branchId(HttpServletRequest req) {
         return (Integer) req.getSession().getAttribute("branchId");
@@ -84,6 +86,18 @@ public class OrderController extends HttpServlet {
 
             req.setAttribute("order", orders);
 
+            Integer paymentMethod = ordersManagerService.getPaymentByOrderId(orders.getId()).getMethod();
+            String paymentMethodStr = "";
+
+            if (paymentMethod == AppConfig.getInt("payments.method.vnpay"))
+                paymentMethodStr = "VNPay";
+            else if (paymentMethod == AppConfig.getInt("payments.method.momo"))
+                paymentMethodStr = "Momo";
+            else
+                paymentMethodStr = "COD";
+
+            req.setAttribute("paymentMethod", paymentMethodStr);
+
             java.util.Map<Integer,String> STATUS_MAP = new java.util.LinkedHashMap<>();
             STATUS_MAP.put(AppConfig.getInt("orders.status.new"),"Mới tạo");
             STATUS_MAP.put(AppConfig.getInt("orders.status.confirmed"),"Đã xác nhận");
@@ -120,72 +134,34 @@ public class OrderController extends HttpServlet {
                 return;
             }
 
-            Orders orders = ordersManagerService.findById(id);
+            Orders orders = ordersDao.findById(id);
+
             if (orders == null) {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
+
             if (orders.getBranch() == null || !bId.equals(orders.getBranch().getId())) {
                 resp.sendError(HttpServletResponse.SC_FORBIDDEN); // không thuộc chi nhánh hiện tại
                 return;
             }
 
             String action = req.getParameter("action");
-            if (action == null || action.isBlank()) {
+            if (action == null || action.isBlank() || !action.equals("updateOrderStatus")) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
 
+            Integer toStatus = parseInt(req.getParameter("status"));
+
             try {
-                boolean changed = false;
+                if (toStatus == null)
+                    throw new IllegalArgumentException("Thiếu 'status'");
 
-                switch (action) {
-
-                    case "updateStatus": {
-                        Integer toStatus = parseInt(req.getParameter("status"));
-                        if (toStatus == null) throw new IllegalArgumentException("Thiếu tham số 'status'");
-                        if (orders.getOrderStatus() != toStatus) {
-                            orders.setOrderStatus(toStatus);
-                            changed = true;
-                        }
-                        break;
-                    }
-                    case "updatePayment": {
-                        Integer toPay = parseInt(req.getParameter("payment"));
-                        if (toPay == null) throw new IllegalArgumentException("Thiếu tham số 'payment'");
-                        if (orders.getPaymentStatus() != toPay) {
-                            orders.setPaymentStatus(toPay);
-                            changed = true;
-                        }
-                        break;
-                    }
-                    case "updateBoth": { // gộp 1 nút
-                        Integer toStatus = parseInt(req.getParameter("status"));
-                        Integer toPay    = parseInt(req.getParameter("payment"));
-                        if (toStatus == null || toPay == null) {
-                            throw new IllegalArgumentException("Thiếu 'status' hoặc 'payment'");
-                        }
-                        if (orders.getOrderStatus() != toStatus) {
-                            orders.setOrderStatus(toStatus);
-                            changed = true;
-                        }
-                        if (orders.getPaymentStatus() != toPay) {
-                            orders.setPaymentStatus(toPay);
-                            changed = true;
-                        }
-                        break;
-                    }
-                    default:
-                        resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
-                        return;
-                }
-
-                if (changed) {
-                    ordersManagerService.update(orders);
-                }
+                if (orders.getOrderStatus() != toStatus)
+                    ordersManagerService.updateOrderStatus(id, toStatus);
 
                 req.getSession().setAttribute("flash_ok", true);
-                // PRG
                 resp.sendRedirect(req.getContextPath() + "/manager/orders/detail?id=" + id);
             } catch (Exception e) {
                 req.setAttribute("error", "Cập nhật thất bại: " + e.getMessage());

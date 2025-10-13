@@ -3,6 +3,7 @@ package com.uteshop.dao.manager;
 import com.uteshop.dao.AbstractDao;
 import com.uteshop.dao.manager.common.PageResult;
 import com.uteshop.entity.order.Orders;
+import com.uteshop.entity.order.Payments;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -43,4 +44,6 @@ public interface IOrdersManagerDao {
     );
 
     Orders findByIdWithItems(Integer orderId, Integer branchId);
+
+    Payments getPaymentByOrderId(Integer orderId);
 }

@@ -2,6 +2,7 @@ package com.uteshop.services.manager;
 
 import com.uteshop.dao.manager.common.PageResult;
 import com.uteshop.entity.order.Orders;
+import com.uteshop.entity.order.Payments;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -34,4 +35,8 @@ public interface IOrdersManagerService {
     );
 
     Orders findByIdWithItems(Integer orderId, Integer branchId);
+
+    void updateOrderStatus(Integer orderId, Integer toStatus);
+
+    Payments getPaymentByOrderId(Integer orderId);
 }
