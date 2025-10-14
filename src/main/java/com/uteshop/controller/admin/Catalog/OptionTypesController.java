@@ -46,8 +46,8 @@ public class OptionTypesController extends HttpServlet {
 			// Tính offset (vị trí bắt đầu)
 			int firstResult = (page - 1) * size;
 
-			List<OptionTypes> optionTypeList = optionTypesService.findAll(false, firstResult, size,
-					searchKeyword, "Code");
+			List<OptionTypes> optionTypeList = optionTypesService.findAll(false, firstResult, size, searchKeyword,
+					"Code");
 
 			// Đếm tổng số bản ghi để tính tổng trang
 			int totalOptionTypes = optionTypesService.count(searchKeyword, "Code");
@@ -75,8 +75,20 @@ public class OptionTypesController extends HttpServlet {
 			req.setAttribute("optionType", optionType);
 			req.getRequestDispatcher("/views/admin/Catalog/OptionTypes/view.jsp").forward(req, resp);
 		} else if (uri.contains("delete")) {
-			String id = req.getParameter("id");
-			optionTypesService.delete(Integer.parseInt(id));
+			/*
+			 * String id = req.getParameter("id");
+			 * optionTypesService.delete(Integer.parseInt(id));
+			 * resp.sendRedirect(req.getContextPath() +
+			 * "/admin/Catalog/OptionTypes/searchpaginated");
+			 */
+
+			try {
+				int id = Integer.parseInt(req.getParameter("id"));
+				optionTypesService.delete(id);
+				req.getSession().setAttribute("message", "Đã xóa loại biến thể thành công!");
+			} catch (Exception e) {
+				req.getSession().setAttribute("errorMessage", "Không thể xóa vì dữ liệu đang được sử dụng ở nơi khác");
+			}
 			resp.sendRedirect(req.getContextPath() + "/admin/Catalog/OptionTypes/searchpaginated");
 		}
 	}

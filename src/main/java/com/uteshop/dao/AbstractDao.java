@@ -63,9 +63,8 @@ public abstract class AbstractDao<T> {
 			enma.remove(entity);
 			trans.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
-			trans.rollback();
-			throw e;
+			if (trans.isActive()) trans.rollback();
+	        throw new RuntimeException("Không thể xóa vì có dữ liệu đang dùng ở nơi khác!", e);
 		} finally {
 			enma.close();
 		}
