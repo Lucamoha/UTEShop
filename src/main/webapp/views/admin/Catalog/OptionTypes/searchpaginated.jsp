@@ -17,6 +17,11 @@
 				<!-- xóa message sau khi da thong bao tranh trung lai khi chuyen trang -->
 			</c:if>
 
+			<c:if test="${not empty sessionScope.errorMessage}">
+				<div class="alert alert-danger">${sessionScope.errorMessage}</div>
+				<c:remove var="errorMessage" scope="session" />
+			</c:if>
+
 			<div class="row mt-2 mb-3">
 				<div class="col-md-6">
 					<form
@@ -24,7 +29,8 @@
 						method="get">
 						<div class="input-group">
 							<input type="text" class="form-control" name="searchKeyword"
-								placeholder="Nhập từ khóa mã code để tìm" value="${searchKeyword}">
+								placeholder="Nhập từ khóa mã code để tìm"
+								value="${searchKeyword}">
 							<button class="btn btn-outline-primary">
 								<i class="fa fa-search search-icon"></i> Search
 							</button>

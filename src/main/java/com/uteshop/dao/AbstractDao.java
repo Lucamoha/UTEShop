@@ -63,9 +63,8 @@ public abstract class AbstractDao<T> {
 			enma.remove(entity);
 			trans.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
-			trans.rollback();
-			throw e;
+			if (trans.isActive()) trans.rollback();
+	        throw new RuntimeException("Không thể xóa vì có dữ liệu đang dùng ở nơi khác!", e);
 		} finally {
 			enma.close();
 		}
@@ -139,7 +138,7 @@ public abstract class AbstractDao<T> {
 			CriteriaQuery<T> cq = cb.createQuery(entityClass);
 			Root<T> root = cq.from(entityClass);
 
-			// Nạp cột parent nếu entity có field này
+			// Nạp cột nếu entity có field này
 			try {
 				root.fetch(fetchColumnName, JoinType.LEFT);
 			} catch (IllegalArgumentException e) {

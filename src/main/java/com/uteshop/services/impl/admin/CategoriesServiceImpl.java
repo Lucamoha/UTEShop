@@ -20,10 +20,12 @@ public class CategoriesServiceImpl implements ICategoriesService {
         return categoriesDao.findById(id);
     }
 
-	@Override
-	public List<Categories> findAll(boolean all, int firstResult, int maxResult, String searchKeyword, String searchKeywordColumnName) {
-		return categoriesDao.findAll(all, firstResult, maxResult, searchKeyword, searchKeywordColumnName);
-	}
+	/*
+	 * @Override public List<Categories> findAll(boolean all, int firstResult, int
+	 * maxResult, String searchKeyword, String searchKeywordColumnName) { return
+	 * categoriesDao.findAll(all, firstResult, maxResult, searchKeyword,
+	 * searchKeywordColumnName); }
+	 */
 
 	@Override
 	public int count(String searchKeyword, String searchKeywordColumnName) {
@@ -48,5 +50,11 @@ public class CategoriesServiceImpl implements ICategoriesService {
 	@Override
 	public List<Categories> findAll() {
 		return categoriesDao.findAll();
+	}
+
+	@Override
+	public List<Categories> findAllFetchParent(boolean all, int firstResult, int maxResult, String searchKeyword,
+			String searchKeywordColumnName, String fetchColumnName) {
+		return categoriesDao.findAllFetchParent(all, firstResult, maxResult, searchKeyword, searchKeywordColumnName, fetchColumnName);
 	}
 }

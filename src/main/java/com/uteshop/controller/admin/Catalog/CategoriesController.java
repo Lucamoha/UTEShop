@@ -51,8 +51,8 @@ public class CategoriesController extends HttpServlet {
 			// Tính offset (vị trí bắt đầu)
 			int firstResult = (page - 1) * size;
 
-			List<Categories> categoryList = categoriesService.findAll(false, firstResult, size,
-					searchKeyword, "Name");
+			List<Categories> categoryList = categoriesService.findAllFetchParent(false, firstResult, size,
+					searchKeyword, "Name", "parent");
 
 			// Đếm tổng số bản ghi để tính tổng trang
 			int totalCategories = categoriesService.count(searchKeyword, "Name");
