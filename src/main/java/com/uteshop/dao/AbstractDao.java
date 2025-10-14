@@ -139,7 +139,7 @@ public abstract class AbstractDao<T> {
 			CriteriaQuery<T> cq = cb.createQuery(entityClass);
 			Root<T> root = cq.from(entityClass);
 
-			// Nạp cột parent nếu entity có field này
+			// Nạp cột nếu entity có field này
 			try {
 				root.fetch(fetchColumnName, JoinType.LEFT);
 			} catch (IllegalArgumentException e) {
