@@ -3,14 +3,19 @@ package com.uteshop.services.impl.manager;
 import com.uteshop.dao.impl.manager.EntityDaoImpl;
 import com.uteshop.dao.manager.common.PageResult;
 import com.uteshop.dao.impl.manager.OrdersManagerDaoImpl;
+import com.uteshop.dto.manager.reports.OrderStatsDTO;
+import com.uteshop.dto.manager.reports.PaymentBreakdownDTO;
 import com.uteshop.entity.order.Orders;
 import com.uteshop.entity.order.Payments;
+import com.uteshop.enums.OrderEnums;
+import com.uteshop.enums.PaymentEnums;
 import com.uteshop.services.manager.IOrdersManagerService;
-import com.uteshop.util.AppConfig;
 import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,52 +23,29 @@ public class OrdersManagerServiceImpl implements IOrdersManagerService {
     OrdersManagerDaoImpl dao = new OrdersManagerDaoImpl();
     EntityDaoImpl<Payments> paymentsEntityDao = new EntityDaoImpl<>(Payments.class);
 
-    private static final int NEW        = AppConfig.getInt("orders.status.new");
-    private static final int CONFIRMED  = AppConfig.getInt("orders.status.confirmed");
-    private static final int SHIPPING   = AppConfig.getInt("orders.status.shipping");
-    private static final int DELIVERED  = AppConfig.getInt("orders.status.delivered");
-    private static final int CANCELED   = AppConfig.getInt("orders.status.canceled");
-    private static final int RETURNED   = AppConfig.getInt("orders.status.returned");
+    private static final int NEW        = OrderEnums.OrderStatus.NEW;
+    private static final int CONFIRMED  = OrderEnums.OrderStatus.CONFIRMED;
+    private static final int SHIPPING   = OrderEnums.OrderStatus.SHIPPING;
+    private static final int DELIVERED  = OrderEnums.OrderStatus.DELIVERED;
+    private static final int CANCELED   = OrderEnums.OrderStatus.CANCELED;
+    private static final int RETURNED   = OrderEnums.OrderStatus.RETURNED;
 
-    private static final int UNPAID     = AppConfig.getInt("payment.status.unpaid");
-    private static final int PAID       = AppConfig.getInt("payment.status.paid");
-    private static final int REFUNDED   = AppConfig.getInt("payment.status.refunded");
+    private static final int UNPAID     = OrderEnums.PaymentStatus.UNPAID;
+    private static final int PAID       = OrderEnums.PaymentStatus.PAID;
+    private static final int REFUNDED   = OrderEnums.PaymentStatus.REFUNDED;
 
-    private static final int PM_PENDING  = AppConfig.getInt("payments.status.pending");
-    private static final int PM_SUCCESS  = AppConfig.getInt("payments.status.success");
-    private static final int PM_FAILED   = AppConfig.getInt("payments.status.failed");
-    private static final int PM_REFUNDED = AppConfig.getInt("payments.status.refunded");
+    private static final int PM_PENDING  = PaymentEnums.Status.PENDING;
+    private static final int PM_SUCCESS  = PaymentEnums.Status.SUCCESS;
+    private static final int PM_FAILED   = PaymentEnums.Status.FAILED;
+    private static final int PM_REFUNDED = PaymentEnums.Status.REFUNDED;
 
-    private static final int METHOD_COD  = AppConfig.getInt("payments.method.cod");
-
-    @Override
-    public long countByStatus(Integer branchId, Integer orderStatus) {
-        return dao.countByStatus(branchId, orderStatus);
-    }
-
-    @Override
-    public long countByPaymentStatus(Integer branchId, Integer paymentStatus) {
-        return dao.countByPaymentStatus(branchId, paymentStatus);
-    }
-
-    @Override
-    public List<Object[]> revenueDaily(Integer branchId, LocalDate from, LocalDate to) {
-        return dao.revenueDaily(branchId, from, to);
-    }
-
-    @Override
-    public BigDecimal sumRevenue(Integer branchId, LocalDate from, LocalDate to) {
-        return dao.sumRevenue(branchId, from, to);
-    }
+    private static final int METHOD_COD   = PaymentEnums.Method.COD;
+    private static final int METHOD_MOMO  = PaymentEnums.Method.MOMO;
+    private static final int METHOD_VNPAY = PaymentEnums.Method.VNPAY;
 
     @Override
     public List<Object[]> topProducts(Integer branchId, LocalDate from, LocalDate to, int limit) {
         return dao.topProducts(branchId, from, to, limit);
-    }
-
-    @Override
-    public Map<Integer, Long> countByStatusRange(Integer branchId, LocalDate from, LocalDate to) {
-        return dao.countByStatusRange(branchId, from, to);
     }
 
     @Override
@@ -212,5 +194,43 @@ public class OrdersManagerServiceImpl implements IOrdersManagerService {
     @Override
     public Payments getPaymentByOrderId(Integer orderId) {
         return dao.getPaymentByOrderId(orderId);
+    }
+
+    @Override
+    public OrderStatsDTO getOrderStats(LocalDateTime from, LocalDateTime to, Integer branchId) {
+        // 1) Tổng đơn
+        long total = dao.countOrdersByRange(from, to, branchId);
+
+        // 2) Theo trạng thái
+        long delivered = dao.countOrdersByStatus(from, to, branchId, DELIVERED);
+        long canceled  = dao.countOrdersByStatus(from, to, branchId, CANCELED);
+        long returned  = dao.countOrdersByStatus(from, to, branchId, RETURNED);
+
+        double dRatio = total == 0 ? 0d : (double) delivered / total;
+        double cRatio = total == 0 ? 0d : (double) canceled  / total;
+        double rRatio = total == 0 ? 0d : (double) returned  / total;
+
+        // 3) Phân bổ phương thức thanh toán
+        long cod   = dao.countOrdersByPaymentMethod(from, to, branchId, METHOD_COD);
+        long vnpay = dao.countOrdersByPaymentMethod(from, to, branchId, METHOD_VNPAY);
+        long momo  = dao.countOrdersByPaymentMethod(from, to, branchId, METHOD_MOMO);
+
+        long sumPay = cod + vnpay + momo;
+        double shareCOD   = sumPay == 0 ? 0d : (double) cod   / sumPay;
+        double shareVNPAY = sumPay == 0 ? 0d : (double) vnpay / sumPay;
+        double shareMOMO  = sumPay == 0 ? 0d : (double) momo  / sumPay;
+
+        List<PaymentBreakdownDTO> breakdown = new ArrayList<>(3);
+        breakdown.add(new PaymentBreakdownDTO("COD",   cod,   shareCOD));
+        breakdown.add(new PaymentBreakdownDTO("VNPAY", vnpay, shareVNPAY));
+        breakdown.add(new PaymentBreakdownDTO("MOMO",  momo,  shareMOMO));
+
+        return new OrderStatsDTO(
+                total,
+                delivered, dRatio,
+                canceled,  cRatio,
+                returned,  rRatio,
+                breakdown
+        );
     }
 }

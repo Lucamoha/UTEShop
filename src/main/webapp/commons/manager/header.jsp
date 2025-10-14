@@ -1,5 +1,4 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<c:set var="currentUserEmail" value="${authenticatedEmail}" />
 
 <div class="main-header-logo">
   <!-- Logo Header -->
@@ -36,7 +35,7 @@
                     </span>
         </a>
         <ul class="dropdown-menu dropdown-user animated fadeIn">
-          <div class="scroll-wrapper dropdown-user-scroll scrollbar-outer" style="position: relative;"><div class="dropdown-user-scroll scrollbar-outer scroll-content" style="height: 167px; margin-bottom: 0px; margin-right: 0px; max-height: none;">
+          <div class="scroll-wrapper dropdown-user-scroll scrollbar-outer" style="position: relative;"><div class="dropdown-user-scroll scrollbar-outer scroll-content" style="height: 30px; margin-bottom: 0px; margin-right: 0px; max-height: none;">
             <li>
               <a class="dropdown-item" href="${pageContext.request.contextPath}/logout">Đăng xuất</a>
             </li>

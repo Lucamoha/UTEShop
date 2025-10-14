@@ -3,8 +3,9 @@ package com.uteshop.controller.manager;
 import com.uteshop.dao.impl.manager.EntityDaoImpl;
 import com.uteshop.dao.manager.common.PageResult;
 import com.uteshop.entity.order.Orders;
+import com.uteshop.enums.OrderEnums;
+import com.uteshop.enums.PaymentEnums;
 import com.uteshop.services.impl.manager.OrdersManagerServiceImpl;
-import com.uteshop.util.AppConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -87,29 +88,22 @@ public class OrderController extends HttpServlet {
             req.setAttribute("order", orders);
 
             Integer paymentMethod = ordersManagerService.getPaymentByOrderId(orders.getId()).getMethod();
-            String paymentMethodStr = "";
 
-            if (paymentMethod == AppConfig.getInt("payments.method.vnpay"))
-                paymentMethodStr = "VNPay";
-            else if (paymentMethod == AppConfig.getInt("payments.method.momo"))
-                paymentMethodStr = "Momo";
-            else
-                paymentMethodStr = "COD";
-
+            String paymentMethodStr = PaymentEnums.Method.label(paymentMethod);
             req.setAttribute("paymentMethod", paymentMethodStr);
 
             java.util.Map<Integer,String> STATUS_MAP = new java.util.LinkedHashMap<>();
-            STATUS_MAP.put(AppConfig.getInt("orders.status.new"),"Mới tạo");
-            STATUS_MAP.put(AppConfig.getInt("orders.status.confirmed"),"Đã xác nhận");
-            STATUS_MAP.put(AppConfig.getInt("orders.status.shipping"),"Đang giao hàng");
-            STATUS_MAP.put(AppConfig.getInt("orders.status.delivered"),"Đã nhận");
-            STATUS_MAP.put(AppConfig.getInt("orders.status.canceled"),"Hủy");
-            STATUS_MAP.put(AppConfig.getInt("orders.status.returned"),"Trả hàng");
+            STATUS_MAP.put(OrderEnums.OrderStatus.NEW,"Mới tạo");
+            STATUS_MAP.put(OrderEnums.OrderStatus.CONFIRMED,"Đã xác nhận");
+            STATUS_MAP.put(OrderEnums.OrderStatus.SHIPPING,"Đang giao hàng");
+            STATUS_MAP.put(OrderEnums.OrderStatus.DELIVERED,"Đã nhận");
+            STATUS_MAP.put(OrderEnums.OrderStatus.CANCELED,"Hủy");
+            STATUS_MAP.put(OrderEnums.OrderStatus.RETURNED,"Trả hàng");
 
             java.util.Map<Integer,String> PAY_MAP = new java.util.LinkedHashMap<>();
-            PAY_MAP.put(AppConfig.getInt("payment.status.unpaid"),"Chưa thanh toán");
-            PAY_MAP.put(AppConfig.getInt("payment.status.paid"),"Đã thanh toán");
-            PAY_MAP.put(AppConfig.getInt("payment.status.refunded"),"Hoàn tiền");
+            PAY_MAP.put(OrderEnums.PaymentStatus.UNPAID,"Chưa thanh toán");
+            PAY_MAP.put(OrderEnums.PaymentStatus.PAID,"Đã thanh toán");
+            PAY_MAP.put(OrderEnums.PaymentStatus.REFUNDED,"Hoàn tiền");
 
             req.setAttribute("STATUS_MAP", STATUS_MAP);
             req.setAttribute("PAY_MAP", PAY_MAP);
