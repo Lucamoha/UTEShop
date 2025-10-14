@@ -71,13 +71,16 @@ public class Products implements Serializable {
     BigDecimal BasePrice;
 
 	@Column(nullable = false)
-    boolean Status;
+    boolean Status = true;
 
 	@Column(nullable = false, updatable = false)
     LocalDateTime CreatedAt;
     
 	@Column
     LocalDateTime UpdatedAt;
+
+    @Column(nullable = false)
+    Integer Sold = 0;
 	
 	@PrePersist
 	void onCreate() {
@@ -91,8 +94,6 @@ public class Products implements Serializable {
 		// Tự động cập nhật UpdatedAt khi update
 		UpdatedAt = LocalDateTime.now();
 	}
-    
-    Integer Sold = 0;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     List<ProductVariants> variants = new ArrayList<>();

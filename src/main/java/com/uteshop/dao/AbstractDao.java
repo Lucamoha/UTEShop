@@ -16,7 +16,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 public abstract class AbstractDao<T> {
-	private Class<T> entityClass;
+	protected Class<T> entityClass;
 
 	public AbstractDao(Class<T> cls) {
 		this.entityClass = cls;

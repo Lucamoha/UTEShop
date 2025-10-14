@@ -27,6 +27,10 @@
 		<maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
 
 		<fileupload.version>1.6.0</fileupload.version>
+
+        <jjwt.version>0.12.6</jjwt.version>
+        <jbcrypt.version>0.4</jbcrypt.version>
+
 	</properties>
 
 	<dependencies>
@@ -123,11 +127,59 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.11.0</version>
 		</dependency>
+        <!--JWT-->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjwt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- Password Hashing (BCrypt) -->
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>${jbcrypt.version}</version>
+        </dependency>
 
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.10.1</version>
+		</dependency>
+
+		<!--  https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind  -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.20.0</version>
+		</dependency>
+		<!--  https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310  -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>2.20.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>5.2.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>5.2.2</version>
 		</dependency>
 
 	</dependencies>

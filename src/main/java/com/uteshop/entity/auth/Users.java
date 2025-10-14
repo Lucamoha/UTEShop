@@ -43,7 +43,7 @@ public class Users implements Serializable {
 	String UserRole; // USER|MANAGER|ADMIN
 
 	@Column(nullable = false)
-	Boolean isActive;
+	Boolean isActive = true;
 
 	@Column(nullable = false)
 	LocalDateTime CreatedAt;
