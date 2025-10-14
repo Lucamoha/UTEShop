@@ -29,14 +29,10 @@ public class ProductsServiceImpl implements IProductsService {
 	public void delete(int id) {
 		productsDao.delete(id);
 	}
-	@Override
-	public List<Products> findAll(boolean all, int firstResult, int maxResult, String searchKeyword) {
-		return productsDao.findAll(all, firstResult, maxResult, searchKeyword);
-	}
 
 	@Override
-	public int count(String searchKeyword) {
-		return productsDao.count(searchKeyword);
+	public int count(String searchKeyword, String searchKeywordColumnName) {
+		return productsDao.count(searchKeyword, searchKeywordColumnName);
 	}
 	@Override
 	public Products findBySlug(String slug) {
@@ -45,5 +41,9 @@ public class ProductsServiceImpl implements IProductsService {
 	@Override
 	public List<Object[]> getTopSellingProducts(int limit) {
 		return productsDao.getTopSellingProducts(limit);
+	}
+	@Override
+	public List<Products> findAll(boolean all, int firstResult, int maxResult, String searchKeyword, String searchKeywordColumnName) {
+		return productsDao.findAll(all, firstResult, maxResult, searchKeyword, searchKeywordColumnName);
 	}
 }

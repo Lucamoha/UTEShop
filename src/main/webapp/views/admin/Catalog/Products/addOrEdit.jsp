@@ -9,7 +9,7 @@
 
 	<div class="col-6 offset-3 mt-4">
 		<form
-			action="${pageContext.request.contextPath}/admin/Product/Products/saveOrUpdate"
+			action="${pageContext.request.contextPath}/admin/Catalog/Products/saveOrUpdate"
 			method="POST">
 			<div class="card">
 				<div class="card-header">
@@ -84,7 +84,7 @@
 					<div class="mt-3">
 						<button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Save</button>
 						<a
-							href="${pageContext.request.contextPath}/admin/Product/Products/searchpaginated"
+							href="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated"
 							class="btn btn-secondary"><i class="bi bi-x-circle"></i> Cancel</a>
 					</div>
 				</div>

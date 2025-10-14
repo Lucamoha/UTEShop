@@ -10,8 +10,8 @@ public interface IProductsService {
 	void insert(Products product);
 	void update(Products products);
 	void delete(int id);
-	List<Products> findAll(boolean all, int firstResult, int maxResult, String searchKeyword);
-	int count(String searchKeyword);
+	List<Products> findAll(boolean all, int firstResult, int maxResult, String searchKeyword, String searchKeywordColumnName);
+	int count(String searchKeyword, String searchKeywordColumnName);
 	Products findBySlug(String slug);
     List<Object[]> getTopSellingProducts(int limit);
 }

@@ -105,7 +105,8 @@ public abstract class AbstractDao<T> {
 		}
 	}
 
-	public List<T> findAll(boolean all, int firstResult, int maxResult, String searchKeyword) {
+	public List<T> findAll(boolean all, int firstResult, int maxResult, String searchKeyword,
+			String searchKeywordColumnName) {
 		EntityManager em = JPAConfigs.getEntityManager();
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -115,7 +116,7 @@ public abstract class AbstractDao<T> {
 
 			if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
 				String pattern = "%" + searchKeyword.toLowerCase() + "%";
-				Predicate pName = cb.like(cb.lower(root.get("Name").as(String.class)), pattern);
+				Predicate pName = cb.like(cb.lower(root.get(searchKeywordColumnName).as(String.class)), pattern);
 				cq.where(pName);
 			}
 
@@ -129,44 +130,44 @@ public abstract class AbstractDao<T> {
 			em.close();
 		}
 	}
-	
-	public List<T> findAllFetchParent(boolean all, int firstResult, int maxResult, String searchKeyword, String fetchColumnName) { 
-	    EntityManager em = JPAConfigs.getEntityManager();
-	    try {
-	        CriteriaBuilder cb = em.getCriteriaBuilder();
-	        CriteriaQuery<T> cq = cb.createQuery(entityClass);
-	        Root<T> root = cq.from(entityClass);
 
-	        //Nạp cột parent nếu entity có field này
-	        try {
-	            root.fetch(fetchColumnName, JoinType.LEFT);
-	        } catch (IllegalArgumentException e) {
-	            // Entity không có thuộc tính cần nạp -> bỏ qua
-	        }
+	public List<T> findAllFetchParent(boolean all, int firstResult, int maxResult, String searchKeyword,
+			String searchKeywordColumnName, String fetchColumnName) {
+		EntityManager em = JPAConfigs.getEntityManager();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<T> cq = cb.createQuery(entityClass);
+			Root<T> root = cq.from(entityClass);
 
-	        //cq.select(root).distinct(true); // tránh trùng dòng khi JOIN FETCH
+			// Nạp cột parent nếu entity có field này
+			try {
+				root.fetch(fetchColumnName, JoinType.LEFT);
+			} catch (IllegalArgumentException e) {
+				// Entity không có thuộc tính cần nạp -> bỏ qua
+			}
 
-	        // Tìm kiếm theo tên
-	        if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
-	            String pattern = "%" + searchKeyword.toLowerCase() + "%";
-	            Predicate pName = cb.like(cb.lower(root.get("Name").as(String.class)), pattern);
-	            cq.where(pName);
-	        }
+			// cq.select(root).distinct(true); // tránh trùng dòng khi JOIN FETCH
 
-	        TypedQuery<T> q = em.createQuery(cq);
-	        if (!all) {
-	            q.setFirstResult(firstResult);
-	            q.setMaxResults(maxResult);
-	        }
+			// Tìm kiếm theo tên
+			if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
+				String pattern = "%" + searchKeyword.toLowerCase() + "%";
+				Predicate pName = cb.like(cb.lower(root.get(searchKeywordColumnName).as(String.class)), pattern);
+				cq.where(pName);
+			}
 
-	        return q.getResultList();
-	    } finally {
-	        em.close();
-	    }
+			TypedQuery<T> q = em.createQuery(cq);
+			if (!all) {
+				q.setFirstResult(firstResult);
+				q.setMaxResults(maxResult);
+			}
+
+			return q.getResultList();
+		} finally {
+			em.close();
+		}
 	}
 
-
-	public int count(String searchKeyword) {
+	public int count(String searchKeyword, String searchKeywordColumnName) {
 		EntityManager em = JPAConfigs.getEntityManager();
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -176,7 +177,7 @@ public abstract class AbstractDao<T> {
 
 			if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
 				String pattern = "%" + searchKeyword.toLowerCase() + "%";
-				Predicate pName = cb.like(cb.lower(root.get("Name").as(String.class)), pattern);
+				Predicate pName = cb.like(cb.lower(root.get(searchKeywordColumnName).as(String.class)), pattern);
 				cq.where(pName);
 			}
 
@@ -188,15 +189,16 @@ public abstract class AbstractDao<T> {
 		}
 	}
 
-	public List<T> findByNameContaining(String name) {
+	public List<T> findByColumnContainingWord(String columnName, String word) {
 		List<T> list = new ArrayList<>();
-		if (name == null || name.trim().isEmpty()) {
+		if (word == null || word.trim().isEmpty()) {
 			list = this.findAll();
 		} else {
 			EntityManager enma = JPAConfigs.getEntityManager();
 			try {
-				String jpql = "SELECT e FROM " + entityClass.getSimpleName() + "e WHERE LOWER(e.name) LIKE :name";
-				list = enma.createQuery(jpql, entityClass).setParameter("name", "%" + name.toLowerCase() + "%")
+				String jpql = "SELECT e FROM " + entityClass.getSimpleName() + " e WHERE e." + columnName.trim()
+						+ " LIKE :word";
+				list = enma.createQuery(jpql, entityClass).setParameter("word", "%" + word.toLowerCase() + "%")
 						.getResultList();
 			} finally {
 				enma.close();
