@@ -43,9 +43,20 @@
                         ${product.name}
                     </h4>
 
-                    <span class="mtext-106 cl2">
+                    <!-- Giá sản phẩm - Sẽ update khi chọn variant -->
+                    <span class="mtext-106 cl2" id="product-price">
                          <fmt:formatNumber value="${product.basePrice}" type="number" /> VND
                     </span>
+                    
+                    <!-- Thông tin variant (ẩn ban đầu) -->
+                    <div id="variant-info" style="display: none; margin-top: 10px;">
+                        <p class="stext-102 cl3">
+                            <strong>SKU:</strong> <span id="variant-sku"></span>
+                        </p>
+                    </div>
+                    
+                    <!-- Hidden input để lưu variant ID đã chọn -->
+                    <input type="hidden" id="selected-variant-id" name="variantId" value="">
 
                     <p class="stext-102 cl3 p-t-23">
                         ${product.description}
@@ -53,45 +64,27 @@
 
                     <!--  -->
                     <div class="p-t-33">
-                        <!-- Duyệt qua danh sách OptionDto -->
-                        <c:set var="prevType" value="" />
-
-                        <c:forEach var="opt" items="${options}">
-                        <!-- Khi gặp optionTypeCode mới, mở select mới -->
-                        <c:if test="${opt.optionTypeCode ne prevType}">
-                        <!-- Đóng select cũ nếu có -->
-                        <c:if test="${not empty prevType}">
-                        </select>
-                        <div class="dropDownSelect2"></div>
+                        <!-- Duyệt qua từng nhóm option đã được group theo optionTypeCode -->
+                        <c:forEach var="optionGroup" items="${groupedOptions}">
+                            <c:set var="optionType" value="${optionGroup.key}" />
+                            <c:set var="optionList" value="${optionGroup.value}" />
+                            
+                            <div class="flex-w flex-r-m p-b-10">
+                                <div class="size-203 flex-c-m respon6">${optionType}</div>
+                                <div class="size-204 respon6-next">
+                                    <div class="rs1-select2 bor8 bg0">
+                                        <select class="js-select2 product-option" name="${optionType}" data-option-type="${optionType}">
+                                            <option value="">Choose an option</option>
+                                            <c:forEach var="opt" items="${optionList}">
+                                                <option value="${opt.optionValueId}">${opt.optionValue}</option>
+                                            </c:forEach>
+                                        </select>
+                                        <div class="dropDownSelect2"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:forEach>
                     </div>
-                </div>
-            </div>
-            </c:if>
-
-            <!-- Hiển thị tiêu đề của nhóm -->
-            <div class="flex-w flex-r-m p-b-10">
-                <div class="size-203 flex-c-m respon6">${opt.optionTypeCode}</div>
-                <div class="size-204 respon6-next">
-                    <div class="rs1-select2 bor8 bg0">
-                        <select class="js-select2" name="${opt.optionTypeCode}">
-                            <option>Choose an option</option>
-                            </c:if>
-
-                            <!-- Thêm từng optionValue -->
-                            <option value="${opt.optionValueId}">${opt.optionValue}</option>
-
-                            <!-- Cập nhật prevType -->
-                            <c:set var="prevType" value="${opt.optionTypeCode}" />
-                            </c:forEach>
-
-                            <!-- Đóng thẻ cuối cùng -->
-                            <c:if test="${not empty prevType}">
-                        </select>
-                        <div class="dropDownSelect2"></div>
-                    </div>
-                </div>
-            </div>
-            </c:if>
             <!----->
 
 
@@ -496,35 +489,98 @@
 </div>
 
 <!--===============================================================================================-->
-<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+<script src="${pageContext.request.contextPath}/templates/vendor/jquery/jquery-3.2.1.min.js"></script>
 <!--===============================================================================================-->
-<script src="vendor/animsition/js/animsition.min.js"></script>
+<script src="${pageContext.request.contextPath}/templates/vendor/slick/slick.min.js"></script>
+<script src="${pageContext.request.contextPath}/templates/js/slick-custom.js"></script>
 <!--===============================================================================================-->
-<script src="vendor/bootstrap/js/popper.js"></script>
-<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-<!--===============================================================================================-->
-<script src="vendor/select2/select2.min.js"></script>
 <script>
-    $(".js-select2").each(function () {
-        $(this).select2({
-            minimumResultsForSearch: 20,
-            dropdownParent: $(this).next(".dropDownSelect2"),
+    // Variant selection
+    $(document).ready(function() {
+        setTimeout(function() {
+            var productId = ${product.id};
+            
+            // Lắng nghe sự kiện trên SELECT element 
+            $("select.product-option").on('change', function() {
+                console.log('Option changed');
+                
+                // Lấy tất cả giá trị đã chọn
+                var selectedOptions = [];
+                $("select.product-option").each(function() {
+                    var val = $(this).val();
+                    if (val && val !== '') {
+                        selectedOptions.push(val);
+                    }
+                });
+                
+                console.log('Selected options:', selectedOptions);
+                
+                // Nếu chưa chọn đủ, reset về giá gốc
+                if (selectedOptions.length === 0) {
+                    $('#product-price').html('${product.basePrice}'.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' VND');
+                    $('#variant-info').hide();
+                    $('#selected-variant-id').val('');
+                    return;
+                }
+                
+                // Gọi tới varient controller
+                var url = '${pageContext.request.contextPath}/variant/find?productId=' + productId + '&optionValues=' + selectedOptions.join(',');
+                console.log('Calling:', url);
+                
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        console.log('Response:', data);
+                        if (data.success && data.data) {
+                            var price = data.data.price;
+                            console.log('Price value:', price, 'Type:', typeof price);
+                            
+                            // Cập nhật giá - format số
+                            var formattedPrice = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            console.log('Formatted price:', formattedPrice);
+                    $('#product-price').html(formattedPrice + ' VND');
+                    
+                    // Cập nhật SKU
+                    $('#variant-sku').text(data.data.sku);
+                    console.log('Updated SKU:', data.data.sku);
+                    
+                    // Hiện thông tin
+                    $('#variant-info').show();
+                    
+                    // Lưu variant ID
+                    $('#selected-variant-id').val(data.data.variantId);
+                    console.log('Variant ID saved:', data.data.variantId);
+                } else {
+                    console.log('Variant not found');
+                    $('#variant-sku').text('N/A');
+                    $('#variant-info').show();
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+                console.error('Status:', status);
+                console.error('Response:', xhr.responseText);
+            }
         });
+            });
+        }, 500); 
     });
 </script>
 <!--===============================================================================================-->
-<script src="vendor/daterangepicker/moment.min.js"></script>
-<script src="vendor/daterangepicker/daterangepicker.js"></script>
+<script src="${pageContext.request.contextPath}/templates/vendor/daterangepicker/moment.min.js"></script>
+<script src="${pageContext.request.contextPath}/templates/vendor/daterangepicker/daterangepicker.js"></script>
 <!--===============================================================================================-->
-<script src="vendor/slick/slick.min.js"></script>
-<script src="js/slick-custom.js"></script>
+<script src="${pageContext.request.contextPath}/templates/vendor/slick/slick.min.js"></script>
+<script src="${pageContext.request.contextPath}/templates/js/slick-custom.js"></script>
 <!--===============================================================================================-->
-<script src="vendor/parallax100/parallax100.js"></script>
+<script src="${pageContext.request.contextPath}/templates/vendor/parallax100/parallax100.js"></script>
 <script>
     $(".parallax100").parallax100();
 </script>
 <!--===============================================================================================-->
-<script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
+<script src="${pageContext.request.contextPath}/templates/vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
 <script>
     $(".gallery-lb").each(function () {
         // the containers for all your galleries
@@ -539,11 +595,11 @@
     });
 </script>
 <!--===============================================================================================-->
-<script src="vendor/isotope/isotope.pkgd.min.js"></script>
+<script src="${pageContext.request.contextPath}/templates/vendor/isotope/isotope.pkgd.min.js"></script>
 <!--===============================================================================================-->
-<script src="vendor/sweetalert/sweetalert.min.js"></script>
+<script src="${pageContext.request.contextPath}/templates/vendor/sweetalert/sweetalert.min.js"></script>
 <!--===============================================================================================-->
-<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+<script src="${pageContext.request.contextPath}/templates/vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
 <script>
     $(".js-pscroll").each(function () {
         $(this).css("position", "relative");
@@ -581,7 +637,9 @@
         });
     });
 
+    // ==========================================
     // XỬ LÝ UPLOAD & PREVIEW HÌNH ẢNH
+    // ==========================================
     let selectedFiles = []; // Mảng lưu các file đã chọn
 
     function handleImageUpload(input) {
@@ -801,3 +859,4 @@
     });
 </script>
 <!--===============================================================================================-->
+
