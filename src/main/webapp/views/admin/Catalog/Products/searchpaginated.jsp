@@ -19,7 +19,7 @@
 				<div class="row mt-2 mb-3">
 					<div class="col-md-6">
 						<form
-							action="${pageContext.request.contextPath}/admin/Product/Products/searchpaginated"
+							action="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated"
 							method="get">
 							<div class="input-group">
 								<input type="text" class="form-control" name="searchKeyword"
@@ -32,7 +32,7 @@
 					<div class="col-md-6">
 						<div class="float-end">
 							<a class="btn btn-outline-success"
-								href="${pageContext.request.contextPath}/admin/Product/Products/saveOrUpdate"><i class="bi bi-plus-circle"></i> Add
+								href="${pageContext.request.contextPath}/admin/Catalog/Products/saveOrUpdate"><i class="bi bi-plus-circle"></i> Add
 								Product</a>
 						</div>
 					</div>
@@ -78,11 +78,11 @@
 										<td>
 											<div class="btn-group" role="group">
 												<a
-													href="${pageContext.request.contextPath}/admin/Product/Products/view?id=${product.id}"
+													href="${pageContext.request.contextPath}/admin/Catalog/Products/view?id=${product.id}"
 													class="btn btn-outline-info me-1" title="View"> <i
 													class="bi bi-eye"></i> <!-- me-1 (margin-end) -->
 												</a> <a
-													href="${pageContext.request.contextPath}/admin/Product/Products/saveOrUpdate?id=${product.id}"
+													href="${pageContext.request.contextPath}/admin/Catalog/Products/saveOrUpdate?id=${product.id}"
 													class="btn btn-outline-warning me-1" title="Edit"> <i
 													class="bi bi-pencil-square"></i>
 												</a> <a href="javascript:void(0)"
@@ -107,13 +107,13 @@
 
 							<li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
 								<a class="page-link"
-								href="${pageContext.request.contextPath}/admin/Product/Products/searchpaginated?page=1&size=${size}">First</a>
+								href="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated?page=1&size=${size}">First</a>
 							</li>
 
 							<c:forEach begin="1" end="${totalPages}" var="i">
 								<li class="page-item ${i == currentPage ? 'active' : ''}">
 									<a class="page-link"
-									href="${pageContext.request.contextPath}/admin/Product/Products/searchpaginated?page=${i}&size=${size}">
+									href="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated?page=${i}&size=${size}">
 										${i} </a>
 								</li>
 							</c:forEach>
@@ -121,7 +121,7 @@
 							<li
 								class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
 								<a class="page-link"
-								href="${pageContext.request.contextPath}/admin/Product/Products/searchpaginated?page=${totalPages}&size=${size}">Last</a>
+								href="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated?page=${totalPages}&size=${size}">Last</a>
 							</li>
 						</ul>
 					</nav>
@@ -163,7 +163,7 @@
 			document.getElementById("productName").innerText = name;
 			document.getElementById("yesOption").setAttribute(
 					"href",
-					'${pageContext.request.contextPath}/admin/Product/Products/delete?id='
+					'${pageContext.request.contextPath}/admin/Catalog/Products/delete?id='
 							+ id);
 			var modal = new bootstrap.Modal(document
 					.getElementById('confirmationId'));

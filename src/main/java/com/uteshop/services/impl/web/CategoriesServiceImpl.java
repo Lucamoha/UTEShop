@@ -33,29 +33,4 @@ public class CategoriesServiceImpl implements ICategoriesService {
     public Categories findById(int id) {
         return categoriesDao.findById(id);
     }
-
-	@Override
-	public List<Categories> findAll(boolean all, int firstResult, int maxResult, String searchKeyword) {
-		return categoriesDao.findAll(all, firstResult, maxResult, searchKeyword);
-	}
-
-	@Override
-	public int count(String searchKeyword) {
-		return categoriesDao.count(searchKeyword);
-	}
-
-	@Override
-	public void insert(Categories category) {
-		categoriesDao.insert(category);
-	}
-
-	@Override
-	public void update(Categories category) {
-		categoriesDao.update(category);
-	}
-
-	@Override
-	public void delete(int id) {
-		categoriesDao.delete(id);
-	}
 }

@@ -12,17 +12,7 @@ public interface IProductsService {
 
 	Products findById(int id);
 
-	void insert(Products product);
-
-	void update(Products products);
-
-	void delete(int id);
-
-	List<Products> findAll(boolean all, int firstResult, int maxResult, String searchKeyword);
-
     List<Products> getRelevantProducts(int productId);
-
-    int count(String searchKeyword);
 
 	Products findBySlug(String slug);
 

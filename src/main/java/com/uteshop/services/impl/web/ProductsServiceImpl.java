@@ -31,26 +31,6 @@ public class ProductsServiceImpl implements IProductsService {
 	}
 
 	@Override
-	public void insert(Products product) {
-		productsDao.insert(product);
-	}
-
-	@Override
-	public void update(Products products) {
-		productsDao.update(products);
-	}
-
-	@Override
-	public void delete(int id) {
-		productsDao.delete(id);
-	}
-
-	@Override
-	public List<Products> findAll(boolean all, int firstResult, int maxResult, String searchKeyword) {
-		return productsDao.findAll(all, firstResult, maxResult, searchKeyword);
-	}
-
-	@Override
 	public List<Products> topLatestProducts() {
 		return productsDao.topLatestProducts();
 	}
@@ -64,11 +44,6 @@ public class ProductsServiceImpl implements IProductsService {
     public List<Products> getRelevantProducts(int productId) {
         return productsDao.getRelativeProducts(productId);
     }
-
-    @Override
-	public int count(String searchKeyword) {
-		return productsDao.count(searchKeyword);
-	}
 
 	@Override
 	public Products findBySlug(String slug) {

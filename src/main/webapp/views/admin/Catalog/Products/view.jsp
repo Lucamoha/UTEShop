@@ -56,12 +56,12 @@
 			<div class="card-footer text-right">
 				<!-- Back -->
 				<a
-					href="${pageContext.request.contextPath}/admin/Product/Products/searchpaginated"
+					href="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated"
 					class="btn btn-secondary"><i class="bi bi-arrow-left-circle"></i> Back</a>
 
 				<!-- Edit -->
 				<a
-					href="${pageContext.request.contextPath}/admin/Product/Products/saveOrUpdate?id=${product.id}"
+					href="${pageContext.request.contextPath}/admin/Catalog/Products/saveOrUpdate?id=${product.id}"
 					class="btn btn-warning"><i class="bi bi-pencil-square"></i> Edit</a>
 
 				<!-- Delete -->
@@ -106,7 +106,7 @@
 			document.getElementById("productName").innerText = name;
 			document.getElementById("yesOption").setAttribute(
 					"href",
-					'${pageContext.request.contextPath}/admin/Product/Products/delete?id='
+					'${pageContext.request.contextPath}/admin/Catalog/Products/delete?id='
 							+ id);
 			var modal = new bootstrap.Modal(document
 					.getElementById('confirmationId'));

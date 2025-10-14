@@ -21,13 +21,13 @@ public class CategoriesServiceImpl implements ICategoriesService {
     }
 
 	@Override
-	public List<Categories> findAll(boolean all, int firstResult, int maxResult, String searchKeyword) {
-		return categoriesDao.findAll(all, firstResult, maxResult, searchKeyword);
+	public List<Categories> findAll(boolean all, int firstResult, int maxResult, String searchKeyword, String searchKeywordColumnName) {
+		return categoriesDao.findAll(all, firstResult, maxResult, searchKeyword, searchKeywordColumnName);
 	}
 
 	@Override
-	public int count(String searchKeyword) {
-		return categoriesDao.count(searchKeyword);
+	public int count(String searchKeyword, String searchKeywordColumnName) {
+		return categoriesDao.count(searchKeyword, searchKeywordColumnName);
 	}
 
 	@Override
@@ -43,12 +43,6 @@ public class CategoriesServiceImpl implements ICategoriesService {
 	@Override
 	public void delete(int id) {
 		categoriesDao.delete(id);
-	}
-
-	@Override
-	public List<Categories> findAllFetchParent(boolean all, int firstResult, int maxResult, String searchKeyword,
-			String fetchColumnName) {
-		return categoriesDao.findAllFetchParent(all, firstResult, maxResult, searchKeyword, fetchColumnName);
 	}
 
 	@Override
