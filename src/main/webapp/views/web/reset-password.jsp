@@ -5,7 +5,7 @@ pageEncoding="UTF-8"%> <%@ include file="/commons/taglib.jsp"%>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Đăng Ký - UTEShop</title>
+    <title>Đặt Mật Khẩu Mới - UTEShop</title>
     <link href="templates/css/register.css" rel="stylesheet" />
     <link
       rel="stylesheet"
@@ -22,7 +22,7 @@ pageEncoding="UTF-8"%> <%@ include file="/commons/taglib.jsp"%>
       }
 
       .requirement {
-        margin: 10px 0;
+        margin: 5px 0;
       }
 
       .requirement.valid {
@@ -40,46 +40,23 @@ pageEncoding="UTF-8"%> <%@ include file="/commons/taglib.jsp"%>
         <img src="templates/images/icons/logo-01.png" alt="Logo" />
       </div>
 
-      <div class="welcome-text">Tạo tài khoản mới</div>
+      <div class="welcome-text">Đặt mật khẩu mới</div>
 
-      <form action="register" id="registerForm" method="post">
-        <div class="form-group">
-          <input
-            type="text"
-            placeholder="Họ và tên"
-            name="fullname"
-            value="${param.fullname}"
-            required
-          />
-        </div>
+      <div class="terms" style="margin-bottom: 30px; text-align: center">
+        Nhập mật khẩu mới cho tài khoản của bạn
+      </div>
 
-        <div class="form-group">
-          <input
-            type="email"
-            placeholder="Email"
-            name="email"
-            value="${param.email}"
-            required
-          />
-        </div>
-
-        <div class="form-group">
-          <input
-            type="tel"
-            placeholder="Số điện thoại"
-            name="phone"
-            value="${param.phone}"
-            required
-          />
-        </div>
-
+      <form
+        action="${pageContext.request.contextPath}/reset-password"
+        method="post"
+        id="resetForm"
+      >
         <div class="form-group">
           <input
             type="password"
-            id="password"
-            placeholder="Mật khẩu"
-            name="password"
-            value="${param.password}"
+            id="newPassword"
+            name="newPassword"
+            placeholder="Mật khẩu mới"
             required
             minlength="6"
           />
@@ -89,9 +66,8 @@ pageEncoding="UTF-8"%> <%@ include file="/commons/taglib.jsp"%>
           <input
             type="password"
             id="confirmPassword"
-            placeholder="Nhập lại mật khẩu"
             name="confirmPassword"
-            value="${param.confirmPassword}"
+            placeholder="Xác nhận mật khẩu"
             required
             minlength="6"
           />
@@ -114,44 +90,37 @@ pageEncoding="UTF-8"%> <%@ include file="/commons/taglib.jsp"%>
           </div>
         </c:if>
 
-        <button type="submit" class="register-btn" id="registerBtn">
-          Đăng Ký
-        </button>
-      </form>
+        <%-- Hiển thị thông báo thành công (nếu có) --%>
+        <c:if test="${not empty success}">
+          <div style="color: green; text-align: center; margin: 15px 0">
+            ${success}
+          </div>
+        </c:if>
 
-      <div class="terms">
-        Bằng cách đăng ký, bạn đồng ý với
-        <a href="#">Điều khoản sử dụng</a> và
-        <a href="#">Chính sách bảo mật</a> của chúng tôi.
-      </div>
+        <button type="submit" class="register-btn">Đặt lại mật khẩu</button>
+      </form>
 
       <div class="divider">
         <span>hoặc</span>
       </div>
 
       <div class="login-link">
-        <span>Đã có tài khoản? </span
-        ><a href="${pageContext.request.contextPath}/login" id="loginLink"
-          >Đăng nhập ngay</a
+        <a href="${pageContext.request.contextPath}/login"
+          >← Quay lại đăng nhập</a
         >
-      </div>
-
-      <div class="success-animation" id="successMessage">
-        <div class="checkmark"></div>
-        Đăng ký thành công!
       </div>
     </div>
 
     <script>
       // Real-time password validation
-      const password = document.getElementById("password");
+      const newPassword = document.getElementById("newPassword");
       const confirmPassword = document.getElementById("confirmPassword");
       const lengthReq = document.getElementById("length");
       const matchReq = document.getElementById("match");
 
       function validatePassword() {
         // Check length
-        if (password.value.length >= 6) {
+        if (newPassword.value.length >= 6) {
           lengthReq.classList.remove("invalid");
           lengthReq.classList.add("valid");
           lengthReq.innerHTML =
@@ -164,7 +133,10 @@ pageEncoding="UTF-8"%> <%@ include file="/commons/taglib.jsp"%>
         }
 
         // Check match
-        if (confirmPassword.value && password.value === confirmPassword.value) {
+        if (
+          confirmPassword.value &&
+          newPassword.value === confirmPassword.value
+        ) {
           matchReq.classList.remove("invalid");
           matchReq.classList.add("valid");
           matchReq.innerHTML =
@@ -177,21 +149,21 @@ pageEncoding="UTF-8"%> <%@ include file="/commons/taglib.jsp"%>
         }
       }
 
-      password.addEventListener("input", validatePassword);
+      newPassword.addEventListener("input", validatePassword);
       confirmPassword.addEventListener("input", validatePassword);
 
       // Form validation on submit
       document
-        .getElementById("registerForm")
+        .getElementById("resetForm")
         .addEventListener("submit", function (e) {
-          if (password.value !== confirmPassword.value) {
+          if (newPassword.value !== confirmPassword.value) {
             e.preventDefault();
             alert("Mật khẩu xác nhận không khớp!");
             confirmPassword.focus();
-          } else if (password.value.length < 6) {
+          } else if (newPassword.value.length < 6) {
             e.preventDefault();
             alert("Mật khẩu phải có ít nhất 6 ký tự!");
-            password.focus();
+            newPassword.focus();
           }
         });
     </script>
