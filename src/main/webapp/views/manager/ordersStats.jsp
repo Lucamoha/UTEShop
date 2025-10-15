@@ -122,185 +122,171 @@
     </div>
 
     <script>
-      // Helper ngắn gọn
-      const $ = (sel) => document.querySelector(sel);
+      (() => {
+        // Helper cục bộ
+        const qs  = (sel) => document.querySelector(sel);
 
-      // Ngày mặc định = tháng hiện tại
-      (function setDefaultDates() {
-        const now = new Date();
-        const y = now.getFullYear();
-        const m = now.getMonth(); // 0-11
-        const first = new Date(y, m, 1);
-        const last  = new Date(y, m + 1, 0);
-        $("#from").value = first.toISOString().slice(0,10);
-        $("#to").value   = last.toISOString().slice(0,10);
-      })();
+        // Ngày mặc định = tháng hiện tại
+        (function setDefaultDates() {
+          const now = new Date();
+          const y = now.getFullYear(), m = now.getMonth();
+          const first = new Date(y, m, 1);
+          const last  = new Date(y, m + 1, 0);
+          const fromEl = qs("#from");
+          const toEl   = qs("#to");
+          if (fromEl) fromEl.value = first.toISOString().slice(0,10);
+          if (toEl)   toEl.value   = last.toISOString().slice(0,10);
+        })();
 
-      // Biến chart dùng lại
-      let statusChart = null;
-      let paymentChart = null;
+        let statusChart = null;
+        let paymentChart = null;
 
-      // Format %
-      function fmtPct(x) {
-        return (x * 100).toFixed(1).replace(/\.0$/, '') + '%';
-      }
+        function fmtPct(x) {
+          return (x * 100).toFixed(1).replace(/\.0$/, '') + '%';
+        }
 
-      // Xuất PNG
-      function downloadCanvasPNG(canvas, filename) {
-        const tmpCanvas = document.createElement('canvas');
-        tmpCanvas.width = canvas.width;
-        tmpCanvas.height = canvas.height;
-        const ctx = tmpCanvas.getContext('2d');
+        function downloadCanvasPNG(canvas, filename) {
+          if (!canvas) return;
+          const tmpCanvas = document.createElement('canvas');
+          tmpCanvas.width = canvas.width;
+          tmpCanvas.height = canvas.height;
+          const ctx = tmpCanvas.getContext('2d');
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, tmpCanvas.width, tmpCanvas.height);
+          ctx.drawImage(canvas, 0, 0);
+          const link = document.createElement('a');
+          link.download = filename;
+          link.href = tmpCanvas.toDataURL('image/png', 1.0);
+          link.click();
+        }
 
-        // Nền trắng
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, tmpCanvas.width, tmpCanvas.height);
-
-        // Vẽ chart gốc lên trên
-        ctx.drawImage(canvas, 0, 0);
-
-        // Tạo link tải
-        const link = document.createElement('a');
-        link.download = filename;
-        link.href = tmpCanvas.toDataURL('image/png', 1.0);
-        link.click();
-      }
-
-      // Render chart trạng thái
-      function renderStatusChart(values) {
-        const ctx = $("#statusChart").getContext('2d');
-        if (statusChart) statusChart.destroy();
-
-        statusChart = new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: ['Hoàn thành', 'Hủy', 'Trả hàng'],
-            datasets: [{ label: 'Số đơn', data: values }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            resizeDelay: 200, // tránh rung
-            animation: { duration: 400, easing: 'easeOutQuart' },
-            plugins: {
-              legend: { display: false },
-              tooltip: {
-                callbacks: {
-                  label: function (ctx) { return ' ' + (ctx.raw ?? 0) + ' đơn'; }
-                }
-              }
+        function renderStatusChart(values) {
+          const c = qs("#statusChart");
+          if (!c) return;
+          const ctx = c.getContext('2d');
+          if (statusChart) statusChart.destroy();
+          statusChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: ['Hoàn thành', 'Hủy', 'Trả hàng'],
+              datasets: [{ label: 'Số đơn', data: values }]
             },
-            scales: {
-              y: { beginAtZero: true, ticks: { precision: 0 } }
+            options: {
+              responsive: true, maintainAspectRatio: false, resizeDelay: 200,
+              animation: { duration: 400, easing: 'easeOutQuart' },
+              plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: (ctx) => ' ' + (ctx.raw ?? 0) + ' đơn' } }
+              },
+              scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
             }
-          }
-        });
-      }
+          });
+        }
 
-      // Render chart phương thức thanh toán
-      function renderPaymentChart(labels, values) {
-        const ctx = $("#paymentChart").getContext('2d');
-        if (paymentChart) paymentChart.destroy();
-
-        paymentChart = new Chart(ctx, {
-          type: 'doughnut',
-          data: { labels: labels, datasets: [{ data: values }] },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            resizeDelay: 200,
-            animation: { duration: 400, easing: 'easeOutQuart' },
-            plugins: {
-              legend: { position: 'bottom' },
-              tooltip: {
-                callbacks: {
-                  label: function (ctx) {
-                    var total = values.reduce(function(a,b){return a+b;}, 0) || 1;
-                    var count = ctx.raw || 0;
-                    var share = count / total;
-                    return ' ' + ctx.label + ': ' + count + ' (' + fmtPct(share) + ')';
+        function renderPaymentChart(labels, values) {
+          const c = qs("#paymentChart");
+          if (!c) return;
+          const ctx = c.getContext('2d');
+          if (paymentChart) paymentChart.destroy();
+          paymentChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: { labels, datasets: [{ data: values }] },
+            options: {
+              responsive: true, maintainAspectRatio: false, resizeDelay: 200,
+              animation: { duration: 400, easing: 'easeOutQuart' },
+              plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                  callbacks: {
+                    label: (ctx) => {
+                      const total = values.reduce((a,b)=>a+b, 0) || 1;
+                      const count = ctx.raw || 0;
+                      return ' ' + ctx.label + ': ' + count + ' (' + fmtPct(count/total) + ')';
+                    }
                   }
                 }
-              }
-            },
-            cutout: '60%'
+              },
+              cutout: '60%'
+            }
+          });
+        }
+
+        async function loadStats() {
+          const fromEl = qs("#from");
+          const toEl   = qs("#to");
+          if (!fromEl || !toEl) return;
+
+          const from = fromEl.value, to = toEl.value;
+          if (!from || !to) { alert("Vui lòng chọn Từ ngày và Đến ngày"); return; }
+
+          const r1 = document.getElementById("statusChart-range");
+          const r2 = document.getElementById("paymentChart-range");
+          if (r1) r1.textContent = from + " → " + to;
+          if (r2) r2.textContent = from + " → " + to;
+
+          const params = new URLSearchParams({ from, to });
+          const apiBase = '<c:url value="/api/manager/orders-stats"/>';
+          const url = apiBase + '?' + params.toString();
+
+          const btn = qs("#loadBtn");
+          if (btn) { btn.disabled = true; btn.textContent = "Đang tải..."; }
+
+          try {
+            const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+
+            const setText = (sel, v) => { const el = qs(sel); if (el) el.textContent = v; };
+            setText("#kpiTotal",      data.totalOrders ?? 0);
+            setText("#kpiDelivered",  data.delivered ?? 0);
+            setText("#kpiCanceled",   data.canceled ?? 0);
+            setText("#kpiReturned",   data.returned ?? 0);
+            setText("#kpiDeliveredPct", fmtPct(data.deliveredRatio ?? 0));
+            setText("#kpiCanceledPct",  fmtPct(data.canceledRatio  ?? 0));
+            setText("#kpiReturnedPct",  fmtPct(data.returnedRatio  ?? 0));
+
+            renderStatusChart([data.delivered ?? 0, data.canceled ?? 0, data.returned ?? 0]);
+
+            const payment = Array.isArray(data.paymentBreakdown) ? data.paymentBreakdown : [];
+            const pLabels = payment.map(p => p.method);
+            const pValues = payment.map(p => p.orders);
+            renderPaymentChart(pLabels, pValues);
+
+          } catch (e) {
+            console.error(e);
+            alert("Không tải được dữ liệu. Vui lòng thử lại.");
+          } finally {
+            if (btn) { btn.disabled = false; btn.textContent = "Tải dữ liệu"; }
           }
-        });
-      }
-
-      // Tải dữ liệu + bind vào UI
-      async function loadStats() {
-        var from = $("#from").value;
-        var to   = $("#to").value;
-        if (!from || !to) {
-          alert("Vui lòng chọn Từ ngày và Đến ngày");
-          return;
         }
 
-        document.getElementById("statusChart-range").textContent = from + " → " + to;
-        document.getElementById("paymentChart-range").textContent = from + " → " + to;
-
-        var params = new URLSearchParams({ from: from, to: to });
-        // dùng c:url để chắc contextPath đúng, KHÔNG dùng template literal
-        var apiBase = '<c:url value="/api/manager/orders-stats"/>';
-        var url = apiBase + '?' + params.toString();
-
-        var btn = $("#loadBtn");
-        btn.disabled = true; btn.textContent = "Đang tải...";
-
-        try {
-          var res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          var data = await res.json();
-
-          // KPI
-          $("#kpiTotal").textContent     = data.totalOrders ?? 0;
-          $("#kpiDelivered").textContent = data.delivered ?? 0;
-          $("#kpiCanceled").textContent  = data.canceled ?? 0;
-          $("#kpiReturned").textContent  = data.returned ?? 0;
-
-          $("#kpiDeliveredPct").textContent = fmtPct(data.deliveredRatio ?? 0);
-          $("#kpiCanceledPct").textContent  = fmtPct(data.canceledRatio  ?? 0);
-          $("#kpiReturnedPct").textContent  = fmtPct(data.returnedRatio  ?? 0);
-
-          // Chart trạng thái
-          renderStatusChart([
-            data.delivered ?? 0,
-            data.canceled ?? 0,
-            data.returned ?? 0
-          ]);
-
-          // Chart thanh toán
-          var payment = Array.isArray(data.paymentBreakdown) ? data.paymentBreakdown : [];
-          var pLabels = payment.map(function(p){ return p.method; });
-          var pValues = payment.map(function(p){ return p.orders; });
-          renderPaymentChart(pLabels, pValues);
-
-        } catch (e) {
-          console.error(e);
-          alert("Không tải được dữ liệu. Vui lòng thử lại.");
-        } finally {
-          btn.disabled = false; btn.textContent = "Tải dữ liệu";
+        // Bind sự kiện nếu phần tử tồn tại
+        const exportStatusBtn  = qs("#exportStatusBtn");
+        if (exportStatusBtn) {
+          exportStatusBtn.addEventListener('click', () => {
+            if (statusChart) {
+              const fname = 'orders-status-' + (qs("#from")?.value || '') + '_to_' + (qs("#to")?.value || '') + '.png';
+              downloadCanvasPNG(qs("#statusChart"), fname);
+            }
+          });
         }
-      }
 
-      // Export PNG (không dùng template literal)
-      $("#exportStatusBtn").addEventListener('click', function () {
-        if (statusChart) {
-          var fname = 'orders-status-' + $("#from").value + '_to_' + $("#to").value + '.png';
-          downloadCanvasPNG($("#statusChart"), fname);
+        const exportPaymentBtn = qs("#exportPaymentBtn");
+        if (exportPaymentBtn) {
+          exportPaymentBtn.addEventListener('click', () => {
+            if (paymentChart) {
+              const fname = 'payment-methods-' + (qs("#from")?.value || '') + '_to_' + (qs("#to")?.value || '') + '.png';
+              downloadCanvasPNG(qs("#paymentChart"), fname);
+            }
+          });
         }
-      });
-      $("#exportPaymentBtn").addEventListener('click', function () {
-        if (paymentChart) {
-          var fname = 'payment-methods-' + $("#from").value + '_to_' + $("#to").value + '.png';
-          downloadCanvasPNG($("#paymentChart"), fname);
-        }
-      });
 
-      // Nút tải dữ liệu + auto load
-      $("#loadBtn").addEventListener('click', loadStats);
-      window.addEventListener('DOMContentLoaded', loadStats);
+        const loadBtn = qs("#loadBtn");
+        if (loadBtn) loadBtn.addEventListener('click', loadStats);
+
+        // Tự load khi DOM sẵn sàng
+        window.addEventListener('DOMContentLoaded', loadStats);
+      })();
     </script>
   </div>
 </div>
