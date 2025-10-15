@@ -73,8 +73,8 @@
                 <div class="size-203 flex-c-m respon6">${opt.optionTypeCode}</div>
                 <div class="size-204 respon6-next">
                     <div class="rs1-select2 bor8 bg0">
-                        <select class="js-select2" name="${opt.optionTypeCode}">
-                            <option>Choose an option</option>
+                        <select class="js-select2" name="${opt.optionTypeCode}" data-option-type="${opt.optionTypeId}">
+                            <option value="">Chọn ${opt.optionTypeCode}</option>
                             </c:if>
 
                             <!-- Thêm từng optionValue -->
@@ -121,6 +121,8 @@
 
                                 <button
                                         class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail"
+                                        type="button"
+                                        onclick="addToCart(<c:out value='${product.id}'/>)"
                                 >
                                     Thêm vào giỏ hàng
                                 </button>
