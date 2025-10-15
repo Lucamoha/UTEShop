@@ -21,7 +21,7 @@
         </div>
         <!-- End Logo Header -->
     </div>
-    <div class="scroll-wrapper sidebar-wrapper scrollbar scrollbar-inner" style="position: relative;"><div class="sidebar-wrapper scrollbar scrollbar-inner scroll-content" style="height: 825.333px; margin-bottom: 0px; margin-right: 0px; max-height: none;">
+    <div class="sidebar-wrapper scrollbar scrollbar-inner">
         <div class="sidebar-content">
             <ul class="nav nav-secondary">
                 <li class="nav-item">
@@ -43,12 +43,12 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="../../documentation/index.html">
+                    <a href="${pageContext.request.contextPath}/manager/ordersStats">
                         <i class="far fa-chart-bar"></i>
-                        <p>Thống kê</p>
+                        <p>Thống kê bán hàng</p>
                     </a>
                 </li>
             </ul>
         </div>
-    </div><div class="scroll-element scroll-x"><div class="scroll-element_outer"><div class="scroll-element_size"></div><div class="scroll-element_track"></div><div class="scroll-bar" style="width: 0px;"></div></div></div><div class="scroll-element scroll-y"><div class="scroll-element_outer"><div class="scroll-element_size"></div><div class="scroll-element_track"></div><div class="scroll-bar" style="height: 0px;"></div></div></div></div>
+    </div>
 </div>

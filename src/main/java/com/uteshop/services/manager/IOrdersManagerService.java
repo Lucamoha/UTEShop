@@ -1,27 +1,16 @@
 package com.uteshop.services.manager;
 
 import com.uteshop.dao.manager.common.PageResult;
+import com.uteshop.dto.manager.reports.OrderStatsDTO;
 import com.uteshop.entity.order.Orders;
 import com.uteshop.entity.order.Payments;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 public interface IOrdersManagerService {
-    long countByStatus(Integer branchId, Integer orderStatus);
-
-    long countByPaymentStatus(Integer branchId, Integer paymentStatus);
-
-    List<Object[]> revenueDaily(Integer branchId, LocalDate from, LocalDate to);
-
-
-    BigDecimal sumRevenue(Integer branchId, LocalDate from, LocalDate to);
-
     List<Object[]> topProducts(Integer branchId, LocalDate from, LocalDate to, int limit);
-
-    Map<Integer, Long> countByStatusRange(Integer branchId, LocalDate from, LocalDate to);
 
     List<Orders> findRecent(Integer branchId, int limit);
 
@@ -39,4 +28,6 @@ public interface IOrdersManagerService {
     void updateOrderStatus(Integer orderId, Integer toStatus);
 
     Payments getPaymentByOrderId(Integer orderId);
+
+    OrderStatsDTO getOrderStats(LocalDateTime from, LocalDateTime to, Integer branchId);
 }
