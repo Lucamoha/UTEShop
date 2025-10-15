@@ -5,7 +5,7 @@
 <div class="container mt-4">
 	<div class="card">
 		<div class="card-header">
-			<h4>Danh Sách Loại Biến Thể</h4>
+			<h4>Danh Sách Loại Tùy Chọn</h4>
 		</div>
 		<div class="card-body">
 
@@ -32,7 +32,7 @@
 								placeholder="Nhập từ khóa mã code để tìm"
 								value="${searchKeyword}">
 							<button class="btn btn-outline-primary">
-								<i class="fa fa-search search-icon"></i> Search
+								<i class="fa fa-search search-icon"></i> Tìm kiếm
 							</button>
 						</div>
 					</form>
@@ -42,13 +42,13 @@
 					<div class="float-end">
 						<a class="btn btn-outline-success"
 							href="${pageContext.request.contextPath}/admin/Catalog/OptionTypes/saveOrUpdate"><i
-							class="bi bi-plus-circle"></i> Thêm loại biến thể</a>
+							class="bi bi-plus-circle"></i> Thêm Loại Tùy Chọn</a>
 					</div>
 				</div>
 			</div>
 
 			<c:if test="${empty optionTypeList}">
-				<div class="alert alert-danger">Không tìm thấy loại biến thể</div>
+				<div class="alert alert-danger">Không tìm thấy Loại Tùy Chọn</div>
 			</c:if>
 
 			<c:if test="${not empty optionTypeList}">

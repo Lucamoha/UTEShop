@@ -15,8 +15,8 @@
 				<div class="card-header">
 					<h2>
 						<c:choose>
-							<c:when test="${not empty optionType.id}">Chỉnh Sửa Loại Biến Thể</c:when>
-							<c:otherwise>Thêm Loại Biến Thể</c:otherwise>
+							<c:when test="${not empty optionType.id}">Chỉnh Sửa Loại Tùy Chọn</c:when>
+							<c:otherwise>Thêm Loại Tùy Chọn</c:otherwise>
 						</c:choose>
 					</h2>
 				</div>

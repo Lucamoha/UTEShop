@@ -6,7 +6,7 @@
 	<div class="col-8 offset-2 mt-4">
 		<div class="card">
 			<div class="card-header">
-				<h4>Chi Tiết Loại Biến Thể</h4>
+				<h4>Chi Tiết Loại Tùy Chọn</h4>
 			</div>
 			<div class="card-body">
 				<table class="table table-bordered">

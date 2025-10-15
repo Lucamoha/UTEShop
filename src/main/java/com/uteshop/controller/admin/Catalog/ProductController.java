@@ -2,14 +2,29 @@ package com.uteshop.controller.admin.Catalog;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import com.uteshop.dto.admin.ProductAttributeDisplayModel;
+import com.uteshop.dto.admin.ProductVariantDetailsModel;
+import com.uteshop.dto.admin.ProductVariantDisplayModel;
+import com.uteshop.dto.admin.ProductsDetailModel;
 import com.uteshop.entity.catalog.Categories;
+import com.uteshop.entity.catalog.ProductImages;
+import com.uteshop.entity.catalog.ProductVariants;
 import com.uteshop.entity.catalog.Products;
 import com.uteshop.services.admin.ICategoriesService;
+import com.uteshop.services.admin.IProductAttributesService;
+import com.uteshop.services.admin.IProductImagesService;
 import com.uteshop.services.admin.IProductsService;
+import com.uteshop.services.admin.IProductsVariantsService;
 import com.uteshop.services.impl.admin.CategoriesServiceImpl;
+import com.uteshop.services.impl.admin.ProductAttributesServiceImpl;
+import com.uteshop.services.impl.admin.ProductImagesServiceImpl;
+import com.uteshop.services.impl.admin.ProductVariantsServiceImpl;
 import com.uteshop.services.impl.admin.ProductsServiceImpl;
 
 import jakarta.servlet.ServletException;
@@ -19,12 +34,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet(urlPatterns = { "/admin/Catalog/Products/searchpaginated", "/admin/Catalog/Products/saveOrUpdate",
-		"/admin/Catalog/Products/delete", "/admin/Catalog/Products/view" })
+		"/admin/Catalog/Products/delete", "/admin/Catalog/Products/view", "/admin/Catalog/Products/image/saveOrUpdate",
+		"/admin/Catalog/Products/image/delete" })
 public class ProductController extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
 	private IProductsService productsService = new ProductsServiceImpl();
+	private IProductsVariantsService productsVariantsService = new ProductVariantsServiceImpl();
+	private IProductImagesService productImagesService = new ProductImagesServiceImpl();
+	private IProductAttributesService productAttributesService = new ProductAttributesServiceImpl();
 	private ICategoriesService categoriesService = new CategoriesServiceImpl();
 
 	@Override
@@ -54,14 +73,21 @@ public class ProductController extends HttpServlet {
 			int firstResult = (page - 1) * size;
 
 			List<Products> productList = productsService.findAll(false, firstResult, size, searchKeyword, "Name");
+			List<ProductsDetailModel> productsDetailModels = new ArrayList<>();
 
 			// Đếm tổng số bản ghi để tính tổng trang
-			// List<Products> allProducts = productsService.findAll(true, 0, 0);
-			// int totalProducts = allProducts.size();
 			int totalProducts = productsService.count(searchKeyword, "Name");
 			int totalPages = (int) Math.ceil((double) totalProducts / size);
 
-			req.setAttribute("productList", productList);
+			for (Products product : productList) {
+				ProductsDetailModel detail = new ProductsDetailModel();
+				detail.setProduct(product);
+				// detail.setProductVariantsDetails(productsVariantsService.getVariantsByProductId(product.getId()));
+				detail.setTotalVariants(productsVariantsService.countVariantsByProductId(product.getId()));
+				// detail.setProductImages(productImagesService.getImageById(product.getId()));
+				productsDetailModels.add(detail);
+			}
+			req.setAttribute("productsDetailModels", productsDetailModels);
 			req.setAttribute("currentPage", page);
 			req.setAttribute("totalPages", totalPages);
 			req.setAttribute("size", size);
@@ -80,9 +106,60 @@ public class ProductController extends HttpServlet {
 			req.setAttribute("categoryList", categoryList);
 			req.getRequestDispatcher("/views/admin/Catalog/Products/addOrEdit.jsp").forward(req, resp);
 		} else if (uri.contains("view")) {
+			/*
+			 * int page = 1; int size = 6;
+			 * 
+			 * if (req.getParameter("page") != null) { page =
+			 * Integer.parseInt(req.getParameter("page")); } if (req.getParameter("size") !=
+			 * null) { size = Integer.parseInt(req.getParameter("size")); }
+			 * 
+			 * // Tính offset (vị trí bắt đầu) int firstResult = (page - 1) * size;
+			 * 
+			 * 
+			 * // Đếm tổng số bản ghi để tính tổng trang int totalProducts =
+			 * productsVariantsService.count("", "Name"); int totalPages = (int)
+			 * Math.ceil((double) totalProducts / size);
+			 * 
+			 * req.setAttribute("currentPage", page); req.setAttribute("totalPages",
+			 * totalPages); req.setAttribute("size", size);
+			 */
+
 			String id = req.getParameter("id");
 			Products product = productsService.findById(Integer.parseInt(id));
+
+			ProductsDetailModel productsDetailModel = new ProductsDetailModel();
+			productsDetailModel
+					.setProductVariantsDetails(productsVariantsService.getVariantsByProductId(product.getId()));
+			productsDetailModel.setProductImages(productImagesService.getImageById(product.getId()));
 			req.setAttribute("product", product);
+
+			Map<Integer, ProductVariantDisplayModel> grouped = new LinkedHashMap<>();
+
+			for (ProductVariantDetailsModel d : productsDetailModel.getProductVariantsDetails()) {
+				ProductVariantDisplayModel view = grouped.get(d.getId());
+				if (view == null) {
+					view = new ProductVariantDisplayModel();
+					view.setId(d.getId());
+					view.setSKU(d.getSKU());
+					view.setPrice(d.getPrice());
+					view.setStatus(d.getStatus());
+					grouped.put(d.getId(), view);
+				}
+				// Ghép option dạng "TYPE: VALUE"
+				view.getOptions().add(d.getCode() + ": " + d.getValue());
+			}
+
+			// Chuyển thành list để JSP dễ duyệt
+			List<ProductVariantDisplayModel> displayList = new ArrayList<>(grouped.values());
+
+			List<ProductAttributeDisplayModel> attributes = productAttributesService
+					.getAttributesByProductId(product.getId());
+
+			// Gửi sang JSP
+			req.setAttribute("variantList", displayList);
+			req.setAttribute("productsDetailModel", productsDetailModel);
+			req.setAttribute("productAttributes", attributes);
+
 			req.getRequestDispatcher("/views/admin/Catalog/Products/view.jsp").forward(req, resp);
 		} else if (uri.contains("delete")) {
 			String id = req.getParameter("id");
@@ -130,15 +207,14 @@ public class ProductController extends HttpServlet {
 
 			Categories category = null;
 			try {
-				if(categoryIdStr != null && !categoryIdStr.isEmpty()) {
+				if (categoryIdStr != null && !categoryIdStr.isEmpty()) {
 					int categoryId = Integer.parseInt(categoryIdStr);
 					category = categoriesService.findById(categoryId);
 					product.setCategory(category);
-				}
-				else{
+				} else {
 					req.setAttribute("error", "Vui lòng chọn danh mục!");
 				}
-				
+
 			} catch (Exception e) {
 				req.setAttribute("error", "Danh mục không hợp lệ!");
 			}
@@ -158,7 +234,7 @@ public class ProductController extends HttpServlet {
 				return;
 			}
 
-			//Lưu sản phẩm vào db nếu không lỗi
+			// Lưu sản phẩm vào db nếu không lỗi
 			String message;
 			if (idStr != null && !idStr.isEmpty()) {
 				productsService.update(product);
