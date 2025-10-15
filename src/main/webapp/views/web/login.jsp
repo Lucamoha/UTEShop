@@ -86,7 +86,7 @@
             </form>
 
             <div class="forgot-password">
-                <a href="#" onclick="showAlert('Chức năng quên mật khẩu')">Quên mật khẩu?</a>
+                <a href="${pageContext.request.contextPath}/forgot-password">Quên mật khẩu?</a>
             </div>
 
             <div class="divider">
@@ -113,6 +113,5 @@
         </div>
     </div>
 </div>
-
 </body>
 </html>

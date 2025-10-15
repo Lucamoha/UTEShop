@@ -21,10 +21,10 @@ public class OptionsDaoImpl implements IOptionsDao {
 
             return results.stream()
                     .map(row -> new OptionDto(
-                            ((Number) row[0]).intValue(),  // OptionTypeId
-                            (String) row[1],               // OptionTypeCode
-                            ((Number) row[2]).intValue(),  // OptionValueId
-                            (String) row[3]                // OptionValue
+                            ((Number) row[0]).intValue(), // OptionTypeId
+                            (String) row[1], // OptionTypeCode
+                            ((Number) row[2]).intValue(), // OptionValueId
+                            (String) row[3] // OptionValue
                     ))
                     .toList();
         } finally {

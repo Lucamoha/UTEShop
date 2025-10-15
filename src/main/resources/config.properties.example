@@ -25,6 +25,15 @@ user_token.type.verify_email=1
 user_token.type.reset_password=2
 
 # ========================
+# Email/SMTP Config
+# ========================
+smtp.host=smtp.gmail.com
+smtp.port=587
+smtp.from.email=your-email@gmail.com
+smtp.from.password=your-app-password
+smtp.from.name=UTEShop
+
+# ========================
 # Attribute DataType
 # ========================
 attributes.datatype.text=1

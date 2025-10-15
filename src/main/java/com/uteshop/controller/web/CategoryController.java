@@ -17,7 +17,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet(urlPatterns = { "/category/*" })
 public class CategoryController extends HttpServlet {
@@ -115,17 +117,53 @@ public class CategoryController extends HttpServlet {
 		} catch (NumberFormatException e) {
 			// Ignore invalid price format
 		}
+		
+		// Parse attribute filters from request
+		// Format: attr_<attributeId>=<value> for TEXT, NUMBER, and BOOLEAN types
+		// Now supports multiple values: attr_<attributeId>=<value1>&attr_<attributeId>=<value2>
+		Map<Integer, Object> attributeFilters = new HashMap<>();
+		Map<String, String[]> paramMap = request.getParameterMap();
+		
+		for (String paramName : paramMap.keySet()) {
+			if (paramName.startsWith("attr_")) {
+				String[] attrParts = paramName.split("_");
+				if (attrParts.length == 2) {
+					try {
+						Integer attrId = Integer.parseInt(attrParts[1]);
+						String[] values = request.getParameterValues(paramName);
+						
+						if (values != null && values.length > 0) {
+							// Filter out empty values
+							List<String> validValues = new ArrayList<>();
+							for (String val : values) {
+								if (val != null && !val.trim().isEmpty()) {
+									validValues.add(val.trim());
+								}
+							}
+							
+							if (!validValues.isEmpty()) {
+								// Store as List<String> for multiple values
+								attributeFilters.put(attrId, validValues);
+								System.out.println("DEBUG Controller - AttrId: " + attrId + ", Values: " + validValues);
+							}
+						}
+					} catch (NumberFormatException e) {
+						// Ignore invalid attribute filter
+					}
+				}
+			}
+		}
 
 		// Load sản phẩm với search & filter
 		List<Products> products;
 		long totalProducts;
 
-		if (keyword != null || minPrice != null || maxPrice != null || sortBy != null) {
+		if (keyword != null || minPrice != null || maxPrice != null || sortBy != null || !attributeFilters.isEmpty()) {
 			// Có filter/search
 			products = productsService.searchAndFilter(categoryIds, keyword, null, 
-			                                            minPrice, maxPrice, sortBy, page, pageSize);
+			                                            minPrice, maxPrice, sortBy, attributeFilters, page, pageSize);
 			totalProducts = productsService.countSearchAndFilter(categoryIds, keyword, 
-			                                                       null, minPrice, maxPrice);
+			                                                       null, minPrice, maxPrice, attributeFilters);
 		} else {
 			// Không có filter
 			products = productsService.findByCategoryIds(categoryIds, page, pageSize);
@@ -150,6 +188,7 @@ public class CategoryController extends HttpServlet {
 		request.setAttribute("currentSortBy", sortBy);
 		request.setAttribute("currentMinPrice", minPrice);
 		request.setAttribute("currentMaxPrice", maxPrice);
+		request.setAttribute("currentAttributeFilters", attributeFilters);
 
 		request.getRequestDispatcher("/views/web/category.jsp").forward(request, response);
 	}

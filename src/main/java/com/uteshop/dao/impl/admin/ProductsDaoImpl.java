@@ -31,15 +31,14 @@ public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsD
 		EntityManager enma = JPAConfigs.getEntityManager();
 		try {
 			String jpql = """
-							SELECT ot.product.Name, SUM(ot.Quantity) AS totalSold
-							FROM OrderItems ot
-							GROUP BY ot.product.Name
-							ORDER BY totalSold DESC
+						SELECT ot.product.Name, SUM(ot.Quantity) AS totalSold
+						FROM OrderItems ot
+						GROUP BY ot.product.Name
+						ORDER BY totalSold DESC
 					""";
 			return enma.createQuery(jpql, Object[].class).setMaxResults(limit).getResultList();
 		} finally {
 			enma.close();
 		}
 	}
-
 }

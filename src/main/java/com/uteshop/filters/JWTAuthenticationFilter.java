@@ -14,29 +14,28 @@ import java.util.List;
 /**
  * Filter để kiểm tra JWT token cho các trang cần authentication
  */
-@WebFilter(urlPatterns = {"/*"})
+@WebFilter(urlPatterns = { "/*" })
 public class JWTAuthenticationFilter implements Filter {
 
     // Danh sách các URL không cần authentication
     private static final List<String> PUBLIC_URLS = Arrays.asList(
-        "/login",
-        "/register",
-        "/logout",
-        "/templates/",
-        "/uploads/",
-        "/image"
-    );
+            "/login",
+            "/register",
+            "/logout",
+            "/templates/",
+            "/uploads/",
+            "/image");
 
     // Danh sách các URL cần authentication (protected)
     private static final List<String> PROTECTED_URLS = Arrays.asList(
-        "/admin/",
-        "/manager/",
-        "/profile",
-        "/cart",
-        "/checkout",
-        "/orders",
-        "/api/manager"
-    );
+            "/admin/",
+            "/manager/",
+            "/profile",
+            "/cart",
+            "/checkout",
+            "/orders",
+            "/orders",
+            "/api/manager");
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -53,7 +52,6 @@ public class JWTAuthenticationFilter implements Filter {
         String requestURI = req.getRequestURI();
         String contextPath = req.getContextPath();
         String path = requestURI.substring(contextPath.length());
-
 
         // Cho phép các URL public đi qua không cần kiểm tra
         if (isPublicUrl(path)) {
@@ -173,6 +171,6 @@ public class JWTAuthenticationFilter implements Filter {
             throws IOException {
         req.getSession().setAttribute("loginMessage", message);
         resp.sendRedirect(req.getContextPath() + "/login?redirect=" +
-                         java.net.URLEncoder.encode(req.getRequestURI(), "UTF-8"));
+                java.net.URLEncoder.encode(req.getRequestURI(), "UTF-8"));
     }
 }

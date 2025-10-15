@@ -6,5 +6,8 @@
 	<!-- Exclude path from decoration. -->
 	<mapping path="/login" exclude="true"/>
 	<mapping path="/register" exclude="true"/>
+	<mapping path="/forgot-password" exclude="true"/>
+	<mapping path="/verify-otp" exclude="true"/>
+	<mapping path="/reset-password" exclude="true"/>
 	<mapping path="/api*" exclude="true" />
 </sitemesh>

@@ -23,8 +23,8 @@ public class Payments implements Serializable {
     Integer Id;
 
     // Mỗi payment thuộc 1 order
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "OrderId", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "OrderId", nullable = false, unique = true)
     Orders order;
 
     /**

@@ -23,8 +23,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @WebServlet(urlPatterns = { "/product", "/product-detail" })
 public class ProductController extends HttpServlet {
@@ -53,6 +55,13 @@ public class ProductController extends HttpServlet {
                 Products product = productsService.findById(productId);
                 List<Products> relevantProducts = productsService.getRelevantProducts(productId);
                 List<OptionDto> options = optionsService.getOptionsByProduct(productId);
+
+                // Group options theo optionTypeCode để render đúng trong JSP
+                Map<String, List<OptionDto>> groupedOptions = options.stream()
+                        .collect(Collectors.groupingBy(
+                                OptionDto::getOptionTypeCode,
+                                LinkedHashMap::new,
+                                Collectors.toList()));
 
                 // Lấy danh mục hiện tại và danh mục cha
                 Categories selectedCategory = product.getCategory();
@@ -84,7 +93,7 @@ public class ProductController extends HttpServlet {
 
                 req.setAttribute("parentCategories", parents);
                 req.setAttribute("product", product);
-                req.setAttribute("options", options);
+                req.setAttribute("groupedOptions", groupedOptions); // Thay options bằng groupedOptions
                 req.setAttribute("relevantProducts", relevantProducts);
                 req.setAttribute("selectedCategory", selectedCategory);
                 req.setAttribute("selectedParent", selectedParent);

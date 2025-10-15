@@ -1,10 +1,10 @@
-package com.uteshop.controller.admin.Catalog.Categories;
+package com.uteshop.controller.admin.Catalog;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import com.uteshop.entity.catalog.Categories;
-import com.uteshop.entity.catalog.Products;
 import com.uteshop.services.admin.ICategoriesService;
 import com.uteshop.services.admin.IProductsService;
 import com.uteshop.services.impl.admin.CategoriesServiceImpl;
@@ -52,10 +52,10 @@ public class CategoriesController extends HttpServlet {
 			int firstResult = (page - 1) * size;
 
 			List<Categories> categoryList = categoriesService.findAllFetchParent(false, firstResult, size,
-					searchKeyword, "parent");
+					searchKeyword, "Name", "parent");
 
 			// Đếm tổng số bản ghi để tính tổng trang
-			int totalCategories = categoriesService.count(searchKeyword);
+			int totalCategories = categoriesService.count(searchKeyword, "Name");
 			int totalPages = (int) Math.ceil((double) totalCategories / size);
 
 			req.setAttribute("categoryList", categoryList);
@@ -124,7 +124,7 @@ public class CategoriesController extends HttpServlet {
 
 			// Kiểm tra slug trùng
 			Categories existing = categoriesService.findBySlug(slug);
-			if (existing != null && (idStr == null || !existing.getId().equals(id))) {
+			if (existing != null && !Objects.equals(existing.getId(), id)) {
 				req.setAttribute("error", "Slug đã tồn tại! Vui lòng nhập slug khác!");
 			}
 

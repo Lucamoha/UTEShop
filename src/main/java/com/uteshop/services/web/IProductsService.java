@@ -2,6 +2,7 @@ package com.uteshop.services.web;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import com.uteshop.dto.web.FilterOptionsDto;
 import com.uteshop.entity.catalog.Products;
@@ -11,17 +12,7 @@ public interface IProductsService {
 
 	Products findById(int id);
 
-	void insert(Products product);
-
-	void update(Products products);
-
-	void delete(int id);
-
-	List<Products> findAll(boolean all, int firstResult, int maxResult, String searchKeyword);
-
     List<Products> getRelevantProducts(int productId);
-
-    int count(String searchKeyword);
 
 	Products findBySlug(String slug);
 
@@ -41,11 +32,13 @@ public interface IProductsService {
 	List<Products> searchAndFilter(List<Integer> categoryIds, String keyword, 
 	                                List<Integer> colorIds, BigDecimal minPrice, 
 	                                BigDecimal maxPrice, String sortBy, 
+	                                Map<Integer, Object> attributeFilters,
 	                                int page, int pageSize);
 	
 	long countSearchAndFilter(List<Integer> categoryIds, String keyword, 
 	                           List<Integer> colorIds, BigDecimal minPrice, 
-	                           BigDecimal maxPrice);
+	                           BigDecimal maxPrice,
+	                           Map<Integer, Object> attributeFilters);
 	
 	FilterOptionsDto getFilterOptions(List<Integer> categoryIds);
 

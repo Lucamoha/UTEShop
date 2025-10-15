@@ -5,15 +5,14 @@ import com.uteshop.dao.AbstractDao;
 import com.uteshop.dao.manager.IOrdersManagerDao;
 import com.uteshop.dao.manager.common.PageResult;
 import com.uteshop.entity.order.Orders;
-import com.uteshop.util.AppConfig;
+import com.uteshop.entity.order.Payments;
+import com.uteshop.enums.OrderEnums;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 
 public class OrdersManagerDaoImpl extends AbstractDao<Orders> implements IOrdersManagerDao {
@@ -22,30 +21,56 @@ public class OrdersManagerDaoImpl extends AbstractDao<Orders> implements IOrders
     }
 
     @Override
-    public long countByStatus(Integer branchId, Integer orderStatus) {
-        EntityManager enma = JPAConfigs.getEntityManager();
+    public long countOrdersByRange(LocalDateTime from, LocalDateTime to, Integer branchId) {
+        EntityManager em = JPAConfigs.getEntityManager();
 
-        String jpql = """
-            SELECT COUNT(o) FROM Orders o WHERE o.branch.Id = :b AND o.OrderStatus = :st
-            """;
-
-        return enma.createQuery(jpql, Long.class)
-                .setParameter("b", branchId)
-                .setParameter("st", orderStatus)
-                .getSingleResult();
+        var q = em.createQuery("""
+                SELECT COUNT(o)
+                FROM Orders o
+                WHERE o.CreatedAt >= :from AND o.CreatedAt < :to
+                  AND (:branchId IS NULL OR o.branch.Id = :branchId)
+                """, Long.class);
+        q.setParameter("from", from);
+        q.setParameter("to", to);
+        q.setParameter("branchId", branchId);
+        return q.getSingleResult();
     }
 
     @Override
-    public long countByPaymentStatus(Integer branchId, Integer paymentStatus) {
-        EntityManager enma = JPAConfigs.getEntityManager();
+    public long countOrdersByPaymentMethod(LocalDateTime from, LocalDateTime to, Integer branchId, int method) {
+        EntityManager em = JPAConfigs.getEntityManager();
 
-        String jpql = """
-            SELECT COUNT(o) FROM Orders o WHERE o.branch.Id = :b AND o.PaymentStatus = :st
-            """;
-        return enma.createQuery(jpql, Long.class)
-                .setParameter("b", branchId)
-                .setParameter("st", paymentStatus)
-                .getSingleResult();
+        var q = em.createQuery("""
+                SELECT COUNT(p)
+                FROM Payments p
+                JOIN p.order o
+                WHERE o.CreatedAt >= :from AND o.CreatedAt < :to
+                  AND p.Method = :method
+                  AND (:branchId IS NULL OR o.branch.Id = :branchId)
+                """, Long.class);
+        q.setParameter("from", from);
+        q.setParameter("to", to);
+        q.setParameter("branchId", branchId);
+        q.setParameter("method", method);
+        return q.getSingleResult();
+    }
+
+    @Override
+    public long countOrdersByStatus(LocalDateTime from, LocalDateTime to, Integer branchId, int status) {
+        EntityManager em = JPAConfigs.getEntityManager();
+
+        var q = em.createQuery("""
+                SELECT COUNT(o)
+                FROM Orders o
+                WHERE o.CreatedAt >= :from AND o.CreatedAt < :to
+                  AND o.OrderStatus = :status
+                  AND (:branchId IS NULL OR o.branch.Id = :branchId)
+                """, Long.class);
+        q.setParameter("from", from);
+        q.setParameter("to", to);
+        q.setParameter("branchId", branchId);
+        q.setParameter("status", status);
+        return q.getSingleResult();
     }
 
     @Override
@@ -62,29 +87,10 @@ public class OrdersManagerDaoImpl extends AbstractDao<Orders> implements IOrders
             ORDER BY CAST(o.CreatedAt AS date)
             """, Object[].class);
         q.setParameter("b", branchId);
-        q.setParameter("paymentStatus", AppConfig.get("payment.status.paid"));
+        q.setParameter("paymentStatus", OrderEnums.PaymentStatus.PAID);
         q.setParameter("from", from.atStartOfDay());
         q.setParameter("toPlus", to.plusDays(1).atStartOfDay());
         return q.getResultList();
-    }
-
-    @Override
-    public BigDecimal sumRevenue(Integer branchId, LocalDate from, LocalDate to) {
-        EntityManager enma = JPAConfigs.getEntityManager();
-
-        String jpql = """
-            SELECT COALESCE(SUM(o.TotalAmount), 0)
-            FROM Orders o
-            WHERE (:b IS NULL OR o.branch.Id = :b)
-              AND o.PaymentStatus = :paymentStatus
-              AND o.CreatedAt >= :fromAt AND o.CreatedAt < :toAt
-            """;
-        TypedQuery<BigDecimal> q = enma.createQuery(jpql, BigDecimal.class);
-        q.setParameter("b", branchId);
-        q.setParameter("paymentStatus", AppConfig.get("payment.status.paid"));
-        q.setParameter("fromAt", from.atStartOfDay());
-        q.setParameter("toAt", to.plusDays(1).atStartOfDay());
-        return q.getSingleResult();
     }
 
     @Override
@@ -105,35 +111,11 @@ public class OrdersManagerDaoImpl extends AbstractDao<Orders> implements IOrders
             """;
         TypedQuery<Object[]> q = enma.createQuery(jpql, Object[].class);
         q.setParameter("b", branchId);
-        q.setParameter("paymentStatus", AppConfig.get("payment.status.paid"));
+        q.setParameter("paymentStatus", OrderEnums.PaymentStatus.PAID);
         q.setParameter("fromAt", from.atStartOfDay());
         q.setParameter("toAt", to.plusDays(1).atStartOfDay());
         q.setMaxResults(Math.max(1, limit));
         return q.getResultList();
-    }
-
-    @Override
-    public Map<Integer, Long> countByStatusRange(Integer branchId, LocalDate from, LocalDate to) {
-        EntityManager enma = JPAConfigs.getEntityManager();
-
-        String jpql = """
-            SELECT o.OrderStatus, COUNT(o)
-            FROM Orders o
-            WHERE (:b IS NULL OR o.branch.Id = :b)
-              AND o.CreatedAt >= :fromAt AND o.CreatedAt < :toAt
-            GROUP BY o.OrderStatus
-            """;
-        TypedQuery<Object[]> q = enma.createQuery(jpql, Object[].class);
-        q.setParameter("b", branchId);
-        q.setParameter("fromAt", from.atStartOfDay());
-        q.setParameter("toAt", to.plusDays(1).atStartOfDay());
-        Map<Integer, Long> map = new HashMap<>();
-        for (Object[] r : q.getResultList()) {
-            Integer st = (Integer) r[0];
-            Long cnt = (Long) r[1];
-            map.put(st, cnt);
-        }
-        return map;
     }
 
     @Override
@@ -212,5 +194,19 @@ public class OrdersManagerDaoImpl extends AbstractDao<Orders> implements IOrders
                 .setParameter("b", branchId)
                 .getResultList();
         return list.isEmpty() ? null : list.get(0);
+    }
+
+    @Override
+    public Payments getPaymentByOrderId(Integer orderId) {
+        EntityManager em = JPAConfigs.getEntityManager();
+        try {
+            Orders order = em.find(Orders.class, orderId);
+            if (order == null) {
+                return null;
+            }
+            return order.getPayment();
+        } finally {
+            em.close();
+        }
     }
 }

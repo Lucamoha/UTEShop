@@ -21,4 +21,9 @@ public class UsersServiceImpl implements IUsersService {
     public void insertUser(Users user) {
         userDaoImpl.insert(user);
     }
+
+    @Override
+    public void update(Users user) {
+        userDaoImpl.update(user);
+    }
 }

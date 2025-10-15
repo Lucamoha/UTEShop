@@ -96,7 +96,7 @@ public class Orders implements Serializable {
     @JoinColumn(name = "BranchId")
     Branches branch;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    List<Payments> payments = new ArrayList<>();
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, optional = true)
+    Payments payment;
 }
 

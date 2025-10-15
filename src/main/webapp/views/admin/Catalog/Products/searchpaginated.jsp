@@ -5,7 +5,7 @@
 	<div class="container mt-4">
 		<div class="card">
 			<div class="card-header">
-				<h4>List Product</h4>
+				<h4>Danh Sách Sản Phẩm</h4>
 			</div>
 			<div class="card-body">
 
@@ -19,12 +19,12 @@
 				<div class="row mt-2 mb-3">
 					<div class="col-md-6">
 						<form
-							action="${pageContext.request.contextPath}/admin/Product/Products/searchpaginated"
+							action="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated"
 							method="get">
 							<div class="input-group">
 								<input type="text" class="form-control" name="searchKeyword"
 									placeholder="Nhập từ khóa tên để tìm" value="${searchKeyword}">
-								<button class="btn btn-outline-primary">Search</button>
+								<button class="btn btn-outline-primary">Tìm kiếm</button>
 							</div>
 						</form>
 					</div>
@@ -32,62 +32,65 @@
 					<div class="col-md-6">
 						<div class="float-end">
 							<a class="btn btn-outline-success"
-								href="${pageContext.request.contextPath}/admin/Product/Products/saveOrUpdate"><i class="bi bi-plus-circle"></i> Add
-								Product</a>
+								href="${pageContext.request.contextPath}/admin/Catalog/Products/saveOrUpdate"><i class="bi bi-plus-circle"></i> Thêm
+								Sản Phẩm</a>
 						</div>
 					</div>
 				</div>
 
-				<c:if test="${empty productList}">
-					<div class="alert alert-danger">No Product Found</div>
+				<c:if test="${empty productsDetailModels}">
+					<div class="alert alert-danger">Không tìm thấy sản phẩm</div>
 				</c:if>
 
-				<c:if test="${not empty productList}">
+				<c:if test="${not empty productsDetailModels}">
 					<div class="table-responsive">
 						<table class="table table-striped align-middle text-center">
 							<thead class="table-dark">
 								<tr>
-									<th>Product Name</th>
+									<th>Tên Sản Phẩm</th>
 									<th>Slug</th>
-									<th>Price</th>
-									<th>Category</th>
-									<th>Status</th>
-									<th>Action</th>
+									<th>Giá</th>
+									<th>Danh Mục</th>
+									<th>Trạng thái</th>
+									<th>Biến Thể</th>
+									<th>Thao Tác</th>
 								</tr>
 							</thead>
 							<tbody>
-								<c:forEach var="product" items="${productList}">
+								<c:forEach var="productsDetailModel" items="${productsDetailModels}">
 									<tr>
-										<td>${product.name}</td>
-										<td>${product.slug}</td>
-										<td><fmt:formatNumber value="${product.basePrice}"
+										<td>${productsDetailModel.product.name}</td>
+										<td>${productsDetailModel.product.slug}</td>
+										<td><fmt:formatNumber value="${productsDetailModel.product.basePrice}"
 												type="number" maxFractionDigits="0" groupingUsed="true" />VND</td>
 										<!-- maxFractionDigits="0": khong lay phan thap phan
 										groupingUsed="true": dung dau phan cach hang nghin
 									-->
-										<td>${product.category.name}</td>
+										<td>${productsDetailModel.product.category.name}</td>
 										<td><c:choose>
-												<c:when test="${product.status}">
-													<span class="badge bg-success">Active</span>
+												<c:when test="${productsDetailModel.product.status}">
+													<span class="badge bg-success">Đang bán</span>
 												</c:when>
 												<c:otherwise>
-													<span class="badge bg-secondary">Inactive</span>
+													<span class="badge bg-secondary">Ngừng bán</span>
 												</c:otherwise>
 											</c:choose></td>
+											
+										<td>${productsDetailModel.totalVariants}</td>
 
 										<td>
 											<div class="btn-group" role="group">
 												<a
-													href="${pageContext.request.contextPath}/admin/Product/Products/view?id=${product.id}"
+													href="${pageContext.request.contextPath}/admin/Catalog/Products/view?id=${productsDetailModel.product.id}"
 													class="btn btn-outline-info me-1" title="View"> <i
 													class="bi bi-eye"></i> <!-- me-1 (margin-end) -->
 												</a> <a
-													href="${pageContext.request.contextPath}/admin/Product/Products/saveOrUpdate?id=${product.id}"
+													href="${pageContext.request.contextPath}/admin/Catalog/Products/saveOrUpdate?id=${productsDetailModel.product.id}"
 													class="btn btn-outline-warning me-1" title="Edit"> <i
 													class="bi bi-pencil-square"></i>
 												</a> <a href="javascript:void(0)"
 													class="btn btn-outline-danger"
-													data-id="${product.id}" data-name="${product.name}"
+													data-id="${productsDetailModel.product.id}" data-name="${productsDetailModel.product.name}"
 													onclick="showConfirmation(this)" title="Delete"> <i
 													class="bi bi-trash"></i>
 												</a>
@@ -107,13 +110,13 @@
 
 							<li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
 								<a class="page-link"
-								href="${pageContext.request.contextPath}/admin/Product/Products/searchpaginated?page=1&size=${size}">First</a>
+								href="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated?page=1&size=${size}">First</a>
 							</li>
 
 							<c:forEach begin="1" end="${totalPages}" var="i">
 								<li class="page-item ${i == currentPage ? 'active' : ''}">
 									<a class="page-link"
-									href="${pageContext.request.contextPath}/admin/Product/Products/searchpaginated?page=${i}&size=${size}">
+									href="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated?page=${i}&size=${size}">
 										${i} </a>
 								</li>
 							</c:forEach>
@@ -121,7 +124,7 @@
 							<li
 								class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
 								<a class="page-link"
-								href="${pageContext.request.contextPath}/admin/Product/Products/searchpaginated?page=${totalPages}&size=${size}">Last</a>
+								href="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated?page=${totalPages}&size=${size}">Last</a>
 							</li>
 						</ul>
 					</nav>
@@ -136,7 +139,7 @@
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="confirmationLabel">Confirmation</h5>
+					<h5 class="modal-title" id="confirmationLabel">Xác Nhận</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal"
 						aria-label="Close"></button>
 				</div>
@@ -144,9 +147,9 @@
 					Bạn có chắc muốn xóa <b><span id="productName"></span></b>?
 				</div>
 				<div class="modal-footer">
-					<a id="yesOption" href="#" class="btn btn-danger">Yes</a>
+					<a id="yesOption" href="#" class="btn btn-danger">Có</a>
 					<button type="button" class="btn btn-secondary"
-						data-bs-dismiss="modal">Close</button>
+						data-bs-dismiss="modal">Không</button>
 				</div>
 			</div>
 		</div>
@@ -163,7 +166,7 @@
 			document.getElementById("productName").innerText = name;
 			document.getElementById("yesOption").setAttribute(
 					"href",
-					'${pageContext.request.contextPath}/admin/Product/Products/delete?id='
+					'${pageContext.request.contextPath}/admin/Catalog/Products/delete?id='
 							+ id);
 			var modal = new bootstrap.Modal(document
 					.getElementById('confirmationId'));

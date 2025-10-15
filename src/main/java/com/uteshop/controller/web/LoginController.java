@@ -15,7 +15,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
 
-@WebServlet(urlPatterns = {"/login"})
+@WebServlet(urlPatterns = { "/login" })
 public class LoginController extends HttpServlet {
     IUsersService userService = new UsersServiceImpl();
 
@@ -39,30 +39,25 @@ public class LoginController extends HttpServlet {
         }
 
         Users user = userService.findByEmail(email);
-        if (user != null && BCrypt.checkpw(password, user.getPasswordHash())){
+        if (user != null && BCrypt.checkpw(password, user.getPasswordHash())) {
             // Lấy role thực tế từ database
             String role = user.getUserRole() != null ? user.getUserRole() : "USER";
-            
+
             // Tạo JWT token
             String token = JWTUtil.generateToken(email, role);
-            
-            System.out.println("=== LOGIN SUCCESS ===");
-            System.out.println("Email: " + email);
-            System.out.println("Role: " + role);
-            System.out.println("Token: " + token);
-            
+
             // Kiểm tra checkbox "remember me"
             String remember = req.getParameter("remember");
             boolean rememberMe = (remember != null);
-            
+
             // Lưu token vào Cookie
             JWTUtil.addTokenToCookie(resp, token, rememberMe);
-            
+
             // Lưu thông tin vào session
             req.getSession().setAttribute("user", user);
             req.getSession().setAttribute("email", email);
             req.getSession().setAttribute("role", role);
-            
+
             // Redirect dựa vào role
             if ("ADMIN".equals(role)) {
                 resp.sendRedirect(req.getContextPath() + "/admin/dashboard");
@@ -83,6 +78,7 @@ public class LoginController extends HttpServlet {
             }
         } else {
             req.setAttribute("error", "Email hoặc mật khẩu không đúng!");
+            req.setAttribute("email", email); // Giữ lại email đã nhập
             req.getRequestDispatcher("/views/web/login.jsp").forward(req, resp);
         }
     }
