@@ -26,20 +26,30 @@ public class DownloadImageController extends HttpServlet {
 
         System.out.println("[DownloadImageController] dir=" + dirParam + ", fname=" + fnameParam);
 
-        if (dirParam == null || fnameParam == null || dirParam.isEmpty() || fnameParam.isEmpty()) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Thiếu tham số dir hoặc fname.");
+        // Kiểm tra bắt buộc có fname
+        if (fnameParam == null || fnameParam.isEmpty()) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Thiếu tham số fname.");
             return;
         }
 
-        String dir = java.net.URLDecoder.decode(dirParam, "UTF-8");
+        String dir = "";
+        if (dirParam != null && !dirParam.isEmpty()) {
+            dir = java.net.URLDecoder.decode(dirParam, "UTF-8");
+            if (dir.contains("..")) {
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Tên thư mục không hợp lệ.");
+                return;
+            }
+        }
+
         String fname = java.net.URLDecoder.decode(fnameParam, "UTF-8");
-
-        if (dir.contains("..") || fname.contains("..")) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Tên file hoặc thư mục không hợp lệ.");
+        if (fname.contains("..")) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Tên file không hợp lệ.");
             return;
         }
 
-        File file = new File(req.getServletContext().getRealPath("/uploads/" + dir), fname);
+        File baseDir = new File(req.getServletContext().getRealPath("/uploads"));
+        File file = (dir.isEmpty()) ? new File(baseDir, fname) : new File(baseDir, dir + File.separator + fname);
+
         if (!file.exists() || file.isDirectory()) {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "File không tồn tại.");
             return;
@@ -55,7 +65,6 @@ public class DownloadImageController extends HttpServlet {
 
         try (java.io.FileInputStream in = new java.io.FileInputStream(file);
              java.io.OutputStream out = resp.getOutputStream()) {
-
             byte[] buffer = new byte[4096];
             int bytesRead;
             while ((bytesRead = in.read(buffer)) != -1) {
@@ -65,6 +74,7 @@ public class DownloadImageController extends HttpServlet {
         }
     }
 }
+
 
 /*
  * @WebServlet("/image") public class DownloadImageController extends

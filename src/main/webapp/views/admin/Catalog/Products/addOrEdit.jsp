@@ -93,7 +93,7 @@
 										<c:forEach items="${tempImages}" var="img">
 											<tr>
 												<td><img
-													src="${pageContext.request.contextPath}/image?dir=tmp&fname=${img}"
+													src="${pageContext.request.contextPath}/image?fname=${img}"
 													width="200" height="150"></td>
 												<td><input type="hidden" name="tempImages"
 													value="${img}">
@@ -103,22 +103,6 @@
 											</tr>
 										</c:forEach>
 									</tbody>
-
-									<%-- <tbody id="image-preview-body">
-										<!-- Ảnh cũ -->
-										<c:forEach items="${productsDetailModel.productImages}"
-											var="img">
-											<tr>
-												<td><img height="150" width="200"
-													src="${pageContext.request.contextPath}/image?fname=${img.imageUrl}" />
-													<input type="hidden" name="existingImageNames"
-													value="${img.imageUrl}"></td>
-												<td><a
-													href="<c:url value='/admin/Catalog/Products/image/delete?imageId=${img.id}'/>"
-													class="btn btn-outline-danger btn-sm">Xóa</a></td>
-											</tr>
-										</c:forEach>
-									</tbody> --%>
 								</table>
 							</div>
 
@@ -293,7 +277,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <td>
                 		<img src="\${contextPath}/image?dir=tmp&fname=\${fileName}" 
                     width="200" height="150" class="img-thumbnail">
-                        <input type="hidden" name="tempImages" value="${fileName}">
+                        <input type="hidden" name="tempImages" value="\${fileName}"
                     </td>
                     <td>
                         <button type="button" class="btn btn-outline-danger btn-sm remove-temp-img">

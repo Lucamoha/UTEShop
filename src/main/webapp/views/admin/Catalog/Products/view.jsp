@@ -4,15 +4,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <section class="row">
-	<div class="col-5 mt-4">
-		<div class="card-header">
-			<a
-				href="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated"
-				class="btn btn-secondary"><i class="bi bi-arrow-left-circle"></i>
-				Back</a>
-		</div>
-	</div>
-
 	<div class="col-12 mt-4">
 		<div class="card">
 			<div class="card-header">
@@ -63,21 +54,6 @@
 					</tr>
 				</table>
 			</div>
-			<div class="card-footer text-right">
-
-				<!-- Edit -->
-				<a
-					href="${pageContext.request.contextPath}/admin/Catalog/Products/saveOrUpdate?id=${product.id}"
-					class="btn btn-warning"><i class="bi bi-pencil-square"></i>
-					Edit</a>
-
-				<!-- Delete -->
-				<a href="javascript:void(0)" class="btn btn-danger"
-					data-id="${product.id}" data-name="${product.name}"
-					onclick="showConfirmation(this)"> <i class="bi bi-trash"></i>
-					Delete
-				</a>
-			</div>
 		</div>
 	</div>
 
@@ -88,35 +64,20 @@
 			</div>
 			<div class="card-body">
 				<table class="table table-bordered">
-					<thead>
-						<tr>
-							<th>Ảnh</th>
-							<th>Thao Tác</th>
-						</tr>
-					</thead>
 					<tbody>
 						<c:forEach items="${productsDetailModel.productImages}" var="img">
 							<tr>
 								<c:url value='/image' var="imageUrl">
 									<c:param name="fname" value="${img.imageUrl}" />
 								</c:url>
-								<td><img height="150" width="200"
-									src="${pageContext.request.contextPath}/image?fname=${img.imageUrl}" /></td>
-								<td><a
-									href="<c:url value='admin/Catalog/Products/image/saveOrUpdate?imageId=${img.id}'/>">Sửa</a>
-									| <a
-									href="<c:url value='admin/Catalog/Products/image/delete?imageId=${img.id}'/>">Xóa</a>
+								<td class="text-center"><img height="500" width="500"
+									src="${pageContext.request.contextPath}/image?dir=&fname=${img.imageUrl}" />
 								</td>
 							</tr>
 						</c:forEach>
 
 					</tbody>
 				</table>
-			</div>
-			<div class="card-footer text-right">
-				<a class="btn btn-outline-success"
-					href="${pageContext.request.contextPath}/admin/Catalog/Products/saveOrUpdate"><i
-					class="bi bi-plus-circle"></i> Thêm ảnh</a>
 			</div>
 		</div>
 	</div>
@@ -133,7 +94,6 @@
 							<tr>
 								<th>Thuộc tính</th>
 								<th>Giá trị</th>
-								<th>Thao Tác</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -141,24 +101,6 @@
 								<tr>
 									<td>${attr.name}</td>
 									<td>${attr.displayValue}</td>
-
-									<td>
-										<div class="btn-group" role="group">
-											<a
-												href="${pageContext.request.contextPath}/admin/Catalog/Products/view?id=${v.id}"
-												class="btn btn-outline-info me-1" title="View"> <i
-												class="bi bi-eye"></i> <!-- me-1 (margin-end) -->
-											</a> <a
-												href="${pageContext.request.contextPath}/admin/Catalog/Products/saveOrUpdate?id=${v.id}"
-												class="btn btn-outline-warning me-1" title="Edit"> <i
-												class="bi bi-pencil-square"></i>
-											</a> <a href="javascript:void(0)" class="btn btn-outline-danger"
-												data-id="${product.id}" data-name="${product.name}"
-												onclick="showConfirmation(this)" title="Delete"> <i
-												class="bi bi-trash"></i>
-											</a>
-										</div>
-									</td>
 								</tr>
 							</c:forEach>
 						</tbody>
@@ -182,7 +124,6 @@
 								<th>Giá</th>
 								<th>Trạng Thái</th>
 								<th>Tùy chọn</th>
-								<th>Thao Tác</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -204,29 +145,30 @@
 										${opt}<br />
 										</c:forEach></td>
 
-									<td>
-										<div class="btn-group" role="group">
-											<a
-												href="${pageContext.request.contextPath}/admin/Catalog/Products/view?id=${v.id}"
-												class="btn btn-outline-info me-1" title="View"> <i
-												class="bi bi-eye"></i> <!-- me-1 (margin-end) -->
-											</a> <a
-												href="${pageContext.request.contextPath}/admin/Catalog/Products/saveOrUpdate?id=${v.id}"
-												class="btn btn-outline-warning me-1" title="Edit"> <i
-												class="bi bi-pencil-square"></i>
-											</a> <a href="javascript:void(0)" class="btn btn-outline-danger"
-												data-id="${product.id}" data-name="${product.name}"
-												onclick="showConfirmation(this)" title="Delete"> <i
-												class="bi bi-trash"></i>
-											</a>
-										</div>
-									</td>
 								</tr>
 							</c:forEach>
 						</tbody>
 					</table>
 				</div>
 			</div>
+		</div>
+	</div>
+
+	<div class="col-12 mt-4">
+		<div class="card-header">
+			<a
+				href="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated"
+				class="btn btn-secondary"><i class="bi bi-arrow-left-circle"></i>
+				Trở về</a> <a
+				href="${pageContext.request.contextPath}/admin/Catalog/Products/saveOrUpdate?id=${product.id}"
+				class="btn btn-warning"><i class="bi bi-pencil-square"></i> Sửa</a>
+
+			<!-- Delete -->
+			<a href="javascript:void(0)" class="btn btn-danger"
+				data-id="${product.id}" data-name="${product.name}"
+				onclick="showConfirmation(this)"> <i class="bi bi-trash"></i>
+				Xóa
+			</a>
 		</div>
 	</div>
 
