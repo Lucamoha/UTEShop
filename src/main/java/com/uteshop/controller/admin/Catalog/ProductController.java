@@ -77,6 +77,47 @@ public class ProductController extends HttpServlet {
 	// private IProductAttributeValuesService productAttributeValuesService = new
 	// ProductAttributeValuesServiceImpl();
 
+	private void loadProductDetails(HttpServletRequest req, int id) {
+
+		Products product = productsService.findById(id);
+
+		ProductsDetailModel productsDetailModel = new ProductsDetailModel();
+		productsDetailModel.setProductVariantsDetails(productsVariantsService.getVariantsByProductId(product.getId()));
+		productsDetailModel.setProductImages(productImagesService.getImageById(product.getId()));
+		req.setAttribute("product", product);
+
+		Map<Integer, ProductVariantDisplayModel> grouped = new LinkedHashMap<>();
+
+		for (ProductVariantDetailsModel d : productsDetailModel.getProductVariantsDetails()) {
+			ProductVariantDisplayModel view = grouped.get(d.getId());
+			if (view == null) {
+				view = new ProductVariantDisplayModel();
+				view.setId(d.getId());
+				view.setSKU(d.getSKU());
+				view.setPrice(d.getPrice());
+				view.setStatus(d.getStatus());
+				grouped.put(d.getId(), view);
+			}
+			// Ghép option dạng "TYPE: VALUE"
+			view.getOptions().add(d.getCode() + ": " + d.getValue());
+		}
+
+		// Chuyển thành list để JSP dễ duyệt
+		List<ProductVariantDisplayModel> displayList = new ArrayList<>(grouped.values());
+
+		List<ProductAttributeDisplayModel> attributes = productAttributesService
+				.getAttributesByProductId(product.getId());
+
+		List<String> imageNames = productsDetailModel.getProductImages().stream().map(ProductImages::getImageUrl)
+				.toList();
+		req.setAttribute("tempImages", imageNames);
+
+		// Gửi sang JSP
+		req.setAttribute("variantList", displayList);
+		req.setAttribute("productsDetailModel", productsDetailModel);
+		req.setAttribute("productAttributes", attributes);
+	}
+
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
@@ -126,6 +167,7 @@ public class ProductController extends HttpServlet {
 		} else if (uri.contains("saveOrUpdate")) {
 			String id = req.getParameter("id");
 			List<Categories> categoryList = categoriesService.findAll();
+			req.setAttribute("categoryList", categoryList);
 
 			List<Attributes> availableAttributes = attributesService.findAll();
 			req.setAttribute("availableAttributes", availableAttributes);
@@ -133,51 +175,18 @@ public class ProductController extends HttpServlet {
 			List<OptionTypes> optionTypes = optionTypeService.findAll();
 			req.setAttribute("availableOptionTypes", optionTypes);
 
-			if (id != null) {
-				// dang o che do edit -> nguoc lai la add
-				Products product = productsService.findById(Integer.parseInt(id));
-				req.setAttribute("product", product);
+			// nếu là sửa -> load thông tin sản phẩm hiện tại
+			if (id != null && !id.isEmpty()) {
+				loadProductDetails(req, Integer.parseInt(id));
 			}
-			req.setAttribute("categoryList", categoryList);
-			req.getRequestDispatcher("/views/admin/Catalog/Products/addOrEdit.jsp").forward(req, resp);
+
+			req.getRequestDispatcher("/views/admin/Catalog/Products/update.jsp").forward(req, resp);
 		} else if (uri.contains("view")) {
 
 			String id = req.getParameter("id");
-			Products product = productsService.findById(Integer.parseInt(id));
-
-			ProductsDetailModel productsDetailModel = new ProductsDetailModel();
-			productsDetailModel
-					.setProductVariantsDetails(productsVariantsService.getVariantsByProductId(product.getId()));
-			productsDetailModel.setProductImages(productImagesService.getImageById(product.getId()));
-			req.setAttribute("product", product);
-
-			Map<Integer, ProductVariantDisplayModel> grouped = new LinkedHashMap<>();
-
-			for (ProductVariantDetailsModel d : productsDetailModel.getProductVariantsDetails()) {
-				ProductVariantDisplayModel view = grouped.get(d.getId());
-				if (view == null) {
-					view = new ProductVariantDisplayModel();
-					view.setId(d.getId());
-					view.setSKU(d.getSKU());
-					view.setPrice(d.getPrice());
-					view.setStatus(d.getStatus());
-					grouped.put(d.getId(), view);
-				}
-				// Ghép option dạng "TYPE: VALUE"
-				view.getOptions().add(d.getCode() + ": " + d.getValue());
+			if (id != null) {
+				loadProductDetails(req, Integer.parseInt(id));
 			}
-
-			// Chuyển thành list để JSP dễ duyệt
-			List<ProductVariantDisplayModel> displayList = new ArrayList<>(grouped.values());
-
-			List<ProductAttributeDisplayModel> attributes = productAttributesService
-					.getAttributesByProductId(product.getId());
-
-			// Gửi sang JSP
-			req.setAttribute("variantList", displayList);
-			req.setAttribute("productsDetailModel", productsDetailModel);
-			req.setAttribute("productAttributes", attributes);
-
 			req.getRequestDispatcher("/views/admin/Catalog/Products/view.jsp").forward(req, resp);
 		} else if (uri.contains("delete")) {
 			String id = req.getParameter("id");
@@ -204,9 +213,11 @@ public class ProductController extends HttpServlet {
 
 			// Nếu có id -> update
 			Integer id = null;
+			boolean isUpdate = false;
 			if (idStr != null && !idStr.isEmpty()) {
 				id = Integer.parseInt(idStr);
 				product = productsService.findById(id);
+				isUpdate = true;
 			}
 
 			// Gán giá trị tạm thời để giữ lại form nếu lỗi
@@ -297,7 +308,7 @@ public class ProductController extends HttpServlet {
 
 			// Lưu sản phẩm vào db nếu không lỗi
 			String message;
-			if (idStr != null && !idStr.isEmpty()) {
+			if (isUpdate) {
 				productsService.update(product);
 				message = "Sản phẩm đã được sửa!";
 			} else {
@@ -307,7 +318,64 @@ public class ProductController extends HttpServlet {
 				System.out.println("===> Product ID sau khi insert: " + product.getId());
 
 				product = productsService.findById(product.getId());// lấy lại product để dùng về sau -> không có -> lỗi
-																	// transient instance
+																	// // transient instance
+			}
+
+			if (isUpdate) {
+				// Chỉ xóa khi có dữ liệu mới được gửi từ form
+				String[] skus = req.getParameterValues("newVariants.sku");
+				String[] attributeIds = req.getParameterValues("newAttributes[].attributeId");
+
+				if (skus != null && skus.length > 0) {
+					productsVariantsService.deleteAllByProductId(product.getId());
+				}
+
+				if (attributeIds != null && attributeIds.length > 0) {
+					productAttributeValuesService.deleteByProductId(product.getId());
+				}
+
+				String uploadPath = req.getServletContext().getRealPath("/uploads");
+
+				// Danh sách ảnh người dùng giữ lại
+				String[] remainingImgs = req.getParameterValues("existingImages");
+				List<String> remaining = (remainingImgs != null) ? Arrays.asList(remainingImgs) : new ArrayList<>();
+
+				productImagesService.deleteRemovedImages(product.getId(), remaining, uploadPath);
+				
+				String[] existingVariantIds = req.getParameterValues("existingVariants.id");
+				String[] existingVariantSkus = req.getParameterValues("existingVariants.sku");
+				String[] existingVariantPrices = req.getParameterValues("existingVariants.price");
+				String[] existingVariantStatuses = req.getParameterValues("existingVariants.status");
+
+				if (existingVariantIds != null) {
+				    for (int i = 0; i < existingVariantIds.length; i++) {
+				        int variantId = Integer.parseInt(existingVariantIds[i]);
+				        ProductVariants variant = productsVariantsService.findById(variantId);
+
+				        if (variant != null) {
+				            variant.setSKU(existingVariantSkus[i]);
+				            variant.setPrice(new BigDecimal(existingVariantPrices[i]));
+				            variant.setStatus(Boolean.parseBoolean(existingVariantStatuses[i]));
+				            productsVariantsService.update(variant);
+				        }
+				    }
+				}
+				
+				String[] existingAttrIds = req.getParameterValues("existingAttributes.attributeId");
+				String[] existingAttrValues = req.getParameterValues("existingAttributes.value");
+
+				if (existingAttrIds != null) {
+				    for (int i = 0; i < existingAttrIds.length; i++) {
+				        int attrId = Integer.parseInt(existingAttrIds[i]);
+				        String value = existingAttrValues[i];
+
+				        ProductAttributeValues pav = productAttributeValuesService.findByProductIdAndAttributeId(product.getId(), attrId);
+				        if (pav != null) {
+				            pav.setValueText(value);
+				            productAttributeValuesService.update(pav);
+				        }
+				    }
+				}
 
 			}
 
@@ -328,18 +396,17 @@ public class ProductController extends HttpServlet {
 					variant.setPrice(new BigDecimal(prices[i]));
 					variant.setStatus(Boolean.parseBoolean(statuses[i]));
 
-					variant.setPrice(new BigDecimal(prices[i]));
+					if (prices[i] != null && !prices[i].isEmpty()) {
+						variant.setPrice(new BigDecimal(prices[i]));
+					} else {
+						variant.setPrice(BigDecimal.ZERO);
+					}
 					System.out.println("-> variant.price = " + variant.getPrice());
 
 					// Lưu biến thể vào DB để sinh Id
 					productsVariantsService.insert(variant);
 					System.out.println(">>> Đã lưu biến thể: " + variant.getSKU() + " (ID = " + variant.getId() + ")");
 
-					// ===== 2. Liên kết các option values (màu, dung lượng, ...) =====
-					// Ở log bạn gửi: newVariants[].optionValueIds[] = [5, 1, 6, 2]
-					// => giả định 2 option cho mỗi biến thể => 4 phần tử => chia đều cho 2 biến thể
-					// Nếu form có thể linh động số option, bạn cần sửa logic này theo cấu trúc thực
-					// tế
 					int optionsPerVariant = optionValueIds.length / skus.length;
 					for (int j = 0; j < optionsPerVariant; j++) {
 						int optionValueId = Integer.parseInt(optionValueIds[optionIndex++]);
@@ -351,13 +418,6 @@ public class ProductController extends HttpServlet {
 						vo.setVariant(variant);
 						vo.setOptionValue(ov);
 						vo.setOptionType(ot);
-
-						/*
-						 * EntityManager enma = JPAConfigs.getEntityManager(); OptionValues ovManaged =
-						 * enma.getReference(OptionValues.class, ov.getId()); OptionTypes otManaged =
-						 * enma.getReference(OptionTypes.class, ot.getId());
-						 * vo.setOptionValue(ovManaged); vo.setOptionType(otManaged);
-						 */
 
 						variantOptionsService.insert(vo);
 					}
@@ -398,7 +458,7 @@ public class ProductController extends HttpServlet {
 				System.out.println("--- BẮT ĐẦU XỬ LÝ ẢNH TẠM ---");
 				String[] tempImages = req.getParameterValues("tempImages");
 				System.out.println("Danh sách ảnh tạm: " + Arrays.toString(tempImages));
-				
+
 				if (tempImages != null && tempImages.length > 0) {
 					Path tmpDir = Paths.get(req.getServletContext().getRealPath("/uploads/tmp"));
 					Path uploadDir = Paths.get(req.getServletContext().getRealPath("/uploads"));
@@ -406,29 +466,30 @@ public class ProductController extends HttpServlet {
 						Files.createDirectories(uploadDir);
 
 					for (String imgName : tempImages) {
-					    if (imgName == null || imgName.isBlank()) continue; // bỏ qua nếu rỗng
+						if (imgName == null || imgName.isBlank())
+							continue; // bỏ qua nếu rỗng
 
-					    Path src = tmpDir.resolve(imgName);
-					    Path dest = uploadDir.resolve(imgName);
+						Path src = tmpDir.resolve(imgName);
+						Path dest = uploadDir.resolve(imgName);
 
-					    // Đảm bảo không phải thư mục
-					    if (Files.isDirectory(src)) {
-					        System.out.println("Bỏ qua vì không phải file: " + src);
-					        continue;
-					    }
+						// Đảm bảo không phải thư mục
+						if (Files.isDirectory(src)) {
+							System.out.println("Bỏ qua vì không phải file: " + src);
+							continue;
+						}
 
-					    if (Files.exists(src)) {
-					        Files.move(src, dest, StandardCopyOption.REPLACE_EXISTING);
-					        System.out.println("===> ĐÃ CHUYỂN FILE: " + imgName);
+						if (Files.exists(src)) {
+							Files.move(src, dest, StandardCopyOption.REPLACE_EXISTING);
+							System.out.println("===> ĐÃ CHUYỂN FILE: " + imgName);
 
-					        // Lưu DB
-					        ProductImages img = new ProductImages();
-					        img.setImageUrl(imgName);
-					        img.setProduct(product);
-					        productImagesService.insert(img);
-					    } else {
-					        System.out.println("Ảnh tạm không tồn tại: " + imgName);
-					    }
+							// Lưu DB
+							ProductImages img = new ProductImages();
+							img.setImageUrl(imgName);
+							img.setProduct(product);
+							productImagesService.insert(img);
+						} else {
+							System.out.println("Ảnh tạm không tồn tại: " + imgName);
+						}
 					}
 
 				} else {

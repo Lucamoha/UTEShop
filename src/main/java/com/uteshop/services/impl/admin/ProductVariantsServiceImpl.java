@@ -46,4 +46,19 @@ public class ProductVariantsServiceImpl implements IProductsVariantsService {
 	public void insert(ProductVariants productVariant) {
 		productVariantsDao.insert(productVariant);
 	}
+
+	@Override
+	public void deleteAllByProductId(Integer productId) {
+		productVariantsDao.deleteAllByProductId(productId);
+	}
+
+	@Override
+	public ProductVariants findById(int variantId) {
+		return productVariantsDao.findById(variantId);
+	}
+
+	@Override
+	public void update(ProductVariants variant) {
+		productVariantsDao.update(variant);
+	}
 }

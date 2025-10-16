@@ -19,5 +19,13 @@ public class ProductImagesServiceImpl implements IProductImagesService{
 	public void insert(ProductImages productImage) {
 		productImagesDaoImpl.insert(productImage);
 	}
+	@Override
+	public void deleteByProductId(Integer productId, String uploadPath) {
+		productImagesDaoImpl.deleteByProductId(productId, uploadPath);		
+	}
+	@Override
+	public void deleteRemovedImages(Integer productId, List<String> remainingFileNames, String uploadPath) {
+		productImagesDaoImpl.deleteRemovedImages(productId, remainingFileNames, uploadPath);
+	}
 
 }

@@ -9,6 +9,8 @@ import com.uteshop.dto.admin.ProductVariantDetailsModel;
 import com.uteshop.entity.catalog.ProductVariants;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.TypedQuery;
 
 public class ProductVariantsDaoImpl extends AbstractDao<ProductVariants> implements IProductVariantsDao {
 	public ProductVariantsDaoImpl() {
@@ -108,6 +110,47 @@ public class ProductVariantsDaoImpl extends AbstractDao<ProductVariants> impleme
 		} finally {
 			enma.close();
 		}
+	}
+
+	@Override
+	public void deleteAllByProductId(Integer productId) {
+		EntityManager em = JPAConfigs.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            // Lấy tất cả các biến thể thuộc productId
+            TypedQuery<ProductVariants> query = em.createQuery(
+                    "SELECT v FROM ProductVariants v WHERE v.product.id = :productId", ProductVariants.class);
+            query.setParameter("productId", productId);
+            List<ProductVariants> variants = query.getResultList();
+
+            for (ProductVariants variant : variants) {
+                // Xóa bản ghi VariantOptions liên quan trước để tránh lỗi ràng buộc khóa ngoại
+                em.createQuery("DELETE FROM VariantOptions vo WHERE vo.variant.id = :variantId")
+                  .setParameter("variantId", variant.getId())
+                  .executeUpdate();
+
+                // Xóa chính ProductVariants
+                em.remove(em.contains(variant) ? variant : em.merge(variant));
+            }
+            tx.commit();
+            System.out.println("✅ Đã xóa tất cả biến thể cho productId=" + productId);
+        } catch (Exception e) {
+            tx.rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+	}
+
+	@Override
+	public ProductVariants findById(int variantId) {
+		return this.findById(variantId);
+	}
+	
+	@Override
+	public void update(ProductVariants variant) {
+		this.update(variant);
 	}
 
 }
