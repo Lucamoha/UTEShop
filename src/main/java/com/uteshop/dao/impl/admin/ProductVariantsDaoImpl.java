@@ -73,7 +73,7 @@ public class ProductVariantsDaoImpl extends AbstractDao<ProductVariants> impleme
 					        pv.Id,
 					        pv.product.Id,
 					        pv.SKU,
-					        pv.Price,
+					        pv.price,
 					        pv.Status,
 					        pv.CreatedAt,
 					        pv.UpdatedAt,

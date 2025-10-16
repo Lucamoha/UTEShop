@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Data
@@ -21,4 +22,7 @@ public class OptionTypes implements Serializable {
 
     @Column(nullable = false, unique = true, length = 30)
     String Code;
+    
+    @OneToMany(mappedBy = "optionType", fetch = FetchType.EAGER)
+    private List<OptionValues> values;
 }

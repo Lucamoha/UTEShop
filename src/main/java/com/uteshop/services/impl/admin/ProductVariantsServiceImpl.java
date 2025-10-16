@@ -41,4 +41,9 @@ public class ProductVariantsServiceImpl implements IProductsVariantsService {
 	public int count(String searchKeyword, String searchKeywordColumnName) {
 		return productVariantsDao.count(searchKeyword, searchKeywordColumnName);
 	}
+
+	@Override
+	public void insert(ProductVariants productVariant) {
+		productVariantsDao.insert(productVariant);
+	}
 }

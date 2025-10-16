@@ -90,16 +90,13 @@
 				<table class="table table-bordered">
 					<thead>
 						<tr>
-							<th>STT</th>
 							<th>Ảnh</th>
 							<th>Thao Tác</th>
 						</tr>
 					</thead>
 					<tbody>
-						<c:forEach items="${productsDetailModel.productImages}" var="img"
-							varStatus="stt">
+						<c:forEach items="${productsDetailModel.productImages}" var="img">
 							<tr>
-								<td>${stt.index + 1}</td>
 								<c:url value='/image' var="imageUrl">
 									<c:param name="fname" value="${img.imageUrl}" />
 								</c:url>

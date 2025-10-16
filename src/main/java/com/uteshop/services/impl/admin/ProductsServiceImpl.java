@@ -35,8 +35,8 @@ public class ProductsServiceImpl implements IProductsService {
 		return productsDao.count(searchKeyword, searchKeywordColumnName);
 	}
 	@Override
-	public Products findBySlug(String slug) {
-		return productsDao.findBySlug(slug);
+	public Products findByName(String name) {
+		return productsDao.findByName(name);
 	}
 	@Override
 	public List<Object[]> getTopSellingProducts(int limit) {

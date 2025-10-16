@@ -49,4 +49,9 @@ public class OptionTypesServiceImpl implements IOptionTypesService {
 		return null;
 	}
 
+	@Override
+	public List<OptionTypes> findAll() {
+		return optionTypesDaoImpl.findAll();
+	}
+
 }

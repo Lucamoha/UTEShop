@@ -3,12 +3,17 @@ package com.uteshop.dao.impl.admin;
 import java.util.List;
 
 import com.uteshop.configs.JPAConfigs;
+import com.uteshop.dao.AbstractDao;
 import com.uteshop.dao.admin.IProductImagesDao;
 import com.uteshop.entity.catalog.ProductImages;
 
 import jakarta.persistence.EntityManager;
 
-public class ProductImagesDaoImpl implements IProductImagesDao {
+public class ProductImagesDaoImpl extends AbstractDao<ProductImages> implements IProductImagesDao {
+
+	public ProductImagesDaoImpl() {
+		super(ProductImages.class);
+	}
 
 	@Override
 	public List<ProductImages> getImageById(int id) {

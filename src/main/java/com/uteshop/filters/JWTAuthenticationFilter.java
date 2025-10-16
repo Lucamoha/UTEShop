@@ -48,10 +48,19 @@ public class JWTAuthenticationFilter implements Filter {
 
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
+        
+        String contentType = req.getContentType();
+        // KIỂM TRA: Nếu đây là một request upload file, BỎ QUA TOÀN BỘ LOGIC CỦA FILTER NÀY
+        // và cho request đi thẳng đến servlet đích.
+        if (contentType != null && contentType.startsWith("multipart/form-data")) {
+            chain.doFilter(request, response);
+            return; // Dừng filter tại đây
+        }
 
         String requestURI = req.getRequestURI();
         String contextPath = req.getContextPath();
         String path = requestURI.substring(contextPath.length());
+       
 
         // Cho phép các URL public đi qua không cần kiểm tra
         if (isPublicUrl(path)) {

@@ -16,17 +16,6 @@ public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsD
 	}
 
 	@Override
-	public Products findBySlug(String slug) {
-		EntityManager enma = JPAConfigs.getEntityManager();
-		try {
-			String jpql = "SELECT p FROM Products p WHERE p.Slug = :slug";
-			return enma.createQuery(jpql, Products.class).setParameter("slug", slug).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
-	}
-
-	@Override
 	public List<Object[]> getTopSellingProducts(int limit) {
 		EntityManager enma = JPAConfigs.getEntityManager();
 		try {
@@ -39,6 +28,17 @@ public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsD
 			return enma.createQuery(jpql, Object[].class).setMaxResults(limit).getResultList();
 		} finally {
 			enma.close();
+		}
+	}
+
+	@Override
+	public Products findByName(String name) {
+		EntityManager enma = JPAConfigs.getEntityManager();
+		try {
+			String jpql = "SELECT p FROM Products p WHERE p.Name = :name";
+			return enma.createQuery(jpql, Products.class).setParameter("name", name).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
 		}
 	}
 }

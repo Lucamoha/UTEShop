@@ -22,16 +22,60 @@ public abstract class AbstractDao<T> {
 		this.entityClass = cls;
 	}
 
+	/*
+	 * public void insert(T entity) { EntityManager enma =
+	 * JPAConfigs.getEntityManager(); EntityTransaction trans =
+	 * enma.getTransaction(); try { trans.begin(); enma.persist(entity);
+	 * trans.commit(); } catch (Exception e) { e.printStackTrace();
+	 * trans.rollback(); throw e; } finally { enma.close(); } }
+	 */
+
 	public void insert(T entity) {
 		EntityManager enma = JPAConfigs.getEntityManager();
 		EntityTransaction trans = enma.getTransaction();
 		try {
 			trans.begin();
+
 			enma.persist(entity);
+			enma.flush(); // ép Hibernate sinh ID
+
 			trans.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
-			trans.rollback();
+			if (trans.isActive())
+				trans.rollback();
+			throw e;
+		} finally {
+			enma.close();
+		}
+	}
+
+	// Dành cho entity hoàn toàn mới (Product, Category,...)
+	/*
+	 * public void insert(T entity) { EntityManager enma =
+	 * JPAConfigs.getEntityManager(); EntityTransaction trans =
+	 * enma.getTransaction(); try { trans.begin(); enma.persist(entity);
+	 * enma.flush(); enma.refresh(entity); trans.commit(); } catch (Exception e) {
+	 * if (trans.isActive()) trans.rollback(); throw e; } finally { enma.close(); }
+	 * }
+	 */
+
+	// Dành cho entity có liên kết (VariantOptions, ProductVariants,...)
+	public void insertByMerge(T entity) {
+		EntityManager enma = JPAConfigs.getEntityManager();
+		EntityTransaction trans = enma.getTransaction();
+		try {
+			trans.begin();
+
+			T managedEntity = enma.merge(entity); // merge trả về bản managed
+			enma.flush(); // ép ghi DB để sinh ID
+
+			// Nếu cần cập nhật lại ID về entity gốc: //
+			// BeanUtils.copyProperties(managedEntity, entity);
+
+			trans.commit();
+		} catch (Exception e) {
+			if (trans.isActive())
+				trans.rollback();
 			throw e;
 		} finally {
 			enma.close();
@@ -63,8 +107,9 @@ public abstract class AbstractDao<T> {
 			enma.remove(entity);
 			trans.commit();
 		} catch (Exception e) {
-			if (trans.isActive()) trans.rollback();
-	        throw new RuntimeException("Không thể xóa vì có dữ liệu đang dùng ở nơi khác!", e);
+			if (trans.isActive())
+				trans.rollback();
+			throw new RuntimeException("Không thể xóa vì có dữ liệu đang dùng ở nơi khác!", e);
 		} finally {
 			enma.close();
 		}

@@ -12,4 +12,5 @@ public interface IProductsVariantsService {
 	List<ProductVariantDetailsModel> getVariantsByProductId(int productId);
 	int countVariantsByProductId(int productId);
 	List<ProductVariants> findAll(boolean all, int firstResult, int maxResult, String searchKeyword, String searchKeywordColumnName);
+	void insert(ProductVariants productVariant);
 }

@@ -16,7 +16,7 @@ public class VariantOptions implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
-    Id id;
+    Id id = new Id();
 
     @MapsId("variantId")
     @ManyToOne(fetch = FetchType.LAZY)

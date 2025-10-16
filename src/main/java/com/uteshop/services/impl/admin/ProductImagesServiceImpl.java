@@ -10,9 +10,14 @@ import com.uteshop.services.admin.IProductImagesService;
 public class ProductImagesServiceImpl implements IProductImagesService{
 
 	IProductImagesDao productImagesDao = new ProductImagesDaoImpl();
+	ProductImagesDaoImpl productImagesDaoImpl = new ProductImagesDaoImpl();
 	@Override
 	public List<ProductImages> getImageById(int id) {
 		return productImagesDao.getImageById(id);
+	}
+	@Override
+	public void insert(ProductImages productImage) {
+		productImagesDaoImpl.insert(productImage);
 	}
 
 }
