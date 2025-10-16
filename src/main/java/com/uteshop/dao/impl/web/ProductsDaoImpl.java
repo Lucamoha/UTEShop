@@ -66,24 +66,38 @@ public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsD
     public List<Products> getRelativeProducts(int productId) {
         EntityManager enma = JPAConfigs.getEntityManager();
         try {
-            Integer categoryId = enma.createQuery(
-                            "SELECT p.category.id FROM Products p WHERE p.id = :productId", Integer.class)
+            // Lấy thông tin category của sản phẩm hiện tại
+            Integer parentCategoryId = enma.createQuery(
+                            """
+                            SELECT COALESCE(p.category.parent.id, p.category.id)
+                            FROM Products p 
+                            WHERE p.id = :productId
+                            """, Integer.class)
                     .setParameter("productId", productId)
                     .getSingleResult();
 
-            if (categoryId == null) {
+            if (parentCategoryId == null) {
                 return List.of();
             }
 
+            // Lấy tất cả sản phẩm có cùng parent category
+            // Bao gồm: 
+            // 1. Sản phẩm có category.parent.id = parentCategoryId
+            // 2. Sản phẩm có category.id = parentCategoryId (nếu sản phẩm hiện tại ở root)
             String jpql = """
             SELECT p FROM Products p
-            WHERE p.category.id = :categoryId AND p.id <> :productId
+            WHERE (
+                COALESCE(p.category.parent.id, p.category.id) = :parentCategoryId
+            )
+            AND p.id <> :productId
+            AND p.Status = true
             ORDER BY p.CreatedAt DESC
             """;
 
             return enma.createQuery(jpql, Products.class)
-                    .setParameter("categoryId", categoryId)
+                    .setParameter("parentCategoryId", parentCategoryId)
                     .setParameter("productId", productId)
+                    .setMaxResults(20) // Giới hạn 20 sản phẩm
                     .getResultList();
 
         } catch (NoResultException e) {
