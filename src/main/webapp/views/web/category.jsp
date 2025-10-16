@@ -358,7 +358,7 @@
 										</a>
 									</div>
 
-									<a href="product-detail.html?id=${product.id}"
+									<a href="${pageContext.request.contextPath}/product-detail?product=${product.slug}"
 										class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
 										Xem chi tiết </a>
 								</div>

@@ -139,7 +139,7 @@ pageEncoding="UTF-8"%> <%@ include file="/commons/taglib.jsp"%>
       </div>
 
       <div class="divider">
-        <span>hoặc</span>
+        <span></span>
       </div>
 
       <div class="login-link">
