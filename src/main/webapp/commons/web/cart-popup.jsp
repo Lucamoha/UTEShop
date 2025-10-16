@@ -11,8 +11,8 @@
                 Giỏ hàng
             </span>
 
-            <div class="fs-35 lh-10 cl2 p-lr-5 pointer hov-cl1 trans-04 js-hide-cart">
-                <i class="zmdi zmdi-close"></i>
+            <div class="fs-35 lh-10 cl2 p-lr-5 pointer hov-cl1 trans-04 js-hide-cart" style="position: relative;">
+                <span style="font-size: 35px; line-height: 1; font-family: 'Segoe UI', Arial, sans-serif;">×</span>
             </div>
         </div>
         
@@ -33,15 +33,11 @@
 
                 <div class="header-cart-buttons flex-w w-full">
                     <a href="${pageContext.request.contextPath}/cart" 
-                       class="flex-c-m stext-101 cl0 size-107 bg3 bor2 hov-btn3 p-lr-15 trans-04 m-r-8 m-b-10">
+                       class="flex-c-m stext-101 cl0 size-107 bg3 bor2 hov-btn3 p-lr-15 trans-04 m-r-8 m-b-10"
+                       style="width: 100%;">
                         Xem giỏ hàng
                     </a>
 
-                    <a href="#" 
-                       onclick="alert('Tính năng đang phát triển'); return false;"
-                       class="flex-c-m stext-101 cl0 size-107 bg3 bor2 hov-btn3 p-lr-15 trans-04 m-b-10">
-                        Thanh toán
-                    </a>
                 </div>
             </div>
         </div>
@@ -110,13 +106,17 @@ function loadCartPopup() {
                         if (countData.needLogin) {
                             itemsContainer.innerHTML = `
                                 <div class="text-center p-t-50 p-b-50 p-l-20 p-r-20">
-                                    <i class="zmdi zmdi-account-circle" style="font-size: 80px; color: #717fe0;"></i>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                                    </svg>
                                     <p class="mtext-109 cl2 p-t-20 p-b-10">Bạn chưa đăng nhập</p>
                                     <p class="stext-113 cl6 p-b-30">Vui lòng đăng nhập để sử dụng giỏ hàng</p>
                                     <a href="${pageContext.request.contextPath}/login?redirect=${pageContext.request.contextPath}/cart" 
                                        class="flex-c-m stext-101 cl0 bg1 bor1 hov-btn1 p-lr-30 p-tb-10 trans-04 pointer" 
                                        style="display: inline-block; border-radius: 25px; text-decoration: none;">
-                                        <i class="zmdi zmdi-account p-r-5"></i>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" style="margin-right: 8px;" viewBox="0 0 16 16">
+                                            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                                        </svg>
                                         Đăng nhập ngay
                                     </a>
                                 </div>

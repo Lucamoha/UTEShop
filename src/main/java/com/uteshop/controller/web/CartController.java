@@ -8,13 +8,17 @@ import com.uteshop.entity.cart.Vouchers;
 import com.uteshop.services.impl.web.AddressesServiceImpl;
 import com.uteshop.services.impl.web.BranchesServiceImpl;
 import com.uteshop.services.impl.web.CartsServiceImpl;
+import com.uteshop.services.impl.web.CategoriesServiceImpl;
 import com.uteshop.services.impl.web.UsersServiceImpl;
 import com.uteshop.services.impl.web.VouchersServiceImpl;
 import com.uteshop.services.web.IAddressesService;
 import com.uteshop.services.web.IBranchesService;
 import com.uteshop.services.web.ICartsService;
+import com.uteshop.services.web.ICategoriesService;
 import com.uteshop.services.web.IUsersService;
 import com.uteshop.services.web.IVouchersService;
+
+import com.uteshop.entity.catalog.Categories;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -35,6 +39,7 @@ public class CartController extends HttpServlet {
     private final IBranchesService branchesService = new BranchesServiceImpl();
     private final IAddressesService addressesService = new AddressesServiceImpl();
     private final IVouchersService vouchersService = new VouchersServiceImpl();
+    private final ICategoriesService categoriesService = new CategoriesServiceImpl();
     private final Gson gson = new Gson();
     
     /**
@@ -82,6 +87,10 @@ public class CartController extends HttpServlet {
         
         switch (path) {
             case "/cart":
+                // Load menu cha cho header
+                List<Categories> parents = categoriesService.findParents();
+                req.setAttribute("parentCategories", parents);
+                
                 // View cart page
                 Map<String, Object> cartData = cartsService.calculateCartTotal(userId);
                 req.setAttribute("cartData", cartData);

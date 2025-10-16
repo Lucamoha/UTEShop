@@ -1,0 +1,588 @@
+/* Custom quantity buttons - Modern design */
+.cart-btn-decrease,
+.cart-btn-increase {
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cart-btn-decrease:hover,
+.cart-btn-increase:hover {
+    background-color: #007bff;
+    color: white !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+/* Fix icon display - use text instead */
+.cart-btn-decrease i::before,
+.cart-btn-increase i::before {
+    content: '' !important;
+    display: none !important;
+}
+
+.cart-btn-decrease::after {
+    content: '−' !important;
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif !important;
+    font-size: 20px !important;
+    font-weight: 400 !important;
+    display: block;
+}
+
+.cart-btn-increase::after {
+    content: '+' !important;
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif !important;
+    font-size: 20px !important;
+    font-weight: 400 !important;
+    display: block;
+}
+
+.cart-btn-decrease:active,
+.cart-btn-increase:active {
+    transform: translateY(0);
+}
+
+/* Remove button - Modern design with X text */
+.btn-remove-item {
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #e74c3c !important;
+    position: relative;
+}
+
+.btn-remove-item i {
+    display: none !important;
+}
+
+.btn-remove-item::after {
+    content: '×' !important;
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif !important;
+    font-size: 28px !important;
+    font-weight: 400 !important;
+    line-height: 1;
+    color: #e74c3c !important;
+}
+
+.btn-remove-item:hover {
+    color: #fff !important;
+    background-color: #e74c3c !important;
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+}
+
+.btn-remove-item:hover::after {
+    color: #fff !important;
+}
+
+.btn-remove-item:active {
+    transform: scale(0.95);
+}
+
+/* Table header alignment - All center aligned */
+.table-shopping-cart .table_head .column-1 {
+    text-align: center;
+    padding-left: 25px !important;
+    padding-right: 10px !important;
+}
+
+.table-shopping-cart .table_head .column-2 {
+    text-align: center;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+}
+
+.table-shopping-cart .table_head .column-3 {
+    text-align: center;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+}
+
+.table-shopping-cart .table_head .column-4 {
+    text-align: center;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+}
+
+.table-shopping-cart .table_head .column-5 {
+    text-align: center;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+}
+
+.table-shopping-cart .table_head .column-6 {
+    text-align: center;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+}
+
+.table-shopping-cart .table_head .column-7 {
+    text-align: center;
+    padding-left: 5px !important;
+    padding-right: 10px !important;
+}
+
+/* Image container - Modern design */
+.how-itemcart1 {
+    width: 80px;
+    height: 80px;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid #e6e6e6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+}
+
+.how-itemcart1:hover {
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+    transform: scale(1.02);
+    border-color: #007bff;
+}
+
+.how-itemcart1 img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Product name styling */
+.table-shopping-cart .column-2 a {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+    font-size: 14px !important;
+    line-height: 1.5;
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+    word-wrap: break-word;
+    transition: color 0.2s ease;
+}
+
+.table-shopping-cart .column-2 a:hover {
+    color: #007bff !important;
+}
+
+.table-shopping-cart .column-2 small {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+    font-size: 12px;
+    color: #888;
+}
+
+/* Price and total styling */
+.table-shopping-cart .column-3,
+.table-shopping-cart .column-6 {
+    white-space: nowrap;
+}
+
+/* Stock display */
+.stock-display {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 600;
+}
+
+/* Quantity input - Modern design */
+.wrap-num-product {
+    margin: 0 auto;
+    border: none !important;
+    border-radius: 0;
+    overflow: visible;
+    box-shadow: none;
+    max-width: 140px;
+    height: 36px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wrap-num-product input {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 600;
+    color: #333;
+    border: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    background-color: transparent !important;
+    height: 36px !important;
+    line-height: 36px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Ensure all table text uses correct font */
+.table-shopping-cart td {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+.table-shopping-cart .table_head th {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+    font-weight: 600 !important;
+}
+
+/* Remove horizontal scrollbar */
+.wrap-table-shopping-cart {
+    overflow-x: hidden !important;
+}
+
+/* Ensure columns have equal spacing */
+.table-shopping-cart td,
+.table-shopping-cart th {
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Better text wrapping for product name */
+.table-shopping-cart .column-2 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Table styling improvements */
+.table-shopping-cart .table_head {
+    background: linear-gradient(to bottom, #f8f9fa 0%, #f1f3f5 100%);
+}
+
+.table-shopping-cart .table_head th {
+    letter-spacing: 0.5px;
+    font-size: 12px !important;
+    color: #000 !important;
+    font-weight: 700 !important;
+}
+
+.table-shopping-cart .table_head th:first-child {
+    border-top-left-radius: 8px;
+}
+
+.table-shopping-cart .table_head th:last-child {
+    border-top-right-radius: 8px;
+}
+
+.table-shopping-cart .table_row {
+    transition: all 0.2s ease;
+}
+
+.table-shopping-cart .table_row:hover {
+    background-color: #e7f3ff;
+}
+
+/* Price styling - All prices bold and black */
+.table-shopping-cart .column-3,
+.table-shopping-cart .column-6 {
+    color: #000 !important;
+    font-weight: 700 !important;
+}
+
+/* Out of stock item styles */
+.table_row.out-of-stock {
+    opacity: 0.5;
+    background-color: #f9f9f9;
+    position: relative;
+}
+
+.table_row.out-of-stock::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(0,0,0,0.02) 10px,
+        rgba(0,0,0,0.02) 20px
+    );
+    pointer-events: none;
+}
+
+.table_row.out-of-stock .column-6 {
+    text-decoration: line-through;
+    color: #999;
+}
+
+.out-of-stock-badge {
+    display: inline-block;
+    background-color: #e74c3c;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+/* Fix font for select boxes */
+select,
+select option {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+#voucher-selector,
+#voucher-code,
+#branch-select,
+#address-select {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+/* Fix font for buttons */
+button,
+.flex-c-m,
+.stext-101,
+div.flex-c-m.stext-101 {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+/* Ensure apply button font and alignment */
+.flex-c-m.stext-101.cl2.size-118 {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+    text-align: center !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1.5 !important;
+    vertical-align: middle !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+}
+
+/* Fix button text visibility - always visible */
+.bor15 .flex-c-m.stext-101.cl2.size-118 {
+    color: #333 !important;
+}
+
+.bor15 .flex-c-m.stext-101.cl2.size-118:hover {
+    color: #fff !important;
+    background-color: #007bff !important;
+}
+
+.bor15 a.flex-c-m.stext-101.cl2.size-118:hover {
+    color: #fff !important;
+    background-color: #007bff !important;
+}
+
+/* Hover buttons to blue */
+.bg3:hover,
+.hov-btn3:hover,
+.bg1:hover,
+.hov-btn1:hover {
+    background-color: #0056b3 !important;
+}
+
+.bg8:hover {
+    background-color: #007bff !important;
+    color: #fff !important;
+}
+
+/* Specific cart page buttons - prevent text disappearing */
+.bor15 .bg8:hover {
+    color: #fff !important;
+}
+
+.bor15 .flex-c-m:hover {
+    color: #fff !important;
+}
+
+/* Cart popup button hover */
+.header-cart-buttons a:hover {
+    background-color: #007bff !important;
+}
+
+/* Cart popup close button hover */
+.header-cart-title .js-hide-cart:hover {
+    color: #007bff !important;
+}
+
+.header-cart-title .js-hide-cart:hover span {
+    color: #007bff !important;
+}
+
+/* Cart popup product name hover */
+.header-cart-item-name:hover {
+    color: #007bff !important;
+}
+
+/* Remove voucher button hover */
+.btn-remove-voucher:hover {
+    color: #c0392b !important;
+    transform: scale(1.2);
+}
+
+/* Warning messages */
+#branch-warning,
+#address-warning {
+    transition: opacity 0.3s ease;
+}
+
+/* Fix alert icon */
+.zmdi-alert-circle::before {
+    font-family: 'Material-Design-Iconic-Font' !important;
+}
+
+
+/* Fix font for SweetAlert popups (SweetAlert 1) */
+.swal-modal,
+.swal-title,
+.swal-text,
+.swal-button,
+.swal-button--confirm,
+.swal-button--cancel,
+.swal-button--danger,
+.swal-content {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+/* Also support SweetAlert 2 if used */
+.swal2-popup,
+.swal2-popup *,
+.swal2-title,
+.swal2-html-container,
+.swal2-content,
+.swal2-confirm,
+.swal2-cancel,
+.swal2-actions button {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+/* Fix font for all text classes */
+.stext-101,
+.stext-102,
+.stext-104,
+.stext-110,
+.stext-111,
+.stext-113,
+.mtext-101,
+.mtext-109,
+.mtext-110,
+label,
+small {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+/* Labels in cart summary - normal weight */
+.bor10 label {
+    font-weight: 400 !important;
+    color: #333 !important;
+}
+
+/* Bold cart summary title */
+.mtext-109 {
+    font-weight: 700 !important;
+    color: #000 !important;
+}
+
+/* Bold prices in cart summary */
+#cart-subtotal,
+#cart-total {
+    font-weight: 700 !important;
+    color: #000 !important;
+}
+
+#discount-amount {
+    font-weight: 700 !important;
+    color: #e74c3c !important;
+}
+
+.mtext-110 {
+    font-weight: 700 !important;
+}
+
+/* Fix font for stock warnings */
+.stock-warning,
+.stock-display {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+/* Fix font for links */
+a {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+/* Hover links to blue - specific selectors only */
+.table-shopping-cart a:hover,
+.bor10 a:hover,
+.wrap-table-shopping-cart a:hover {
+    color: #007bff !important;
+}
+
+/* Fix plus icon in add address link */
+a i.zmdi-plus {
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif !important;
+}
+
+a i.zmdi-plus::before {
+    content: '+' !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+}
+
+/* Fix font for input elements */
+input[type="text"],
+input[type="number"],
+textarea {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+/* Fix font for spans and divs with text */
+span,
+div,
+p {
+    font-family: inherit;
+}
+
+/* Global font override for cart page */
+form.bg0 * {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+    .table-shopping-cart .column-1 {
+        padding-left: 15px;
+    }
+    
+    .table-shopping-cart .column-7 {
+        padding-right: 15px;
+    }
+}
+
+@media (max-width: 767px) {
+    .wrap-table-shopping-cart {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Apply voucher button visibility control */
+#apply-voucher-btn[style*="display: none"] {
+    display: none !important;
+}
+
+#apply-voucher-btn[style*="display: block"] {
+    display: block !important;
+}
+
+/* IMPORTANT: Override footer hover - must be at end */
+footer a:hover,
+footer .stext-107.cl7.hov-cl1.trans-04:hover,
+footer a.stext-107:hover,
+footer a.cl7:hover,
+footer a.hov-cl1:hover,
+footer .fs-18.cl7.hov-cl1:hover {
+    color: #b2b2b2 !important;
+}

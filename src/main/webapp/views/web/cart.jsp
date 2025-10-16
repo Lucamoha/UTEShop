@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ include file="/commons/taglib.jsp"%>
-<%@ include file="/commons/taglib.jsp"%>
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/templates/css/cart.css">
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/templates/css/home.css">
 <c:set var="cartData" value="${cartData}" />
@@ -21,8 +22,8 @@
 <form class="bg0 p-t-75 p-b-85">
 	<div class="container">
 		<div class="row">
-			<div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
-				<div class="m-l-25 m-r--38 m-lr-0-xl">
+			<div class="col-lg-8 col-xl-8 m-b-50">
+				<div class="m-l-25 m-r-20 m-lr-0-xl">
 					<div class="wrap-table-shopping-cart">
 						<c:choose>
 							<c:when test="${empty items}">
@@ -71,7 +72,7 @@
 												</div>
 											</td>
 											<td class="column-2">
-													<a href="${pageContext.request.contextPath}/product-detail?id=${item.product.id}" 
+													<a href="${pageContext.request.contextPath}/product-detail?product=${item.product.slug}" 
 													   class="stext-104 cl4 hov-cl1 trans-04" 
 													   style="text-decoration: none;">
 														${item.product.name}
@@ -129,30 +130,31 @@
 
 								<div
 								class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
-								<div class="flex-w flex-m m-r-20 m-tb-5" style="width: 100%; max-width: 600px;">
+								<div class="flex-w flex-m m-r-20 m-tb-5" style="width: 100%;">
 									<!-- Voucher selector -->
 									<select id="voucher-selector" 
 											class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5"
-											style="flex: 1; min-width: 200px;"
+											style="flex: 1; min-width: 180px;"
 											onchange="onVoucherSelect()">
-										<option value="">-- Chọn voucher hoặc nhập mã --</option>
+										<option value="">-- Chọn voucher --</option>
 									</select>
 									
 									<!-- Manual input -->
 									<input
 										class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5"
-										style="flex: 1; min-width: 150px;"
+										style="flex: 1; min-width: 130px;"
 										type="text" id="voucher-code" placeholder="Hoặc nhập mã voucher">
 
 									<!-- Apply button -->
-									<div
+									<div id="apply-voucher-btn"
 										class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-5"
 										onclick="applyVoucher()">Áp dụng</div>
+									
+									<!-- Continue shopping button -->
+									<a href="${pageContext.request.contextPath}/home"
+										class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-5 m-l-10">
+										Tiếp tục mua sắm </a>
 								</div>
-
-								<a href="${pageContext.request.contextPath}/home"
-									class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10">
-									Tiếp tục mua sắm </a>
 							</div>
 							</c:otherwise>
 						</c:choose>
@@ -161,25 +163,31 @@
 			</div>
 
 			<c:if test="${not empty items}">
-				<div class="col-sm-10 col-lg-7 col-xl-5 m-lr-auto m-b-50">
+				<div class="col-lg-4 col-xl-4 m-b-50">
 					<div
-						class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
+						class="bor10 p-lr-30 p-t-30 p-b-40 m-l-20 m-r-25 m-lr-0-xl p-lr-15-sm">
 						<h4 class="mtext-109 cl2 p-b-30">Tổng giỏ hàng</h4>
 
 						<!-- Chọn chi nhánh giao hàng -->
 						<div class="p-b-20">
-							<label class="stext-102 cl3 p-b-10">Giao từ chi nhánh:</label>
+							<label for="branch-select" class="stext-102 cl3 p-b-10">Giao từ chi nhánh:</label>
 							<select id="branch-select" class="stext-104 cl2 size-116 bor13 p-lr-20" style="width: 100%; height: 50px;">
 								<option value="">-- Chọn chi nhánh --</option>
 							</select>
+							<small id="branch-warning" class="stext-111" style="display: none; color: #e74c3c; margin-top: 5px;">
+								<i class="zmdi zmdi-alert-circle"></i> Vui lòng chọn chi nhánh giao hàng
+							</small>
 						</div>
 
 						<!-- Chọn địa chỉ giao đến -->
 						<div class="p-b-30">
-							<label class="stext-102 cl3 p-b-10">Giao đến địa chỉ:</label>
+							<label for="address-select" class="stext-102 cl3 p-b-10">Giao đến địa chỉ:</label>
 							<select id="address-select" class="stext-104 cl2 size-116 bor13 p-lr-20" style="width: 100%; height: 50px;">
 								<option value="">-- Chọn địa chỉ --</option>
 							</select>
+							<small id="address-warning" class="stext-111" style="display: none; color: #e74c3c; margin-top: 5px;">
+								<i class="zmdi zmdi-alert-circle"></i> Vui lòng chọn địa chỉ giao hàng
+							</small>
 							<small class="stext-111 cl6 p-t-5" style="display: block;">
 								<a href="${pageContext.request.contextPath}/profile#addresses" class="cl4 hov-cl1">
 									<i class="zmdi zmdi-plus"></i> Thêm địa chỉ mới
@@ -208,9 +216,9 @@
 
 							<div class="size-209">
 								<span class="mtext-110" style="color: #e74c3c;" id="discount-amount">-0đ</span>
-								<button type="button" onclick="removeVoucher()" 
-										style="border: none; background: none; cursor: pointer; margin-left: 10px; color: #888;">
-									<i class="zmdi zmdi-close"></i>
+								<button type="button" onclick="removeVoucher()" class="btn-remove-voucher"
+										style="border: none; background: none; cursor: pointer; margin-left: 10px; color: #e74c3c; padding: 5px; font-size: 20px; line-height: 1; font-family: 'Segoe UI', Arial, sans-serif;">
+									×
 								</button>
 							</div>
 						</div>
@@ -254,69 +262,6 @@
 		</div>
 	</div>
 </form>
-
-<style>
-/* Custom quantity buttons to avoid conflict with template */
-.cart-btn-decrease,
-.cart-btn-increase {
-    cursor: pointer;
-}
-
-.cart-btn-decrease:hover,
-.cart-btn-increase:hover {
-    background-color: #f0f0f0;
-}
-
-.btn-remove-item:hover {
-    color: #e74c3c !important;
-    transform: scale(1.1);
-    transition: all 0.2s ease;
-}
-
-.btn-remove-item:active {
-    transform: scale(0.95);
-}
-
-/* Out of stock item styles */
-.table_row.out-of-stock {
-    opacity: 0.5;
-    background-color: #f9f9f9;
-    position: relative;
-}
-
-.table_row.out-of-stock::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: repeating-linear-gradient(
-        45deg,
-        transparent,
-        transparent 10px,
-        rgba(0,0,0,0.02) 10px,
-        rgba(0,0,0,0.02) 20px
-    );
-    pointer-events: none;
-}
-
-.table_row.out-of-stock .column-6 {
-    text-decoration: line-through;
-    color: #999;
-}
-
-.out-of-stock-badge {
-    display: inline-block;
-    background-color: #e74c3c;
-    color: white;
-    padding: 2px 8px;
-    border-radius: 3px;
-    font-size: 11px;
-    margin-left: 10px;
-    font-weight: bold;
-}
-</style>
 
 <script>
 // Prevent concurrent updates
@@ -460,7 +405,7 @@ function updateCartTotals() {
             
             // Validate
             if (isNaN(appliedVoucherType) || isNaN(appliedVoucherValue)) {
-                console.error('❌ Invalid data from sessionStorage, clearing...');
+                console.error(' Invalid data from sessionStorage, clearing...');
                 appliedVoucherCode = null;
                 appliedVoucherType = null;
                 appliedVoucherValue = null;
@@ -502,7 +447,7 @@ function updateCartTotals() {
     const subtotalEl = document.getElementById('cart-subtotal');
     if (subtotalEl) {
         subtotalEl.textContent = subtotalFormatted;
-        console.log('✅ Updated subtotal display to:', subtotalFormatted, '(raw value:', subtotal, ')');
+        console.log(' Updated subtotal display to:', subtotalFormatted, '(raw value:', subtotal, ')');
     }
     
     // CRITICAL: Use setTimeout to ensure DOM has updated before recalculating voucher
@@ -697,7 +642,7 @@ function applyVoucher() {
     }
     
     // Show loading
-    const applyBtn = document.querySelector('.flex-c-m.stext-101.cl2.size-118');
+    const applyBtn = document.getElementById('apply-voucher-btn');
     const originalText = applyBtn.textContent;
     applyBtn.textContent = 'Đang xử lý...';
     applyBtn.style.pointerEvents = 'none';
@@ -711,7 +656,7 @@ function applyVoucher() {
     })
     .then(response => response.json())
     .then(data => {
-        console.log('📥 Server response for apply voucher:', data);
+        console.log(' Server response for apply voucher:', data);
         
         applyBtn.textContent = originalText;
         applyBtn.style.pointerEvents = 'auto';
@@ -722,7 +667,7 @@ function applyVoucher() {
             appliedVoucherType = parseInt(data.voucherType);
             appliedVoucherValue = parseFloat(data.voucherValue);
             
-            console.log('✅ Applied voucher variables:', {
+            console.log(' Applied voucher variables:', {
                 code: appliedVoucherCode,
                 type: appliedVoucherType,
                 value: appliedVoucherValue,
@@ -731,7 +676,7 @@ function applyVoucher() {
             
             // Validate parsed values
             if (isNaN(appliedVoucherType) || isNaN(appliedVoucherValue)) {
-                console.error('❌ Invalid voucher data from server:', data);
+                console.error(' Invalid voucher data from server:', data);
                 swal({
                     title: "Lỗi",
                     text: "Dữ liệu voucher không hợp lệ",
@@ -760,7 +705,11 @@ function applyVoucher() {
             document.getElementById('voucher-selector').disabled = true;
             document.getElementById('voucher-code').value = data.voucherCode;
             document.getElementById('voucher-code').disabled = true;
+            
+            // Hide apply button
+            console.log(' Hiding apply button...');
             applyBtn.style.display = 'none';
+            console.log(' Apply button display:', applyBtn.style.display);
         } else {
             swal({
                 title: "Lỗi",
@@ -829,11 +778,11 @@ function updateVoucherDisplay(data) {
 
 // Recalculate voucher discount when subtotal changes (CLIENT-SIDE)
 function recalculateVoucher(newSubtotal) {
-    console.log('🔄 recalculateVoucher called with subtotal:', newSubtotal);
+    console.log(' recalculateVoucher called with subtotal:', newSubtotal);
     
     // Validate input
     if (isNaN(newSubtotal) || newSubtotal <= 0) {
-        console.error('❌ Invalid subtotal:', newSubtotal);
+        console.error(' Invalid subtotal:', newSubtotal);
         return;
     }
     
@@ -849,13 +798,13 @@ function recalculateVoucher(newSubtotal) {
             appliedVoucherCode = code;
             appliedVoucherType = parseInt(type);
             appliedVoucherValue = parseFloat(value);
-            console.log('✅ Restored voucher in recalculateVoucher:', {
+            console.log(' Restored voucher in recalculateVoucher:', {
                 code: appliedVoucherCode,
                 type: appliedVoucherType,
                 value: appliedVoucherValue
             });
         } else {
-            console.error('❌ Cannot recalculate voucher - missing voucher info and sessionStorage is empty');
+            console.error(' Cannot recalculate voucher - missing voucher info and sessionStorage is empty');
             return;
         }
     }
@@ -872,7 +821,7 @@ function recalculateVoucher(newSubtotal) {
         discountAmount = Math.min(appliedVoucherValue, newSubtotal);
         console.log(`Calculating FIXED discount: min(${appliedVoucherValue}, ${newSubtotal}) = ${discountAmount}`);
     } else {
-        console.error('❌ Unknown voucher type:', appliedVoucherType);
+        console.error(' Unknown voucher type:', appliedVoucherType);
     }
     
     // Ensure non-negative
@@ -881,7 +830,7 @@ function recalculateVoucher(newSubtotal) {
         discountAmount = 0;
     }
     
-    console.log('📊 Voucher calculation result:', {
+    console.log(' Voucher calculation result:', {
         code: appliedVoucherCode,
         type: appliedVoucherType === 1 ? 'Percent' : 'Amount',
         value: appliedVoucherValue,
@@ -951,8 +900,12 @@ function removeVoucherSilently() {
     document.getElementById('voucher-code').value = '';
     document.getElementById('voucher-code').disabled = false;
     
-    const applyBtn = document.querySelector('.flex-c-m.stext-101.cl2.size-118');
-    if (applyBtn) applyBtn.style.display = 'block';
+    const applyBtn = document.getElementById('apply-voucher-btn');
+    if (applyBtn) {
+        console.log(' Showing apply button silently...');
+        applyBtn.style.display = 'block';
+        console.log(' Apply button display:', applyBtn.style.display);
+    }
 }
 
 function removeVoucher() {
@@ -998,8 +951,10 @@ function removeVoucher() {
             document.getElementById('voucher-code').disabled = false;
             
             // Show apply button
-            const applyBtn = document.querySelector('.flex-c-m.stext-101.cl2.size-118');
+            const applyBtn = document.getElementById('apply-voucher-btn');
+            console.log(' Showing apply button...');
             applyBtn.style.display = 'block';
+            console.log(' Apply button display:', applyBtn.style.display);
             
             swal({
                 title: "Đã hủy",
@@ -1041,14 +996,18 @@ function restoreVoucherInfo() {
         // Disable selector and input
         const voucherSelector = document.getElementById('voucher-selector');
         const voucherInput = document.getElementById('voucher-code');
-        const applyBtn = document.querySelector('.flex-c-m.stext-101.cl2.size-118');
+        const applyBtn = document.getElementById('apply-voucher-btn');
         
         if (voucherSelector) voucherSelector.disabled = true;
         if (voucherInput) {
             voucherInput.value = code;
             voucherInput.disabled = true;
         }
-        if (applyBtn) applyBtn.style.display = 'none';
+        if (applyBtn) {
+            console.log(' Hiding apply button on restore...');
+            applyBtn.style.display = 'none';
+            console.log(' Apply button display:', applyBtn.style.display);
+        }
         
         // Use setTimeout to ensure DOM is fully rendered before recalculating
         setTimeout(() => {
@@ -1114,7 +1073,7 @@ function loadVouchers() {
         .then(data => {
             if (data.success && data.vouchers) {
                 // Clear existing options except placeholder
-                voucherSelector.innerHTML = '<option value="">-- Chọn voucher hoặc nhập mã --</option>';
+                voucherSelector.innerHTML = '<option value="">-- Chọn voucher --</option>';
                 
                 data.vouchers.forEach(voucher => {
                     const option = document.createElement('option');
@@ -1169,6 +1128,58 @@ function onVoucherSelect() {
 }
 
 function proceedToCheckout() {
+    // Validate branch and address selection
+    const branchSelect = document.getElementById('branch-select');
+    const addressSelect = document.getElementById('address-select');
+    const branchLabel = document.querySelector('label[for="branch-select"]');
+    const addressLabel = document.querySelector('label[for="address-select"]');
+    const branchWarning = document.getElementById('branch-warning');
+    const addressWarning = document.getElementById('address-warning');
+    
+    let isValid = true;
+    
+    // Reset previous highlights
+    if (branchLabel) {
+        branchLabel.style.fontWeight = '400';
+        branchLabel.style.color = '';
+    }
+    if (addressLabel) {
+        addressLabel.style.fontWeight = '400';
+        addressLabel.style.color = '';
+    }
+    branchSelect.style.borderColor = '';
+    addressSelect.style.borderColor = '';
+    if (branchWarning) branchWarning.style.display = 'none';
+    if (addressWarning) addressWarning.style.display = 'none';
+    
+    // Check branch selection
+    if (!branchSelect.value) {
+        isValid = false;
+        if (branchLabel) {
+            branchLabel.style.fontWeight = '700';
+            branchLabel.style.color = '#e74c3c';
+        }
+        branchSelect.style.borderColor = '#e74c3c';
+        if (branchWarning) branchWarning.style.display = 'block';
+        branchSelect.focus();
+    }
+    
+    // Check address selection
+    if (!addressSelect.value) {
+        isValid = false;
+        if (addressLabel) {
+            addressLabel.style.fontWeight = '700';
+            addressLabel.style.color = '#e74c3c';
+        }
+        addressSelect.style.borderColor = '#e74c3c';
+        if (addressWarning) addressWarning.style.display = 'block';
+        if (isValid) addressSelect.focus(); // Only focus if branch was valid
+    }
+    
+    if (!isValid) {
+        return;
+    }
+    
     // TODO: Implement checkout
     swal({
         title: "Thông báo",
@@ -1202,10 +1213,24 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Event listener cho branch select
     const branchSelect = document.getElementById('branch-select');
+    const addressSelect = document.getElementById('address-select');
+    const branchWarning = document.getElementById('branch-warning');
+    const addressWarning = document.getElementById('address-warning');
+    const branchLabel = document.querySelector('label[for="branch-select"]');
+    const addressLabel = document.querySelector('label[for="address-select"]');
+    
     if (branchSelect) {
         branchSelect.addEventListener('change', function() {
             const branchId = this.value;
+            
+            // Reset warning and label when user selects
             if (branchId) {
+                if (branchWarning) branchWarning.style.display = 'none';
+                if (branchLabel) {
+                    branchLabel.style.fontWeight = '400';
+                    branchLabel.style.color = '';
+                }
+                this.style.borderColor = '';
                 updateStockDisplay(branchId);
             } else {
                 // Reset stock display
@@ -1213,6 +1238,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     cell.querySelector('.stock-display').textContent = '--';
                     cell.querySelector('.stock-warning').style.display = 'none';
                 });
+            }
+        });
+    }
+    
+    // Event listener cho address select
+    if (addressSelect) {
+        addressSelect.addEventListener('change', function() {
+            const addressId = this.value;
+            
+            // Reset warning and label when user selects
+            if (addressId) {
+                if (addressWarning) addressWarning.style.display = 'none';
+                if (addressLabel) {
+                    addressLabel.style.fontWeight = '400';
+                    addressLabel.style.color = '';
+                }
+                this.style.borderColor = '';
             }
         });
     }
@@ -1600,12 +1642,12 @@ window.debugVoucherCalculation = debugVoucherCalculation;
 
 // Quick test function
 function testVoucherNow() {
-    console.log('🧪 === QUICK VOUCHER TEST ===');
+    console.log(' === QUICK VOUCHER TEST ===');
     
     // 1. Get subtotal
     const subtotalEl = document.getElementById('cart-subtotal');
     if (!subtotalEl) {
-        console.error('❌ Subtotal element not found!');
+        console.error(' Subtotal element not found!');
         return;
     }
     
@@ -1649,16 +1691,16 @@ function testVoucherNow() {
     // 4. Try to recalculate
     if (subtotalValue > 0) {
         if (appliedVoucherCode && !isNaN(appliedVoucherType) && !isNaN(appliedVoucherValue)) {
-            console.log('6. ✅ All valid, calling recalculateVoucher...');
+            console.log('6.  All valid, calling recalculateVoucher...');
             recalculateVoucher(subtotalValue);
         } else {
-            console.error('6. ❌ Voucher data invalid, cannot recalculate');
+            console.error('6.  Voucher data invalid, cannot recalculate');
         }
     } else {
-        console.error('6. ❌ Cannot test - subtotal is 0 or invalid');
+        console.error('6.  Cannot test - subtotal is 0 or invalid');
     }
     
-    console.log('🧪 === END TEST ===');
+    console.log(' === END TEST ===');
 }
 
 window.testVoucherNow = testVoucherNow;
