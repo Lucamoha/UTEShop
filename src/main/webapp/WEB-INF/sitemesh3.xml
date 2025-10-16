@@ -9,5 +9,6 @@
 	<mapping path="/forgot-password" exclude="true"/>
 	<mapping path="/verify-otp" exclude="true"/>
 	<mapping path="/reset-password" exclude="true"/>
+	<mapping path="/product-compare" exclude="true"/>
 	<mapping path="/api*" exclude="true" />
 </sitemesh>

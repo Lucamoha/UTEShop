@@ -175,13 +175,13 @@
                                 </a>
                             </div>
 
-                            <a href="product-detail.html?id=${product.id}" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
+                            <a href="${pageContext.request.contextPath}/product-detail?product=${product.slug}" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
                                 Xem chi tiết
                             </a>
                         </div>
                         <div class="block2-txt flex-w p-t-14">
                             <div class="block2-txt-child1 flex-col-l">
-                                <a href="${pageContext.request.contextPath}/product-detail?id=${product.id}" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+                                <a href="${pageContext.request.contextPath}/product-detail?product=${product.slug}" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
                                         ${product.name}
                                 </a>
                                 <span class="stext-105 cl3">

@@ -48,13 +48,13 @@ public class ProductController extends HttpServlet {
                 break;
 
             case "/product-detail":
-                String id = req.getParameter("id");
-                int productId = Integer.parseInt(id);
-
+                String slug = req.getParameter("product");
+            
                 List<Categories> parents = categoriesService.findParents();
-                Products product = productsService.findById(productId);
-                List<Products> relevantProducts = productsService.getRelevantProducts(productId);
-                List<OptionDto> options = optionsService.getOptionsByProduct(productId);
+                Products product = productsService.findBySlug(slug);
+                List<Products> relevantProducts = productsService.getRelevantProducts(product.getId());
+                List<OptionDto> options = optionsService.getOptionsByProduct(product.getId());
+                Integer productId = product.getId();
 
                 // Group options theo optionTypeCode để render đúng trong JSP
                 Map<String, List<OptionDto>> groupedOptions = options.stream()

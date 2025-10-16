@@ -110,6 +110,13 @@
                 Chưa có tài khoản?
                 <a href="${pageContext.request.contextPath}/register">Đăng ký ngay</a>
             </div>
+
+            <div class="back-to-home">
+                <a href="${pageContext.request.contextPath}/home" class="back-home-btn">
+                    <i class="fas fa-home"></i>
+                    Trở về trang chủ
+                </a>
+            </div>
         </div>
     </div>
 </div>

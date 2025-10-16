@@ -171,7 +171,7 @@ public class InventoryManagerDaoImpl extends AbstractDao<BranchInventory> implem
             for (String sku : skus) {
                 Integer vid = skuToVid.get(sku);
                 Integer delta = deltaBySku.get(sku);
-                if (vid == null || delta == null) { result.put(sku, null); continue; }
+                if (vid == null || delta == null) { continue; }
 
                 // PESSIMISTIC_WRITE để tránh race
                 BranchInventory inv = em.find(BranchInventory.class,
@@ -243,18 +243,5 @@ public class InventoryManagerDaoImpl extends AbstractDao<BranchInventory> implem
             out.add(new InventoryRow(productId, productName, variantId, sku, qty, price));
         }
         return out;
-    }
-
-    public Integer findVariantIdBySku(String sku) {
-        EntityManager em = JPAConfigs.getEntityManager();
-
-        if (sku == null || sku.isBlank()) return null;
-        List<Integer> ids = em.createQuery(
-                        "select v.Id from ProductVariants v where v.SKU = :sku and v.Status = true",
-                        Integer.class
-                ).setParameter("sku", sku.trim())
-                .setMaxResults(1)
-                .getResultList();
-        return ids.isEmpty() ? null : ids.get(0);
     }
 }

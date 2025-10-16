@@ -73,9 +73,23 @@ public class JWTAuthenticationFilter implements Filter {
             String token = JWTUtil.extractTokenFromRequest(req);
 
             if (token == null) {
-                // Không có token -> chuyển đến trang login
-                redirectToLogin(req, resp, "Vui lòng đăng nhập để tiếp tục");
-                return;
+                // Kiểm tra nếu là AJAX request (cart APIs)
+                if (isAjaxRequest(req, path)) {
+                    // Trả về JSON cho AJAX request
+                    resp.setContentType("application/json;charset=UTF-8");
+                    
+                    // Different response format for different endpoints
+                    if ("/cart/count".equals(path)) {
+                        resp.getWriter().write("{\"count\": 0, \"needLogin\": true}");
+                    } else {
+                        resp.getWriter().write("{\"success\": false, \"needLogin\": true, \"message\": \"Vui lòng đăng nhập để sử dụng giỏ hàng\"}");
+                    }
+                    return;
+                } else {
+                    // Redirect to login cho page request
+                    redirectToLogin(req, resp, "Vui lòng đăng nhập để tiếp tục");
+                    return;
+                }
             }
 
             try {
@@ -144,6 +158,22 @@ public class JWTAuthenticationFilter implements Filter {
 
     private boolean isProtectedUrl(String path) {
         return PROTECTED_URLS.stream().anyMatch(path::startsWith);
+    }
+
+    private boolean isAjaxRequest(HttpServletRequest req, String path) {
+        // Check if it's an AJAX request based on:
+        // 1. Path pattern (cart APIs: /cart/add, /cart/count, /cart/update, /cart/remove, /cart/items, /cart/branches, /cart/addresses, /cart/stock)
+        // 2. X-Requested-With header
+        // 3. Accept header contains application/json
+        
+        String requestedWith = req.getHeader("X-Requested-With");
+        String accept = req.getHeader("Accept");
+        
+        boolean isCartApi = path.matches("/cart/(add|count|update|remove|items|branches|addresses|stock)");
+        boolean hasAjaxHeader = "XMLHttpRequest".equals(requestedWith);
+        boolean acceptsJson = accept != null && accept.contains("application/json");
+        
+        return isCartApi || hasAjaxHeader || acceptsJson;
     }
 
     private void redirectToLogin(HttpServletRequest req, HttpServletResponse resp, String message)

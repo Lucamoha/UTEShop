@@ -4,6 +4,38 @@
 <link rel="stylesheet"
       href="${pageContext.request.contextPath}/templates/css/home.css">
 
+<!-- Product Comparison Styles -->
+<style>
+    /* Icon so sánh */
+    .icon-compare {
+        transition: all 0.3s ease;
+    }
+    
+    .icon-compare:hover {
+        color: #6c7ae0 !important;
+        transform: scale(1.1);
+    }
+    
+    .icon-compare i {
+        font-size: 18px;
+    }
+    
+    /* Tooltip cho nút so sánh */
+    .block2-icon[title]:hover::after {
+        content: attr(title);
+        position: absolute;
+        bottom: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #333;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        z-index: 1000;
+    }
+</style>
 
 <!-- Product Detail -->
 <section class="sec-product-detail bg0 p-b-60" style="padding-top: 150px;">
@@ -114,8 +146,19 @@
 
                                 <button
                                         class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail"
+                                        type="button"
+                                        onclick="addToCart(<c:out value='${product.id}'/>)"
                                 >
                                     Thêm vào giỏ hàng
+                                </button>
+                                
+                                <!-- Nút mở modal so sánh -->
+                                <button type="button"
+                                        class="flex-c-m stext-101 cl0 size-101 bg3 bor1 hov-btn3 p-lr-15 trans-04 m-l-10"
+                                        data-toggle="modal" 
+                                        data-target="#compareModal"
+                                        style="background-color: #6c7ae0;">
+                                    <i class="zmdi zmdi-swap m-r-5"></i> So sánh
                                 </button>
                             </div>
                         </div>
@@ -442,7 +485,7 @@
                                 <c:url value="/image?fname=${product.getImages()[0].getImageUrl()}" var="imgUrl"></c:url>
                                 <img src="${imgUrl}" alt="${product.name}">
 
-                                <!-- Nút Yêu thích và Giỏ hàng -->
+                                <!-- Nút Yêu thích, Giỏ hàng và So sánh -->
                                 <div class="block2-icons">
                                     <a href="#" class="block2-icon js-addwish-b2 dis-block icon-heart cl2 trans-04"
                                        data-product-id="${product.id}"
@@ -454,9 +497,16 @@
                                        title="Thêm vào giỏ hàng">
                                         <i class="zmdi zmdi-shopping-cart"></i>
                                     </a>
+                                    <a href="#" class="block2-icon js-compare-product dis-block icon-compare cl2 trans-04 m-l-10"
+                                       data-product-slug="${product.slug}"
+                                       data-product-id="${product.id}"
+                                       title="So sánh với sản phẩm này"
+                                       onclick="compareWithCurrentProduct('${product.slug}'); return false;">
+                                        <i class="zmdi zmdi-swap"></i>
+                                    </a>
                                 </div>
 
-                                <a href="product-detail.html?id=${product.id}"
+                                <a href="${pageContext.request.contextPath}/product-detail?product=${product.slug}"
                                    class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
                                     Xem chi tiết
                                 </a>
@@ -481,6 +531,68 @@
     </div>
 </section>
 
+<!-- Modal So Sánh Sản Phẩm -->
+<div class="modal fade" id="compareModal" tabindex="-1" role="dialog" aria-labelledby="compareModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="compareModalLabel">
+                    <i class="zmdi zmdi-swap m-r-10"></i>
+                    Chọn sản phẩm để so sánh với "${product.name}"
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-3">Chọn một sản phẩm bên dưới để so sánh:</p>
+                
+                <div class="row">
+                    <c:forEach var="relatedProduct" items="${relevantProducts}">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100" style="cursor: pointer; transition: all 0.3s;" 
+                                 onclick="compareWithCurrentProduct('${relatedProduct.slug}'); $('#compareModal').modal('hide');">
+                                <div class="row no-gutters">
+                                    <div class="col-4">
+                                        <c:url value="/image?fname=${relatedProduct.getImages()[0].getImageUrl()}" var="relatedImgUrl"></c:url>
+                                        <img src="${relatedImgUrl}" 
+                                             alt="${relatedProduct.name}" 
+                                             class="img-fluid" 
+                                             style="height: 100px; object-fit: cover;">
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="card-body">
+                                            <h6 class="card-title" style="font-size: 14px;">${relatedProduct.name}</h6>
+                                            <p class="card-text text-danger" style="font-weight: bold; font-size: 16px;">
+                                                <fmt:formatNumber value="${relatedProduct.basePrice}" type="number" /> VND
+                                            </p>
+                                            <button class="btn btn-sm btn-primary">
+                                                <i class="zmdi zmdi-swap"></i> So sánh ngay
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </c:forEach>
+                    
+                    <c:if test="${empty relevantProducts}">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="zmdi zmdi-info"></i>
+                                Không có sản phẩm liên quan để so sánh.
+                            </div>
+                        </div>
+                    </c:if>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Back to top -->
 <div class="btn-back-to-top" id="myBtn">
     <span class="symbol-btn-back-to-top">
@@ -493,6 +605,33 @@
 <!--===============================================================================================-->
 <script src="${pageContext.request.contextPath}/templates/vendor/slick/slick.min.js"></script>
 <script src="${pageContext.request.contextPath}/templates/js/slick-custom.js"></script>
+<!--===============================================================================================-->
+<!-- Product Comparison Script -->
+<script src="${pageContext.request.contextPath}/templates/js/product-comparison.js"></script>
+<!--===============================================================================================-->
+<script>
+    // CURRENT PRODUCT - Sản phẩm đang xem (dùng slug thay vì ID)
+    var CURRENT_PRODUCT_SLUG = '${product.slug}';
+    var CURRENT_PRODUCT_ID = ${product.id};
+    
+    // Function để so sánh sản phẩm hiện tại với sản phẩm được chọn
+    // Tham số có thể là slug (string) hoặc ID (number)
+    function compareWithCurrentProduct(selectedProduct) {
+        // Kiểm tra không so sánh với chính nó
+        if (selectedProduct === CURRENT_PRODUCT_SLUG || selectedProduct === CURRENT_PRODUCT_ID) {
+            alert('Không thể so sánh sản phẩm với chính nó!');
+            return false;
+        }
+        
+        // Chuyển hướng đến trang so sánh với SLUG (thân thiện hơn)
+        // Sản phẩm 1: Sản phẩm hiện tại
+        // Sản phẩm 2: Sản phẩm được chọn
+        window.location.href = '${pageContext.request.contextPath}/product-compare?product1=' + 
+            CURRENT_PRODUCT_SLUG + '&product2=' + selectedProduct;
+        
+        return false;
+    }
+</script>
 <!--===============================================================================================-->
 <script>
     // Variant selection
