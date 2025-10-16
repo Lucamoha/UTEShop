@@ -58,7 +58,6 @@
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/templates/css/util.css">
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/templates/css/main.css">
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/templates/css/price-slider.css">
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/templates/css/home.css">
 
 <!--===============================================================================================-->
 
@@ -67,6 +66,10 @@
 	<div>
 		<%@ include file="/commons/web/header.jsp"%>
 	</div>
+	
+	<!-- Cart Popup -->
+	<%@ include file="/commons/web/cart-popup.jsp"%>
+	
 	<div>
 		<sitemesh:write property="body" />
 	</div>
@@ -152,14 +155,8 @@
 				});
 
 		/*---------------------------------------------*/
-		$(".js-addcart-detail").each(
-				function() {
-					var nameProduct = $(this).parent().parent().parent()
-							.parent().find(".js-name-detail").html();
-					$(this).on("click", function() {
-						swal(nameProduct, "is added to cart !", "success");
-					});
-				});
+		// Add to cart đã được xử lý bởi cart.js
+		// Không cần bind swal ở đây nữa để tránh conflict
 	</script>
 	<!--===============================================================================================-->
 	<script
@@ -184,6 +181,12 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
 	<!--===============================================================================================-->
 	<script src="${pageContext.request.contextPath}/templates/js/main.js"></script>
+	<!--===============================================================================================-->
+	<!-- Cart JS -->
+	<script>
+		var contextPath = '${pageContext.request.contextPath}';
+	</script>
+	<script src="${pageContext.request.contextPath}/templates/js/cart.js"></script>
 
 </body>
 </html>
