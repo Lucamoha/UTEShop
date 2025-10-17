@@ -48,6 +48,9 @@ public class Payments implements Serializable {
     @Column(length = 120)
     String TxnId;
 
+    @Column(length = 120)
+    String refundTxnId;
+
     // Số tiền đã thanh toán / hoàn tiền
     @Column(precision = 12, scale = 2)
     BigDecimal PaidAmount;

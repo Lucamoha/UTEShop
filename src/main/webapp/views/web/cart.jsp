@@ -229,7 +229,7 @@
 							</div>
 
 							<div class="size-209 p-t-1">
-								<span class="stext-111 cl6"> Tính khi thanh toán </span>
+								<span class="stext-111 cl6"> 0đ </span>
 							</div>
 						</div>
 						
@@ -253,15 +253,192 @@
 							</div>
 						</div>
 
+						<div class="flex-w flex-t p-t-10 p-b-10">
+							<div class="size-208">
+								<label for="order-note" class="stext-110 cl2">Ghi chú đơn hàng:</label>
+							</div>
+							<div class="size-209 w-full-ssm">
+								<textarea id="order-note"
+										  class="stext-104 cl3 form-control"
+										  rows="3"
+										  maxlength="500"
+										  placeholder="Ví dụ: Giao giờ hành chính, liên hệ trước khi giao..."></textarea>
+								<div class="stext-111 cl9 m-t-5" style="font-size:12px;">
+									Tối đa 400 ký tự.
+								</div>
+							</div>
+						</div>
+
+						<!-- Chọn phương thức thanh toán -->
+						<div class="flex-w flex-t p-t-20 p-b-10">
+							<div class="size-208 w-full-ssm">
+								<label class="stext-110 cl2">Phương thức thanh toán:</label>
+							</div>
+
+							<div class="size-209">
+								<div class="p-t-5">
+									<label class="stext-104 cl3 m-r-20" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;">
+										<input type="radio" name="payment-method" value="COD" checked> Thanh toán khi nhận hàng (COD)
+									</label>
+									<br/>
+									<label class="stext-104 cl3 m-r-20" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;">
+										<input type="radio" name="payment-method" value="MOMO"> Ví MoMo
+									</label>
+									<br/>
+									<label class="stext-104 cl3" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;">
+										<input type="radio" name="payment-method" value="VNPAY"> VNPAY
+									</label>
+								</div>
+							</div>
+						</div>
+
 						<button type="button"
-							class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer"
-							onclick="proceedToCheckout()">Đi đến thanh toán</button>
+								id="btn-place-order"
+								class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer"
+								onclick="placeOrder()">
+							Đặt hàng
+						</button>
 					</div>
 				</div>
 			</c:if>
 		</div>
 	</div>
 </form>
+
+<script>
+	// Lấy ctx để build URL
+	const CTX = '${pageContext.request.contextPath}';
+
+	function getVoucherCode() {
+		const manual = document.getElementById('voucher-code')?.value?.trim();
+		if (manual) return manual;
+
+		const sel = document.getElementById('voucher-selector');
+		if (!sel) return null;
+		const opt = sel.options[sel.selectedIndex];
+		const code = opt?.dataset?.code || (opt?.value || '').trim();
+		return code || null;
+	}
+
+	function getOrderNote() {
+		const el = document.getElementById('order-note');
+		if (!el) return null;
+		const txt = (el.value || '').trim();
+		if (!txt) return null;
+		// Cắt gọn về tối đa 400 ký tự để khớp với maxlength (phòng trường hợp sửa HTML)
+		return txt.slice(0, 400);
+	}
+
+	function getPaymentMethod() {
+		const r = document.querySelector('input[name="payment-method"]:checked');
+		return r ? r.value : null; // "COD" | "MOMO" | "VNPAY"
+	}
+
+	function parseVnd(str) {
+		// Lấy toàn bộ chữ số liên tiếp -> "123456"
+		if (!str) return 0;
+		// Loại bỏ mọi ký tự không phải số
+		const digits = (str + '').replace(/[^\d]/g, '');
+		if (!digits) return 0;
+		// Chuyển về Number (có thể dùng BigInt nếu bạn muốn cực an toàn)
+		return Number(digits);
+	}
+
+	function getCartTotalAmount() {
+		const el = document.getElementById('cart-total');
+		if (!el) return 0;
+		const txt = el.innerText || el.textContent || '';
+		return parseVnd(txt); // trả về số VND integer
+	}
+
+	function gatherItems() {
+		// Lấy tất cả các dòng còn hàng: .table_row nhưng KHÔNG có class .out-of-stock
+		const rows = document.querySelectorAll('tr.table_row:not(.out-of-stock)');
+		const items = [];
+
+		rows.forEach(tr => {
+			const stockCell = tr.querySelector('.stock-cell');
+			const variantIdStr = stockCell?.dataset?.variantId || '0';
+			const variantId = parseInt(variantIdStr, 10);
+
+			const qtyInput = tr.querySelector('.num-product');
+			const quantity = parseInt(qtyInput?.value || '0', 10);
+
+			if (variantId > 0 && quantity > 0) {
+				items.push({ variantId, quantity });
+			}
+		});
+
+		return items;
+	}
+
+	async function placeOrder() {
+		const btn = document.getElementById('btn-place-order');
+		try {
+			const branchId = document.getElementById('branch-select')?.value;
+			const addressId = document.getElementById('address-select')?.value;
+			const paymentMethod = getPaymentMethod();
+			const voucherCode = getVoucherCode();
+			const items = gatherItems();
+			const note = getOrderNote();
+			const totalAmount = getCartTotalAmount(); // <-- LẤY TỔNG CỘNG TỪ UI
+
+			// Validate tối thiểu
+			if (!branchId) { swal({ title: "Thiếu dữ liệu", text: "Vui lòng chọn chi nhánh!", icon: "warning" }); return; }
+			if (!addressId) { swal({ title: "Thiếu dữ liệu", text: "Vui lòng chọn địa chỉ nhận!", icon: "warning" }); return; }
+			if (!paymentMethod) { swal({ title: "Thiếu dữ liệu", text: "Vui lòng chọn phương thức thanh toán!", icon: "warning" }); return; }
+			if (!items.length) { swal({ title: "Thiếu dữ liệu", text: "Giỏ hàng không hợp lệ!", icon: "warning" }); return; }
+			if (!totalAmount || totalAmount < 0) { swal({ title: "Thiếu dữ liệu", text: "Tổng cộng không hợp lệ!", icon: "warning" }); return; }
+
+			const payload = {
+				branchId: parseInt(branchId, 10),
+				addressId: parseInt(addressId, 10),
+				voucherCode: voucherCode || null,     // có thể null
+				totalAmount: totalAmount,             // VND integer để server đối soát
+				paymentMethod: paymentMethod,         // "COD" | "MOMO" | "VNPAY"
+				note: note || null,
+				items: items                          // [{ variantId, quantity }]
+			};
+
+			// Khoá nút trong lúc gửi
+			if (btn) { btn.disabled = true; btn.style.opacity = 0.7; }
+
+			const res = await fetch(CTX + '/api/web/place-order', {
+				method: 'POST',
+				credentials: 'include', // gửi cookie (JWT của bạn nếu set cookie)
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(payload)
+			});
+
+			const data = await res.json().catch(() => ({}));
+
+			if (!res.ok || data.success === false) {
+				const msg = data.message || 'Đặt hàng thất bại. Vui lòng thử lại.';
+				swal({ title: "Thông báo", text: msg, icon: "error" });
+				return;
+			}
+
+			// Thành công:
+			// - Nếu có paymentUrl (MOMO/VNPAY) => chuyển sang trang thanh toán
+			// - Ngược lại => trang cảm ơn
+			if (data.paymentUrl) {
+				window.location.href = data.paymentUrl;
+				return;
+			}
+			if (data.orderId) {
+				window.location.href = CTX + '/order/detail?id=' + data.orderId;
+			} else {
+				location.reload();
+			}
+		} catch (e) {
+			console.error(e);
+			swal({ title: "Thông báo", text: "Có lỗi kết nối. Vui lòng thử lại sau.", icon: "error" });
+		} finally {
+			if (btn) { btn.disabled = false; btn.style.opacity = 1; }
+		}
+	}
+</script>
+
 
 <script>
 // Prevent concurrent updates
