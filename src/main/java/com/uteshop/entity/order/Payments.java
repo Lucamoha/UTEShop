@@ -68,4 +68,9 @@ public class Payments implements Serializable {
     void onCreate() {
         CreatedAt = LocalDateTime.now();
     }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

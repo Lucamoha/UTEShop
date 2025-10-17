@@ -26,7 +26,8 @@ public class JWTAuthenticationFilter implements Filter {
         "/uploads/",
         "/image",
         "/test-login",
-        "/payment/momo"
+        "/payment/momo",
+        "/payment/vnpay"
     );
 
     // Danh sách các URL cần authentication (protected)
@@ -124,6 +125,7 @@ public class JWTAuthenticationFilter implements Filter {
 
             } catch (Exception e) {
                 // Token không hợp lệ hoặc hết hạn
+                e.printStackTrace();
                 System.err.println("JWT validation failed: " + e.getMessage());
 
                 // Xóa token không hợp lệ

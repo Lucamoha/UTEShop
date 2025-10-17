@@ -25,4 +25,9 @@ public class OptionTypes implements Serializable {
     
     @OneToMany(mappedBy = "optionType", fetch = FetchType.EAGER)
     private List<OptionValues> values;
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

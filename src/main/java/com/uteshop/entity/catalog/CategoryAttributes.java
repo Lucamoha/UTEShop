@@ -43,4 +43,9 @@ public class CategoryAttributes implements Serializable {
         @Column(name = "AttributeId")
         private Integer attributeId;
     }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

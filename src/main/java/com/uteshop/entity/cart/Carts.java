@@ -28,4 +28,9 @@ public class Carts implements Serializable {
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     List<CartItems> items = new ArrayList<>();
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

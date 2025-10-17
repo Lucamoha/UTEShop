@@ -10,14 +10,18 @@ import com.uteshop.entity.order.Payments;
 import com.uteshop.enums.OrderEnums;
 import com.uteshop.enums.PaymentEnums;
 import com.uteshop.services.impl.web.payment.MomoServiceImpl;
+import com.uteshop.services.impl.web.payment.VnpayServiceImpl;
 import com.uteshop.services.manager.IOrdersManagerService;
 import com.uteshop.services.web.payment.IPaymentService;
 import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -148,15 +152,19 @@ public class OrdersManagerServiceImpl implements IOrdersManagerService {
                         throw new IllegalStateException("Thiếu mã giao dịch gốc (txnId) để hoàn tiền online.");
                     }
 
+                    IPaymentService.RefundRequest refundRequest = new IPaymentService.RefundRequest();
                     if (order.getPayment().getMethod() ==  METHOD_MOMO)
                         paymentService = new MomoServiceImpl();
                     else if (order.getPayment().getMethod() ==  METHOD_VNPAY) {
-                        //
+                        paymentService = new VnpayServiceImpl();
+                        Map<String, String> m = new HashMap<String, String>();
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+                        m.put("vnp_TransactionDate", payment.getPaidAt().format(formatter));
+                        refundRequest.withMeta(m);
                     }
                     else
                         throw new IllegalStateException("Phương thức thanh toán không hợp lệ!");
 
-                    IPaymentService.RefundRequest refundRequest = new IPaymentService.RefundRequest();
                     refundRequest.orderId = orderId.toString();
                     refundRequest.gatewayTxnId = payment.getTxnId();
                     refundRequest.amount = payment.getPaidAmount();
@@ -201,15 +209,19 @@ public class OrdersManagerServiceImpl implements IOrdersManagerService {
                     throw new IllegalStateException("Thiếu mã giao dịch gốc (txnId) để hoàn tiền online.");
                 }
 
+                IPaymentService.RefundRequest refundRequest = new IPaymentService.RefundRequest();
                 if (order.getPayment().getMethod() ==  METHOD_MOMO)
                     paymentService = new MomoServiceImpl();
                 else if (order.getPayment().getMethod() ==  METHOD_VNPAY) {
-                    //
+                    paymentService = new VnpayServiceImpl();
+                    Map<String, String> m = new HashMap<String, String>();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+                    m.put("vnp_TransactionDate", payment.getPaidAt().format(formatter));
+                    refundRequest.withMeta(m);
                 }
                 else
                     throw new IllegalStateException("Phương thức thanh toán không hợp lệ!");
 
-                IPaymentService.RefundRequest refundRequest = new IPaymentService.RefundRequest();
                 refundRequest.orderId = orderId.toString();
                 refundRequest.gatewayTxnId = payment.getTxnId();
                 refundRequest.amount = payment.getPaidAmount();

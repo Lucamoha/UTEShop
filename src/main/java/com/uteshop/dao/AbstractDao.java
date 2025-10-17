@@ -7,6 +7,7 @@ import com.uteshop.configs.JPAConfigs;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -123,6 +124,25 @@ public abstract class AbstractDao<T> {
 			enma.close();
 		}
 	}
+	
+	public T findByIdFetchColumn(Object id, String column) {
+	    EntityManager enma = JPAConfigs.getEntityManager();
+	    try {
+	        String jpql = String.format(
+	            "SELECT e FROM %s e LEFT JOIN FETCH e.%s WHERE e.id = :id",
+	            entityClass.getSimpleName(),
+	            column
+	        );
+	        return enma.createQuery(jpql, entityClass)
+	                   .setParameter("id", id)
+	                   .getSingleResult();
+	    } catch (NoResultException e) {
+	        return null;
+	    } finally {
+	        enma.close();
+	    }
+	}
+
 
 	public List<T> findAll() {
 		EntityManager enma = JPAConfigs.getEntityManager();

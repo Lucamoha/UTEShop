@@ -50,8 +50,8 @@ public class BranchesController extends HttpServlet {
 			// Tính offset (vị trí bắt đầu)
 			int firstResult = (page - 1) * size;
 
-			List<Branches> branchList = branchesService.findAll(false, firstResult, size, searchKeyword,
-					"Name");
+			List<Branches> branchList = branchesService.findAllFetch(false, firstResult, size, searchKeyword,
+					"Name", "manager");
 
 			// Đếm tổng số bản ghi để tính tổng trang
 			int totalBranches = branchesService.count(searchKeyword, "Name");
@@ -69,13 +69,17 @@ public class BranchesController extends HttpServlet {
 			String id = req.getParameter("id");
 			if (id != null) {
 				// dang o che do edit -> nguoc lai la add
-				Branches branch = branchesService.findById(Integer.parseInt(id));
+				Branches branch = branchesService.findByIdFetchColumn(Integer.parseInt(id), "manager");
+				
 				req.setAttribute("branch", branch);
-			}
+			} else {
+		        req.setAttribute("branch", new Branches());//tạo đối tượng trống để JSP không bị lỗi khi gọi branch.x
+		    }
 			req.getRequestDispatcher("/views/admin/Branch/Branches/addOrEdit.jsp").forward(req, resp);
 		} else if (uri.contains("view")) {
 			String id = req.getParameter("id");
-			Branches branch = branchesService.findById(Integer.parseInt(id));
+			Branches branch = branchesService.findByIdFetchColumn(Integer.parseInt(id), "manager");
+			
 			req.setAttribute("branch", branch);
 			req.getRequestDispatcher("/views/admin/Branch/Branches/view.jsp").forward(req, resp);
 		} else if (uri.contains("delete")) {
@@ -109,7 +113,7 @@ public class BranchesController extends HttpServlet {
 			Integer id = null;
 			if (idStr != null && !idStr.isEmpty()) {
 				id = Integer.parseInt(idStr);
-				branch = branchesService.findById(id);
+				branch = branchesService.findByIdFetchColumn(id, "manager");
 			}
 
 			// Gán giá trị tạm thời để giữ lại form nếu lỗi
@@ -117,8 +121,10 @@ public class BranchesController extends HttpServlet {
 			branch.setAddress(address);
 			branch.setPhone(phone);
 			branch.setIsActive(Boolean.parseBoolean(isActive));	
-			if(managerId != null) {
-				branch.setManager(usersService.findById(Integer.parseInt(managerId)));
+			if (managerId != null && !managerId.isBlank()) {
+			    branch.setManager(usersService.findById(Integer.parseInt(managerId)));
+			} else {
+			    branch.setManager(null);
 			}
 
 			// Kiểm tra code trùng

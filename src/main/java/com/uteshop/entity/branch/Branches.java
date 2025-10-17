@@ -6,6 +6,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -40,6 +42,9 @@ public class Branches {
 
     LocalDateTime UpdatedAt;
     
+    @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<BranchInventory> inventories = new ArrayList<>();
+    
     @PrePersist
 	void onCreate() {
 		//Tự động gán giá trị khi insert mới
@@ -52,4 +57,9 @@ public class Branches {
 		// Tự động cập nhật UpdatedAt khi update
 		UpdatedAt = LocalDateTime.now();
 	}
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

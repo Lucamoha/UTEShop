@@ -34,4 +34,9 @@ public class CartItems implements Serializable {
 
     @Column(nullable = false)
     int Quantity;
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

@@ -31,7 +31,7 @@ public class ProductVariants implements Serializable {
     String SKU;
 
     @Column(nullable = false, precision = 12, scale = 2)
-    BigDecimal price;
+    BigDecimal Price;
 
     @Column(nullable = false)
     boolean Status = true;
@@ -56,4 +56,9 @@ public class ProductVariants implements Serializable {
 
     @OneToMany(mappedBy = "variant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     List<VariantOptions> options = new ArrayList<>();
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

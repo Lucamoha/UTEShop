@@ -98,5 +98,10 @@ public class Orders implements Serializable {
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, optional = true)
     Payments payment;
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
 

@@ -9,8 +9,8 @@ public interface IBranchesService {
 	void update(Branches branch);
 	void delete(int id);
 	List<Branches> findAll();
-	List<Branches> findAll(boolean all, int firstResult, int maxResult, String searchKeyword, String searchKeywordColumnName);
-	Branches findById(int id);
+	List<Branches> findAllFetch(boolean all, int firstResult, int maxResult, String searchKeyword, String searchKeywordColumnName, String fetchColumn);
+	Branches findByIdFetchColumn(int id, String column);
 	Branches findByName(String name);
 	int count(String searchKeyword, String searchKeywordColumnName);
 	
