@@ -34,4 +34,9 @@ public class Attributes implements Serializable {
 
     @OneToMany(mappedBy = "attribute", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<ProductAttributeValues> productAttributeValues;
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

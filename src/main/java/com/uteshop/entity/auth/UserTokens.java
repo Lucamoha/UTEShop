@@ -43,4 +43,9 @@ public class UserTokens implements Serializable {
 		//Tự động gán giá trị khi insert mới
 		CreatedAt = LocalDateTime.now();
 	}
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

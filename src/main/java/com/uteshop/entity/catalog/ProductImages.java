@@ -25,4 +25,9 @@ public class ProductImages implements Serializable {
 
     @Column(nullable = false)
     String ImageUrl;
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

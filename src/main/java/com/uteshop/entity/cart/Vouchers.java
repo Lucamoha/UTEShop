@@ -52,6 +52,11 @@ public class Vouchers implements Serializable {
     @Column(nullable = false)
     Boolean IsActive = true;
 
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
     /**
      * Kiểm tra voucher có hợp lệ không
      */

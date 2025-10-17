@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.uteshop.entity.cart.Carts;
-import com.uteshop.entity.engagement.CompareLists;
 import com.uteshop.entity.engagement.Reviews;
 import com.uteshop.entity.order.Orders;
 import jakarta.persistence.*;
@@ -82,6 +81,8 @@ public class Users implements Serializable {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     List<Reviews> reviews = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    List<CompareLists> compareLists = new ArrayList<>();
+	@Override
+	public int hashCode() {
+		return getClass().hashCode();
+	}
 }

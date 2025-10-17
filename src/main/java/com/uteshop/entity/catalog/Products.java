@@ -100,4 +100,9 @@ public class Products implements Serializable {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     List<ProductImages> images = new ArrayList<>();
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

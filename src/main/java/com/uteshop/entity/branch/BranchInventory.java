@@ -43,4 +43,9 @@ public class BranchInventory {
         @Column(name = "VariantId")
         private Integer variantId;
     }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
