@@ -31,7 +31,7 @@ public class ProductVariants implements Serializable {
     String SKU;
 
     @Column(nullable = false, precision = 12, scale = 2)
-    BigDecimal price;
+    BigDecimal Price;
 
     @Column(nullable = false)
     boolean Status = true;
