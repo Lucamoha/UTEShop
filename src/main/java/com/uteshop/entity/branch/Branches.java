@@ -6,6 +6,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -39,6 +41,9 @@ public class Branches {
     LocalDateTime CreatedAt;
 
     LocalDateTime UpdatedAt;
+    
+    @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<BranchInventory> inventories = new ArrayList<>();
     
     @PrePersist
 	void onCreate() {
