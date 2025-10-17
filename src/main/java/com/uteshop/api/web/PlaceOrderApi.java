@@ -157,13 +157,10 @@ public class PlaceOrderApi extends HttpServlet {
 
             // 7) Khởi tạo thanh toán nếu online
             String paymentUrl = null;
-            if (method == PaymentEnums.Method.MOMO) {
+            if (method != PaymentEnums.Method.COD)
                 paymentUrl = req.getContextPath() + "/payment/create?orderId=" + order.getId();
-            }
-            else {
+            else
                 paymentUrl = req.getContextPath() + "/order/detail?id=" + order.getId();
-            }
-            // else if (method == PaymentEnums.Method.VNPAY) { ... set paymentUrl ... }
 
             // 8) Response
             writeJson(resp, HttpServletResponse.SC_OK,

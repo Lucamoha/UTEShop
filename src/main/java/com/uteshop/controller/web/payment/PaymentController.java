@@ -7,6 +7,7 @@ import com.uteshop.entity.order.Orders;
 import com.uteshop.enums.OrderEnums;
 import com.uteshop.enums.PaymentEnums;
 import com.uteshop.services.impl.web.payment.MomoServiceImpl;
+import com.uteshop.services.impl.web.payment.VnpayServiceImpl;
 import com.uteshop.services.web.payment.IPaymentService;
 import com.uteshop.util.SignUtil;
 import jakarta.servlet.ServletException;
@@ -22,6 +23,7 @@ import java.util.Map;
 @WebServlet(urlPatterns = {"/payment/create"})
 public class PaymentController extends HttpServlet {
     private final MomoServiceImpl momoService = new MomoServiceImpl();
+    private final VnpayServiceImpl vnpayService = new VnpayServiceImpl();
     private EntityDaoImpl<Orders> ordersDao = new EntityDaoImpl<>(Orders.class);
     private static final ObjectMapper MAPPER = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -69,6 +71,13 @@ public class PaymentController extends HttpServlet {
                 );
                 createReq.extraData = SignUtil.b64Json(MAPPER.writeValueAsString(extraMap));
                 createPaymentResponse = momoService.create(createReq);
+            } else if (method == PaymentEnums.Method.VNPAY) {
+                IPaymentService.CreatePaymentRequest createReq = new IPaymentService.CreatePaymentRequest();
+                createReq.orderId = String.valueOf(order.getId());
+                createReq.amount = amount;
+                createReq.clientIp = "127.0.0.1";
+
+                createPaymentResponse = vnpayService.create(createReq);
             }
 
             if (createPaymentResponse == null || createPaymentResponse.checkoutUrl == null) {
