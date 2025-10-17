@@ -2,7 +2,7 @@ package com.uteshop.api.manager.reports;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.uteshop.api.manager.Jsons;
+import com.uteshop.util.JsonUtil;
 import com.uteshop.dto.manager.reports.OrderStatsDTO;
 import com.uteshop.services.impl.manager.OrdersManagerServiceImpl;
 import jakarta.servlet.ServletException;
@@ -61,7 +61,7 @@ public class OrdersStatsApi extends HttpServlet {
             OrderStatsDTO result = ordersManagerService.getOrderStats(from, toEx, branchId);
 
             resp.setStatus(HttpServletResponse.SC_OK);
-            Jsons.MAPPER.writeValue(resp.getWriter(), result);
+            JsonUtil.MAPPER.writeValue(resp.getWriter(), result);
 
         } catch (DateTimeParseException e) {
             writeJson(resp, 400, Map.of("ok", false, "error", "Invalid date format. Use yyyy-MM-dd"));

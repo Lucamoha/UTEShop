@@ -1,4 +1,4 @@
-package com.uteshop.util;
+package com.uteshop.configs;
 
 import java.io.InputStream;
 import java.util.Properties;

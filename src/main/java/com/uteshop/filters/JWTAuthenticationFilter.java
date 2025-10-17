@@ -19,23 +19,27 @@ public class JWTAuthenticationFilter implements Filter {
 
     // Danh sách các URL không cần authentication
     private static final List<String> PUBLIC_URLS = Arrays.asList(
-            "/login",
-            "/register",
-            "/logout",
-            "/templates/",
-            "/uploads/",
-            "/image");
+        "/login",
+        "/register",
+        "/logout",
+        "/templates/",
+        "/uploads/",
+        "/image",
+        "/test-login",
+        "/payment/momo"
+    );
 
     // Danh sách các URL cần authentication (protected)
     private static final List<String> PROTECTED_URLS = Arrays.asList(
-            "/admin/",
-            "/manager/",
-            "/profile",
-            "/cart",
-            "/checkout",
-            "/orders",
-            "/orders",
-            "/api/manager");
+        "/admin/",
+        "/manager/",
+        "/profile",
+        "/cart",
+        "/checkout",
+        "/orders",
+        "/api/manager",
+        "/api/web"
+    );
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -61,6 +65,7 @@ public class JWTAuthenticationFilter implements Filter {
         String contextPath = req.getContextPath();
         String path = requestURI.substring(contextPath.length());
        
+
 
         // Cho phép các URL public đi qua không cần kiểm tra
         if (isPublicUrl(path)) {
@@ -101,6 +106,7 @@ public class JWTAuthenticationFilter implements Filter {
                 // Lưu thông tin user vào request attribute
                 req.setAttribute("authenticatedEmail", email);
                 req.setAttribute("authenticatedRole", role);
+
 
                 // Kiểm tra quyền truy cập dựa trên role
                 if (path.startsWith("/admin/") && !"ADMIN".equals(role)) {

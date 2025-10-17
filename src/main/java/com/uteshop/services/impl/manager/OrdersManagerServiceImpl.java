@@ -9,7 +9,9 @@ import com.uteshop.entity.order.Orders;
 import com.uteshop.entity.order.Payments;
 import com.uteshop.enums.OrderEnums;
 import com.uteshop.enums.PaymentEnums;
+import com.uteshop.services.impl.web.payment.MomoServiceImpl;
 import com.uteshop.services.manager.IOrdersManagerService;
+import com.uteshop.services.web.payment.IPaymentService;
 import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
@@ -21,7 +23,7 @@ import java.util.Map;
 
 public class OrdersManagerServiceImpl implements IOrdersManagerService {
     OrdersManagerDaoImpl dao = new OrdersManagerDaoImpl();
-    EntityDaoImpl<Payments> paymentsEntityDao = new EntityDaoImpl<>(Payments.class);
+    IPaymentService paymentService = null;
 
     private static final int NEW        = OrderEnums.OrderStatus.NEW;
     private static final int CONFIRMED  = OrderEnums.OrderStatus.CONFIRMED;
@@ -97,7 +99,7 @@ public class OrdersManagerServiceImpl implements IOrdersManagerService {
         int fromStatus = order.getOrderStatus();
         ensureAllowedTransition(fromStatus, toStatus);
 
-        Payments payment = dao.getPaymentByOrderId(orderId);
+        Payments payment = order.getPayment();
         if (payment == null) {
             throw new IllegalStateException("Đơn hàng này chưa có bản ghi thanh toán.");
         }
@@ -126,7 +128,6 @@ public class OrdersManagerServiceImpl implements IOrdersManagerService {
                     if (payment.getPaidAmount() == null) {
                         payment.setPaidAmount(order.getTotalAmount());
                     }
-                    paymentsEntityDao.update(payment);
                 }
                 order.setPaymentStatus(PAID);
             } else {
@@ -141,32 +142,104 @@ public class OrdersManagerServiceImpl implements IOrdersManagerService {
 
         } else if (toStatus == RETURNED) {
             if (isOnline) {
-                // Online: chỉ RETURNED khi đã hoàn tiền xong
+                // ONLINE: Nếu chưa hoàn tiền thì thực hiện refund qua cổng thanh toán
                 if (payment.getStatus() != PM_REFUNDED) {
-                    throw new IllegalStateException("Đơn thanh toán online chỉ được chuyển sang RETURNED sau khi thanh toán đã hoàn tiền (payment = REFUNDED).");
+                    if (payment.getTxnId() == null || payment.getTxnId().isBlank()) {
+                        throw new IllegalStateException("Thiếu mã giao dịch gốc (txnId) để hoàn tiền online.");
+                    }
+
+                    if (order.getPayment().getMethod() ==  METHOD_MOMO)
+                        paymentService = new MomoServiceImpl();
+                    else if (order.getPayment().getMethod() ==  METHOD_VNPAY) {
+                        //
+                    }
+                    else
+                        throw new IllegalStateException("Phương thức thanh toán không hợp lệ!");
+
+                    IPaymentService.RefundRequest refundRequest = new IPaymentService.RefundRequest();
+                    refundRequest.orderId = orderId.toString();
+                    refundRequest.gatewayTxnId = payment.getTxnId();
+                    refundRequest.amount = payment.getPaidAmount();
+
+                    IPaymentService.RefundResponse rr;
+                    try {
+                        rr = paymentService.refund(refundRequest);
+                    } catch (Exception ex) {
+                        throw new IllegalStateException("Lỗi gọi cổng thanh toán khi hoàn tiền: " + ex.getMessage(), ex);
+                    }
+
+                    if (rr == null || !rr.success) {
+                        // Không hoàn tiền được -> không cho trả
+                        throw new IllegalStateException("Hoàn tiền thất bại, không thể trả đơn. Chi tiết: " + (rr != null ? rr.message : "unknown"));
+                    }
+
+                    // Nếu refund thành công → cập nhật Payment
+                    payment.setStatus(PM_REFUNDED);
+                    payment.setRefundTxnId(rr.refundTxnId);
                 }
+
+                // Đồng bộ paymentStatus của đơn
                 order.setPaymentStatus(REFUNDED);
+
             } else {
-                // COD: khi trả hàng thì ghi nhận hoàn tiền
+                // COD: khi trả hàng thì ghi nhận hoàn tiền nội bộ
                 if (payment.getStatus() != PM_REFUNDED) {
                     payment.setStatus(PM_REFUNDED);
-                    paymentsEntityDao.update(payment);
+                    payment.setPaidAt(java.time.LocalDateTime.now());
+                    payment.setPaidAmount(order.getTotalAmount());
                 }
                 order.setPaymentStatus(REFUNDED);
             }
 
+            // Cuối cùng, cập nhật trạng thái đơn
+            order.setOrderStatus(RETURNED);
+
         } else if (toStatus == CANCELED) {
-            // Có thể hủy từ NEW/CONFIRMED. Với online đã thu tiền → bắt buộc refund trước.
+            // Hủy đơn
             if (isOnline && payment.getStatus() == PM_SUCCESS) {
-                throw new IllegalStateException("Không thể hủy đơn online đã thanh toán. Vui lòng hoàn tiền trước khi hủy.");
-            }
-            // Đồng bộ PaymentStatus theo trạng thái thanh toán hiện tại
-            if (payment.getStatus() == PM_REFUNDED) {
+                if (payment.getTxnId() == null || payment.getTxnId().isBlank()) {
+                    throw new IllegalStateException("Thiếu mã giao dịch gốc (txnId) để hoàn tiền online.");
+                }
+
+                if (order.getPayment().getMethod() ==  METHOD_MOMO)
+                    paymentService = new MomoServiceImpl();
+                else if (order.getPayment().getMethod() ==  METHOD_VNPAY) {
+                    //
+                }
+                else
+                    throw new IllegalStateException("Phương thức thanh toán không hợp lệ!");
+
+                IPaymentService.RefundRequest refundRequest = new IPaymentService.RefundRequest();
+                refundRequest.orderId = orderId.toString();
+                refundRequest.gatewayTxnId = payment.getTxnId();
+                refundRequest.amount = payment.getPaidAmount();
+
+                IPaymentService.RefundResponse rr;
+                try {
+                    rr = paymentService.refund(refundRequest);
+                } catch (Exception ex) {
+                    throw new IllegalStateException("Lỗi gọi cổng thanh toán khi hoàn tiền: " + ex.getMessage(), ex);
+                }
+
+                if (rr == null || !rr.success) {
+                    // Không hoàn tiền được -> không cho hủy
+                    throw new IllegalStateException("Hoàn tiền thất bại, không thể hủy đơn. Chi tiết: " + (rr != null ? rr.message : "unknown"));
+                }
+
+                payment.setStatus(PM_REFUNDED);
+                payment.setRefundTxnId(rr.refundTxnId);
+
+                // Đồng bộ PaymentStatus của đơn
                 order.setPaymentStatus(REFUNDED);
-            } else if (payment.getStatus() == PM_SUCCESS) {
-                order.setPaymentStatus(PAID);
             } else {
-                order.setPaymentStatus(UNPAID);
+                // Online chưa thu tiền, hoặc COD
+                if (payment.getStatus() == PM_REFUNDED) {
+                    order.setPaymentStatus(REFUNDED);
+                } else if (payment.getStatus() == PM_SUCCESS) {
+                    order.setPaymentStatus(PAID);
+                } else {
+                    order.setPaymentStatus(UNPAID);
+                }
             }
         } else {
             // NEW / CONFIRMED: không có ràng buộc thanh toán bổ sung

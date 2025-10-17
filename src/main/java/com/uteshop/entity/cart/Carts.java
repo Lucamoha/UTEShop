@@ -22,8 +22,8 @@ public class Carts implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer Id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "UserId", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "UserId", nullable = false, unique = true)
     Users user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

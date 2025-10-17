@@ -2,7 +2,7 @@ package com.uteshop.api.manager.reports;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.uteshop.api.manager.Jsons;
+import com.uteshop.util.JsonUtil;
 import com.uteshop.dto.manager.reports.RevenueSeriesResponse;
 import com.uteshop.services.impl.manager.RevenueServiceImpl;
 import com.uteshop.services.manager.IRevenueService;
@@ -52,6 +52,6 @@ public class RevenueApi extends HttpServlet {
         LocalDate to = LocalDate.parse(param(req, "to", LocalDate.now().toString()));
 
         RevenueSeriesResponse data = revenueServiceImpl.buildSeries(branchId(req), from, to, bucket);
-        Jsons.MAPPER.writeValue(resp.getWriter(), data);
+        JsonUtil.MAPPER.writeValue(resp.getWriter(), data);
     }
 }

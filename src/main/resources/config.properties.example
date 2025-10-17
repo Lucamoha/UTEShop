@@ -12,6 +12,18 @@ jwt.signerKey=your_secret_here
 jwt.expiration=3600000
 
 # ========================
+# Momo config
+# ========================
+momo.partnerCode=MOMO
+momo.accessKey=F8BBA842ECF85
+momo.secretKey=K951B6PE1waDMi640xX08PD3vg6EkVlz
+momo.endpointCreate=https://test-payment.momo.vn/v2/gateway/api/create
+momo.endpointQuery=https://test-payment.momo.vn/v2/gateway/api/query
+momo.endpointRefund=https://test-payment.momo.vn/v2/gateway/api/refund
+momo.redirectUrl=
+momo.ipnUrl=
+
+# ========================
 # User Roles
 # ========================
 users.role.user=USER
