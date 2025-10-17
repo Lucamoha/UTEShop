@@ -250,4 +250,22 @@ public abstract class AbstractDao<T> {
 		}
 		return list;
 	}
+	
+	public List<T> findByColumnHasExactWord(String columnName, String word) {
+		List<T> list = new ArrayList<>();
+		if (word == null || word.trim().isEmpty()) {
+			list = this.findAll();
+		} else {
+			EntityManager enma = JPAConfigs.getEntityManager();
+			try {
+				String jpql = "SELECT e FROM " + entityClass.getSimpleName() + " e WHERE e." + columnName.trim()
+						+ " = :word";
+				list = enma.createQuery(jpql, entityClass).setParameter("word", word.toLowerCase())
+						.getResultList();
+			} finally {
+				enma.close();
+			}
+		}
+		return list;
+	}
 }

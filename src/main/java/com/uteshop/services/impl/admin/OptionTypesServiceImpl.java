@@ -42,7 +42,7 @@ public class OptionTypesServiceImpl implements IOptionTypesService {
 
 	@Override
 	public OptionTypes findByCode(String code) {
-		List<OptionTypes> listOptionType = optionTypesDaoImpl.findByColumnContainingWord("Code", code);
+		List<OptionTypes> listOptionType = optionTypesDaoImpl.findByColumnHasExactWord("Code", code);
 		if(listOptionType != null && !listOptionType.isEmpty()) {
 			return listOptionType.get(0);
 		}

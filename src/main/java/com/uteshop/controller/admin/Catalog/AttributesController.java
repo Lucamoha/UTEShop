@@ -5,11 +5,8 @@ import java.util.List;
 import java.util.Objects;
 
 import com.uteshop.entity.catalog.Attributes;
-import com.uteshop.entity.catalog.OptionTypes;
 import com.uteshop.services.admin.IAttributesService;
-import com.uteshop.services.admin.IOptionTypesService;
 import com.uteshop.services.impl.admin.AttributesServiceImpl;
-import com.uteshop.services.impl.admin.OptionTypesServiceImpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

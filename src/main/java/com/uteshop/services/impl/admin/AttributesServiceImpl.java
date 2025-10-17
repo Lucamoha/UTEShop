@@ -7,43 +7,66 @@ import com.uteshop.dao.impl.admin.AttributesDaoImpl;
 import com.uteshop.entity.catalog.Attributes;
 import com.uteshop.services.admin.IAttributesService;
 
+import jakarta.persistence.EntityNotFoundException;
+
 public class AttributesServiceImpl implements IAttributesService {
 
 	IAttributesDao attributesDao = new AttributesDaoImpl();
 	AttributesDaoImpl attributesDaoImpl = new AttributesDaoImpl();
+
 	@Override
-	public List<Attributes> findAll() {	
+	public List<Attributes> findAll() {
 		return attributesDao.findAll();
 	}
+
 	@Override
 	public Attributes findByName(String name) {
-		List<Attributes> attributes = attributesDaoImpl.findByColumnContainingWord("Name", name);
-		if(!attributes.isEmpty()) {
+		List<Attributes> attributes = attributesDaoImpl.findByColumnHasExactWord("Name", name);
+		if (!attributes.isEmpty()) {
 			return attributes.get(0);
 		}
 		return null;
 	}
+
 	@Override
-	public void insert(Attributes attribute) {	
+	public void insert(Attributes attribute) {
 		attributesDaoImpl.insert(attribute);
 	}
+
 	@Override
 	public Attributes findById(int id) {
 		return attributesDaoImpl.findById(id);
 	}
+
 	@Override
 	public List<Attributes> findAll(boolean all, int firstResult, int maxResult, String searchKeyword,
 			String searchKeywordColumnName) {
 		return attributesDaoImpl.findAll(all, firstResult, maxResult, searchKeyword, searchKeywordColumnName);
 	}
+
 	@Override
 	public void update(Attributes attribute) {
 		attributesDaoImpl.update(attribute);
 	}
+
 	@Override
 	public void delete(int id) {
-		attributesDaoImpl.delete(attributesDao);
+	    Attributes attr = attributesDaoImpl.findById(id);
+	    if (attr == null) {
+	        throw new EntityNotFoundException("Không tìm thấy thông số kỹ thuật");
+	    }
+
+	    boolean isInCategory = attributesDaoImpl.existsInCategoryAttributes(id);
+	    boolean isInProduct = attributesDaoImpl.existsInProductAttributeValues(id);
+
+	    if (isInCategory || isInProduct) {
+	        throw new IllegalStateException("Không thể xóa thông số kỹ thuật đang được sử dụng");
+	    }
+
+	    attributesDaoImpl.delete(id);
 	}
+
+
 	@Override
 	public int count(String searchKeyword, String searchKeywordColumnName) {
 		return attributesDaoImpl.count(searchKeyword, searchKeywordColumnName);

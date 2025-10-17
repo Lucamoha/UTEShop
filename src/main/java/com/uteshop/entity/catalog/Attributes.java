@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Data
@@ -27,4 +28,10 @@ public class Attributes implements Serializable {
     int DataType; // 1=text,2=number,3=boolean
 
     String Unit;
+
+    @OneToMany(mappedBy = "attribute", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<CategoryAttributes> categoryAttributes;
+
+    @OneToMany(mappedBy = "attribute", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<ProductAttributeValues> productAttributeValues;
 }

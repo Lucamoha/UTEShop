@@ -5,4 +5,6 @@ import java.util.List;
 
 public interface IAttributesDao {
 	List<Attributes> findAll();
+	boolean existsInCategoryAttributes(int attributeId);
+	boolean existsInProductAttributeValues(int attributeId);
 }

@@ -22,4 +22,33 @@ public class AttributesDaoImpl extends AbstractDao<Attributes> implements IAttri
 		TypedQuery<Attributes> query = enma.createNamedQuery("Attributes.findAll", Attributes.class);
 		return query.getResultList();
 	}
+	
+	@Override
+	public boolean existsInCategoryAttributes(int attributeId) {
+	    EntityManager em = JPAConfigs.getEntityManager();
+	    try {
+	        Long count = em.createQuery(
+	            "SELECT COUNT(ca) FROM CategoryAttributes ca WHERE ca.attribute.Id = :attrId", Long.class)
+	            .setParameter("attrId", attributeId)
+	            .getSingleResult();
+	        return count > 0;
+	    } finally {
+	        em.close();
+	    }
+	}
+
+	@Override
+	public boolean existsInProductAttributeValues(int attributeId) {
+	    EntityManager em = JPAConfigs.getEntityManager();
+	    try {
+	        Long count = em.createQuery(
+	            "SELECT COUNT(pav) FROM ProductAttributeValues pav WHERE pav.attribute.Id = :attrId", Long.class)
+	            .setParameter("attrId", attributeId)
+	            .getSingleResult();
+	        return count > 0;
+	    } finally {
+	        em.close();
+	    }
+	}
+
 }
