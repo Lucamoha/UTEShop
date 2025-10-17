@@ -17,8 +17,8 @@ public class AttributesServiceImpl implements IAttributesService {
 	}
 	@Override
 	public Attributes findByName(String name) {
-		List<Attributes> attributes = attributesDaoImpl.findByColumnContainingWord("Name", "");
-		if(attributes != null) {
+		List<Attributes> attributes = attributesDaoImpl.findByColumnContainingWord("Name", name);
+		if(!attributes.isEmpty()) {
 			return attributes.get(0);
 		}
 		return null;
@@ -30,6 +30,23 @@ public class AttributesServiceImpl implements IAttributesService {
 	@Override
 	public Attributes findById(int id) {
 		return attributesDaoImpl.findById(id);
+	}
+	@Override
+	public List<Attributes> findAll(boolean all, int firstResult, int maxResult, String searchKeyword,
+			String searchKeywordColumnName) {
+		return attributesDaoImpl.findAll(all, firstResult, maxResult, searchKeyword, searchKeywordColumnName);
+	}
+	@Override
+	public void update(Attributes attribute) {
+		attributesDaoImpl.update(attribute);
+	}
+	@Override
+	public void delete(int id) {
+		attributesDaoImpl.delete(attributesDao);
+	}
+	@Override
+	public int count(String searchKeyword, String searchKeywordColumnName) {
+		return attributesDaoImpl.count(searchKeyword, searchKeywordColumnName);
 	}
 
 }

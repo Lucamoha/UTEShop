@@ -78,15 +78,19 @@
 						<ul class="nav nav-collapse">
 							<li><a
 								href="${pageContext.request.contextPath}/admin/Catalog/Categories/searchpaginated">
-									<span class="sub-item">Categories</span>
+									<span class="sub-item">Quản Lý Danh Mục</span>
 							</a></li>
 							<li><a
 								href="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated">
-									<span class="sub-item">Products</span>
+									<span class="sub-item">Quản Lý Sản Phẩm</span>
 							</a></li>
 							<li><a
 								href="${pageContext.request.contextPath}/admin/Catalog/OptionTypes/searchpaginated">
-									<span class="sub-item">Option Types</span>
+									<span class="sub-item">Quản Lý Loại Tùy Chọn</span>
+							</a></li>
+							<li><a
+								href="${pageContext.request.contextPath}/admin/Catalog/Attributes/searchpaginated">
+									<span class="sub-item">Quản Lý Thông Số Kỹ Thuật</span>
 							</a></li>
 						</ul>
 					</div></li>

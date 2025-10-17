@@ -67,7 +67,7 @@ public class JWTAuthenticationFilter implements Filter {
             chain.doFilter(request, response);
             return;
         }
-
+        
         // Kiểm tra các URL protected
         if (isProtectedUrl(path)) {
             String token = JWTUtil.extractTokenFromRequest(req);
