@@ -167,6 +167,11 @@
         </div>
     </div>
 
+    <a class="btn btn-outline-secondary px-4"
+       href="${pageContext.request.contextPath}/manager/invoice?id=${o.id}"
+       target="_blank" rel="noopener">Xuất hóa đơn (PDF)
+    </a>
+
     <!-- Modal Xác nhận -->
     <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered"> <!-- centered -->

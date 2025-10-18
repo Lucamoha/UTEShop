@@ -460,7 +460,7 @@
 				return;
 			}
 			if (data.orderId) {
-				window.location.href = CTX + '/order/detail?id=' + data.orderId;
+				window.location.href = CTX + '/orders/detail?id=' + data.orderId;
 			} else {
 				location.reload();
 			}

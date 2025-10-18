@@ -50,7 +50,7 @@ public class PaymentController extends HttpServlet {
             Integer method = order.getPayment().getMethod();
             // Đơn hàng có phương thức là COD hoặc đã thanh toán
             if (method == PaymentEnums.Method.COD || order.getPaymentStatus() != OrderEnums.PaymentStatus.UNPAID) {
-                resp.sendRedirect(req.getContextPath() + "/order/detail?id=" + orderId);
+                resp.sendRedirect(req.getContextPath() + "/orders/detail?id=" + orderId);
                 return;
             }
 
@@ -75,7 +75,6 @@ public class PaymentController extends HttpServlet {
                 IPaymentService.CreatePaymentRequest createReq = new IPaymentService.CreatePaymentRequest();
                 createReq.orderId = String.valueOf(order.getId());
                 createReq.amount = amount;
-                createReq.clientIp = "127.0.0.1";
 
                 createPaymentResponse = vnpayService.create(createReq);
             }

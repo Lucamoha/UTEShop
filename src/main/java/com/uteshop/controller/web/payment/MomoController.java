@@ -75,7 +75,7 @@ public class MomoController extends HttpServlet {
         if (path.equals("/payment/momo/return")) {
             Integer orderId = extractOrderId(req.getParameter("orderId"));
             String ctx = req.getContextPath();
-            String url = String.format("%s/order/detail?id=%s",  // trang xem chi tiết đơn
+            String url = String.format("%s/orders/detail?id=%s",  // trang xem chi tiết đơn
                     ctx,
                     orderId == null ? "" : orderId);
             resp.sendRedirect(url);

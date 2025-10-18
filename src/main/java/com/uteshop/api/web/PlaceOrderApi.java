@@ -160,7 +160,7 @@ public class PlaceOrderApi extends HttpServlet {
             if (method != PaymentEnums.Method.COD)
                 paymentUrl = req.getContextPath() + "/payment/create?orderId=" + order.getId();
             else
-                paymentUrl = req.getContextPath() + "/order/detail?id=" + order.getId();
+                paymentUrl = req.getContextPath() + "/orders/detail?id=" + order.getId();
 
             // 8) Response
             writeJson(resp, HttpServletResponse.SC_OK,
