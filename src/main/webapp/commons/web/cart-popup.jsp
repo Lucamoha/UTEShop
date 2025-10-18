@@ -159,8 +159,17 @@ function renderCartItems(data) {
     
     console.log('Rendering cart items:', data);
     
+    // CRITICAL: Show warning if items were removed
+    let warningHtml = '';
+    if (data.removedItems && data.removedItems.length > 0) {
+        console.log('Items were removed due to status=false:', data.removedItems);
+        warningHtml = '<div class="alert alert-warning" style="margin: 10px; padding: 10px; background-color: #fff3cd; border-left: 3px solid #ff9800; border-radius: 3px;">' +
+            '<p style="margin: 0; color: #856404; font-size: 13px;"><strong>Thông báo:</strong> Một số sản phẩm đã ngừng kinh doanh và đã được xóa khỏi giỏ hàng.</p>' +
+            '</div>';
+    }
+    
     // Build items HTML
-    let itemsHtml = '<ul class="header-cart-wrapitem w-full">';
+    let itemsHtml = warningHtml + '<ul class="header-cart-wrapitem w-full">';
     
     data.items.forEach(item => {
         const contextPath = '${pageContext.request.contextPath}';
@@ -171,14 +180,17 @@ function renderCartItems(data) {
         const price = new Intl.NumberFormat('vi-VN').format(item.price);
         const itemTotal = new Intl.NumberFormat('vi-VN').format(item.price * item.quantity);
         const variantInfo = item.variantSKU ? '<span class="stext-108 cl6" style="font-size: 11px;">SKU: ' + item.variantSKU + '</span><br>' : '';
+        const productDetailUrl = contextPath + '/product-detail?product=' + item.productSlug;
         
         itemsHtml += 
             '<li class="header-cart-item flex-w flex-t m-b-12">' +
                 '<div class="header-cart-item-img">' +
-                    '<img src="' + imageUrl + '" alt="' + item.productName + '" style="width: 70px; height: 70px; object-fit: cover;">' +
+                    '<a href="' + productDetailUrl + '">' +
+                        '<img src="' + imageUrl + '" alt="' + item.productName + '" style="width: 70px; height: 70px; object-fit: cover;">' +
+                    '</a>' +
                 '</div>' +
                 '<div class="header-cart-item-txt p-t-8 p-l-15">' +
-                    '<a href="#" class="header-cart-item-name m-b-5 hov-cl1 trans-04" style="display: block; max-width: 200px;">' +
+                    '<a href="' + productDetailUrl + '" class="header-cart-item-name m-b-5 hov-cl1 trans-04" style="display: block; max-width: 200px; text-decoration: none;">' +
                         item.productName +
                     '</a>' +
                     variantInfo +
@@ -207,6 +219,11 @@ function renderCartItems(data) {
     
     document.getElementById('cart-popup-total').innerHTML = 'Tổng cộng: <strong>' + totalFormatted + '</strong>';
     footer.style.display = 'block';
+    
+    // CRITICAL: Update cart count on header icon after rendering
+    // This ensures the count is updated when items are auto-removed
+    console.log('Updating cart count after popup render...');
+    updateCartCount();
 }
 
 // Export function for use in other scripts

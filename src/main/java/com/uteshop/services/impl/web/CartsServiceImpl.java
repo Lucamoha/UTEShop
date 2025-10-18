@@ -205,4 +205,9 @@ public class CartsServiceImpl implements ICartsService {
         
         return result;
     }
+
+    @Override
+    public List<java.util.Map<String, String>> validateAndRemoveInactiveItems(Integer userId) {
+        return cartsDao.removeInactiveVariantItems(userId);
+    }
 }

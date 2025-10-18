@@ -87,6 +87,20 @@ public class CartController extends HttpServlet {
         
         switch (path) {
             case "/cart":
+                // Kiểm tra và xóa các sản phẩm có variant.status = false
+                List<Map<String, String>> removedItems = cartsService.validateAndRemoveInactiveItems(userId);
+                System.out.println("[DEBUG] validateAndRemoveInactiveItems returned " + removedItems.size() + " items");
+                
+                if (!removedItems.isEmpty()) {
+                    // Lưu vào session để thông báo hiển thị lần đầu tiên user vào cart sau khi bị xóa
+                    // Session sẽ được clear trong JSP sau khi hiển thị
+                    req.getSession().setAttribute("removedItems", removedItems);
+                    System.out.println("[DEBUG] Set removedItems in session: " + removedItems);
+                } else {
+                    System.out.println("[DEBUG] No items removed, session removedItems: " + 
+                        req.getSession().getAttribute("removedItems"));
+                }
+                
                 // Load menu cha cho header
                 List<Categories> parents = categoriesService.findParents();
                 req.setAttribute("parentCategories", parents);
@@ -304,6 +318,16 @@ public class CartController extends HttpServlet {
         try {
             resp.setContentType("application/json;charset=UTF-8");
             
+            // Kiểm tra và xóa các sản phẩm có variant.status = false
+            List<Map<String, String>> removedItems = cartsService.validateAndRemoveInactiveItems(userId);
+            System.out.println("[DEBUG /cart/items] validateAndRemoveInactiveItems returned " + removedItems.size() + " items");
+            
+            // CRITICAL: Lưu vào session để thông báo hiện khi user vào /cart page sau này
+            if (!removedItems.isEmpty()) {
+                req.getSession().setAttribute("removedItems", removedItems);
+                System.out.println("[DEBUG /cart/items] Saved removedItems to session: " + removedItems);
+            }
+            
             List<com.uteshop.entity.cart.CartItems> items = cartsService.getCartItems(userId);
             Map<String, Object> cartData = cartsService.calculateCartTotal(userId);
             
@@ -314,6 +338,7 @@ public class CartController extends HttpServlet {
                 java.util.HashMap<String, Object> itemMap = new java.util.HashMap<>();
                 itemMap.put("id", item.getId());
                 itemMap.put("productName", item.getProduct().getName());
+                itemMap.put("productSlug", item.getProduct().getSlug());
                 itemMap.put("productImage", item.getProduct().getImages().isEmpty() ? "" : item.getProduct().getImages().get(0).getImageUrl());
                 itemMap.put("variantSKU", item.getVariant() != null ? item.getVariant().getSKU() : "");
                 itemMap.put("price", item.getVariant() != null ? item.getVariant().getPrice() : item.getProduct().getBasePrice());
@@ -326,6 +351,20 @@ public class CartController extends HttpServlet {
             response.put("items", itemList);
             response.put("total", cartData.get("total") != null ? cartData.get("total") : 0);
             response.put("count", items.size());
+            
+            // Thêm thông tin về sản phẩm đã bị xóa (nếu có)
+            if (!removedItems.isEmpty()) {
+                response.put("removedItems", removedItems);
+                StringBuilder message = new StringBuilder("Các sản phẩm sau đã ngừng kinh doanh và đã được xóa khỏi giỏ hàng: ");
+                for (int i = 0; i < removedItems.size(); i++) {
+                    Map<String, String> item = removedItems.get(i);
+                    message.append(item.get("productName")).append(" (SKU: ").append(item.get("sku")).append(")");
+                    if (i < removedItems.size() - 1) {
+                        message.append(", ");
+                    }
+                }
+                response.put("warningMessage", message.toString());
+            }
             
             resp.getWriter().write(gson.toJson(response));
         } catch (Exception e) {
