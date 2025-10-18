@@ -22,6 +22,7 @@ import java.util.List;
         @NamedQuery(
                 name = "Products.findLatestProducts",
                 query = "SELECT DISTINCT p FROM Products p " +
+                        "WHERE p.Status = true " +
                         "ORDER BY p.CreatedAt DESC"
         ),
         @NamedQuery(name = "Products.findByCategoryId",
@@ -100,4 +101,9 @@ public class Products implements Serializable {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     List<ProductImages> images = new ArrayList<>();
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

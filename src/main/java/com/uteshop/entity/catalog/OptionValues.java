@@ -25,4 +25,9 @@ public class OptionValues implements Serializable {
 
     @Column(nullable = false, columnDefinition = "NVARCHAR(60)")
     String Value;
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

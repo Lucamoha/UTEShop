@@ -57,4 +57,9 @@ public class Branches {
 		// Tự động cập nhật UpdatedAt khi update
 		UpdatedAt = LocalDateTime.now();
 	}
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

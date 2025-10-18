@@ -39,6 +39,11 @@
             <h3>Đăng nhập tài khoản</h3>
 
             <form id="loginForm" action="login" method="post">
+                <%-- Hidden field để giữ redirect URL --%>
+                <c:if test="${not empty param.redirect}">
+                    <input type="hidden" name="redirect" value="${param.redirect}" />
+                </c:if>
+
                 <div class="form-group">
                     <input
                             type="email"

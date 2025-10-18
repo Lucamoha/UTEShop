@@ -53,4 +53,11 @@ public interface ICartsService {
      * @return Map chứa thông tin giỏ hàng và discount
      */
     Map<String, Object> calculateCartTotalWithVoucher(Integer userId, String voucherCode);
+    
+    /**
+     * Kiểm tra và xóa các cart items có variant.status = false
+     * @param userId ID người dùng
+     * @return List chứa thông tin các sản phẩm bị xóa (tên sản phẩm và SKU)
+     */
+    List<java.util.Map<String, String>> validateAndRemoveInactiveItems(Integer userId);
 }

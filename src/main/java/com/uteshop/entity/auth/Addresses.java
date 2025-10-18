@@ -38,4 +38,9 @@ public class Addresses {
 
     @Column(nullable = false)
     Boolean IsDefault = false;
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

@@ -85,6 +85,14 @@
                         <p class="stext-102 cl3">
                             <strong>SKU:</strong> <span id="variant-sku"></span>
                         </p>
+                        
+                        <!-- Thông báo sản phẩm ngừng kinh doanh -->
+                        <div id="discontinued-warning" style="display: none; margin-top: 10px; padding: 10px 12px; background-color: #fff3cd; border-left: 4px solid #ff9800; border-radius: 4px;">
+                            <p style="margin: 0; color: #856404; font-size: 13px;">
+                                <i class="zmdi zmdi-alert-triangle" style="margin-right: 5px;"></i>
+                                <strong>Sản phẩm này đã ngừng kinh doanh.</strong> Vui lòng chọn phiên bản khác.
+                            </p>
+                        </div>
                     </div>
                     
                     <!-- Hidden input để lưu variant ID đã chọn -->
@@ -145,6 +153,7 @@
                                 </div>
 
                                 <button
+                                        id="btn-add-to-cart"
                                         class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail"
                                         type="button"
                                         onclick="addToCart(<c:out value='${product.id}'/>)"
@@ -691,10 +700,47 @@
                     // Lưu variant ID
                     $('#selected-variant-id').val(data.data.variantId);
                     console.log('Variant ID saved:', data.data.variantId);
+                    
+                    // CRITICAL: Kiểm tra status của variant
+                    const variantStatus = data.data.status;
+                    console.log('Variant status:', variantStatus);
+                    
+                    const addToCartBtn = $('#btn-add-to-cart');
+                    const discontinuedWarning = $('#discontinued-warning');
+                    
+                    if (variantStatus === 'inactive') {
+                        // Sản phẩm ngừng kinh doanh
+                        addToCartBtn.prop('disabled', true);
+                        addToCartBtn.css({
+                            'opacity': '0.5',
+                            'cursor': 'not-allowed',
+                            'background-color': '#999'
+                        });
+                        discontinuedWarning.show();
+                        console.log('Variant is inactive - button disabled and warning shown');
+                    } else {
+                        // Sản phẩm còn kinh doanh
+                        addToCartBtn.prop('disabled', false);
+                        addToCartBtn.css({
+                            'opacity': '1',
+                            'cursor': 'pointer',
+                            'background-color': ''
+                        });
+                        discontinuedWarning.hide();
+                        console.log('Variant is active - button enabled');
+                    }
                 } else {
                     console.log('Variant not found');
                     $('#variant-sku').text('N/A');
                     $('#variant-info').show();
+                    
+                    // Reset button về trạng thái mặc định khi không tìm thấy variant
+                    $('#btn-add-to-cart').prop('disabled', false).css({
+                        'opacity': '1',
+                        'cursor': 'pointer',
+                        'background-color': ''
+                    });
+                    $('#discontinued-warning').hide();
                 }
             },
             error: function(xhr, status, error) {

@@ -9,6 +9,16 @@
 <c:set var="items" value="${cartData.items}" />
 <c:set var="subtotal" value="${cartData.subtotal}" />
 
+<%-- Đọc removedItems từ session, sẽ xóa AFTER hiển thị thông báo --%>
+<%
+    Object sessionRemovedItems = session.getAttribute("removedItems");
+    System.out.println("[DEBUG JSP] Session removedItems: " + sessionRemovedItems);
+    if (sessionRemovedItems != null) {
+        System.out.println("[DEBUG JSP] removedItems size: " + ((java.util.List)sessionRemovedItems).size());
+    }
+%>
+<c:set var="removedItems" value="${sessionScope.removedItems}" />
+
 <!-- Page title / breadcrumb -->
 <div class="container p-t-60 p-b-30">
 	<div class="row">
@@ -17,6 +27,30 @@
 		</div>
 	</div>
 </div>
+
+<!-- Thông báo sản phẩm đã ngừng kinh doanh (chỉ hiện lần đầu tiên sau khi bị xóa) -->
+<c:if test="${not empty removedItems}">
+	<div class="container">
+		<div class="row">
+			<div class="col-12">
+				<div class="alert alert-warning" role="alert" style="border-left: 4px solid #ff9800; background-color: #fff3cd; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+					<h5 style="color: #ff9800; margin-bottom: 10px;">
+						<i class="zmdi zmdi-alert-triangle" style="margin-right: 8px;"></i>
+						Thông báo
+					</h5>
+					<p style="margin-bottom: 10px; color: #856404;">Các sản phẩm sau đã ngừng kinh doanh và đã được xóa khỏi giỏ hàng của bạn:</p>
+					<ul style="margin-bottom: 0; padding-left: 20px; color: #856404;">
+						<c:forEach var="item" items="${removedItems}">
+							<li><strong>${item.productName}</strong> - SKU: ${item.sku}</li>
+						</c:forEach>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<%-- Xóa khỏi session SAU KHI đã hiển thị thông báo --%>
+	<c:remove var="removedItems" scope="session" />
+</c:if>
 
 <!-- Shopping Cart -->
 <form class="bg0 p-t-75 p-b-85">
@@ -426,7 +460,7 @@
 				return;
 			}
 			if (data.orderId) {
-				window.location.href = CTX + '/order/detail?id=' + data.orderId;
+				window.location.href = CTX + '/orders/detail?id=' + data.orderId;
 			} else {
 				location.reload();
 			}
@@ -1435,6 +1469,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // CRITICAL: Update cart count on header icon AFTER page is fully loaded
+    // This is needed because when items are auto-removed (status=false),
+    // the header cart count needs to be updated
+    // Call at the END to ensure all other initialization is done
+    setTimeout(function() {
+        if (typeof updateCartCount === 'function') {
+            console.log('Calling updateCartCount after cart page load...');
+            updateCartCount();
+        } else {
+            console.warn('updateCartCount function not found!');
+        }
+    }, 100);
 });
 
 function loadBranches() {

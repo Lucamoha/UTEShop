@@ -31,6 +31,7 @@ public class LoginController extends HttpServlet {
 
         String email = req.getParameter("email");
         String password = req.getParameter("password");
+        String redirectUrl = req.getParameter("redirect");
 
         if (email == null || email.trim().isEmpty() || password == null || password.trim().isEmpty()) {
             req.setAttribute("error", "Vui lòng điền đầy đủ thông tin!");
@@ -58,23 +59,38 @@ public class LoginController extends HttpServlet {
             req.getSession().setAttribute("email", email);
             req.getSession().setAttribute("role", role);
 
-            // Redirect dựa vào role
-            if ("ADMIN".equals(role)) {
-                resp.sendRedirect(req.getContextPath() + "/admin/dashboard");
-            } else if ("MANAGER".equals(role)) {
-                EntityDaoImpl<Branches> branchesEntityDaoImpl = new EntityDaoImpl<>(Branches.class);
-                Branches branches = branchesEntityDaoImpl.findByUnique("manager", user).orElse(null);
-
-                if (branches == null) {
-                    resp.sendRedirect(req.getContextPath() + "/home");
-                    return;
+            // Nếu có redirect URL hợp lệ, ưu tiên redirect về đó
+            if (redirectUrl != null && !redirectUrl.isEmpty() && redirectUrl.startsWith(req.getContextPath())) {
+                // Đối với MANAGER, vẫn cần set branch info trước khi redirect
+                if ("MANAGER".equals(role)) {
+                    EntityDaoImpl<Branches> branchesEntityDaoImpl = new EntityDaoImpl<>(Branches.class);
+                    Branches branches = branchesEntityDaoImpl.findByUnique("manager", user).orElse(null);
+                    
+                    if (branches != null) {
+                        req.getSession().setAttribute("branchId", branches.getId());
+                        req.getSession().setAttribute("branchName", branches.getName());
+                    }
                 }
-
-                req.getSession().setAttribute("branchId", branches.getId());
-                req.getSession().setAttribute("branchName", branches.getName());
-                resp.sendRedirect(req.getContextPath() + "/manager/dashboard");
+                resp.sendRedirect(redirectUrl);
             } else {
-                resp.sendRedirect(req.getContextPath() + "/home");
+                // Không có redirect URL, redirect về dashboard/home mặc định
+                if ("ADMIN".equals(role)) {
+                    resp.sendRedirect(req.getContextPath() + "/admin/dashboard");
+                } else if ("MANAGER".equals(role)) {
+                    EntityDaoImpl<Branches> branchesEntityDaoImpl = new EntityDaoImpl<>(Branches.class);
+                    Branches branches = branchesEntityDaoImpl.findByUnique("manager", user).orElse(null);
+
+                    if (branches == null) {
+                        resp.sendRedirect(req.getContextPath() + "/home");
+                        return;
+                    }
+
+                    req.getSession().setAttribute("branchId", branches.getId());
+                    req.getSession().setAttribute("branchName", branches.getName());
+                    resp.sendRedirect(req.getContextPath() + "/manager/dashboard");
+                } else {
+                    resp.sendRedirect(req.getContextPath() + "/home");
+                }
             }
         } else {
             req.setAttribute("error", "Email hoặc mật khẩu không đúng!");

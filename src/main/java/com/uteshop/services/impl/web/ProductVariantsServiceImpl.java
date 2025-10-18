@@ -26,6 +26,7 @@ public class ProductVariantsServiceImpl implements IProductVariantsService {
                 .variantId(variant.getId())
                 .sku(variant.getSKU())
                 .price(variant.getPrice())
+                .status(variant.isStatus() ? "active" : "inactive")
                 .build();
         return dto;
     }

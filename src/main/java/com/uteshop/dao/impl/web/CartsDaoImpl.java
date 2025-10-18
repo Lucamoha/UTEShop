@@ -219,4 +219,54 @@ public class CartsDaoImpl implements ICartsDao {
             em.close();
         }
     }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<java.util.Map<String, String>> removeInactiveVariantItems(Integer userId) {
+        EntityManager em = JPAConfigs.getEntityManager();
+        EntityTransaction trans = em.getTransaction();
+        List<java.util.Map<String, String>> removedItems = new java.util.ArrayList<>();
+        
+        try {
+            // Tìm các cart items có variant.status = false
+            String jpql = """
+                SELECT ci FROM CartItems ci
+                JOIN FETCH ci.product p
+                JOIN FETCH ci.variant v
+                JOIN FETCH ci.cart c
+                WHERE c.user.Id = :userId
+                AND v.Status = false
+            """;
+            Query query = em.createQuery(jpql, CartItems.class);
+            query.setParameter("userId", userId);
+            List<CartItems> inactiveItems = (List<CartItems>) query.getResultList();
+            
+            if (!inactiveItems.isEmpty()) {
+                trans.begin();
+                
+                // Lưu thông tin các sản phẩm bị xóa trước khi xóa
+                for (CartItems item : inactiveItems) {
+                    java.util.Map<String, String> itemInfo = new java.util.HashMap<>();
+                    itemInfo.put("productName", item.getProduct().getName());
+                    itemInfo.put("sku", item.getVariant().getSKU());
+                    removedItems.add(itemInfo);
+                    
+                    // Xóa cart item
+                    em.remove(item);
+                }
+                
+                trans.commit();
+            }
+            
+            return removedItems;
+        } catch (Exception e) {
+            if (trans.isActive()) {
+                trans.rollback();
+            }
+            e.printStackTrace();
+            return removedItems;
+        } finally {
+            em.close();
+        }
+    }
 }

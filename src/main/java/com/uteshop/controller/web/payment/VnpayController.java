@@ -7,6 +7,7 @@ import com.uteshop.entity.order.Payments;
 import com.uteshop.enums.OrderEnums;
 import com.uteshop.enums.PaymentEnums;
 import com.uteshop.services.impl.web.payment.MomoServiceImpl;
+import com.uteshop.services.impl.web.payment.VnpayServiceImpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,14 +18,13 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@WebServlet(urlPatterns = {"/payment/momo/return",
-                            "/payment/momo/ipn"})
-public class MomoController extends HttpServlet {
-    private final MomoServiceImpl momoService = new MomoServiceImpl();
+@WebServlet(urlPatterns = {"/payment/vnpay/return",
+                            "/payment/vnpay/ipn" })
+public class VnpayController extends HttpServlet {
+    private final VnpayServiceImpl vnpayService = new VnpayServiceImpl();
     EntityDaoImpl<Orders> orderDao = new EntityDaoImpl<>(Orders.class);
 
     private Integer extractOrderId(String orderId) {
@@ -57,7 +57,6 @@ public class MomoController extends HttpServlet {
         return Collections.emptyMap();
     }
 
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Map<String,String> map = readParams(req);
@@ -66,51 +65,37 @@ public class MomoController extends HttpServlet {
             return;
         }
 
-        boolean valid = momoService.verifyCallback(map);
+        boolean valid = vnpayService.verifyCallback(map);
         if (!valid) {
             return;
         }
 
         String path = req.getServletPath();
-        if (path.equals("/payment/momo/return")) {
-            Integer orderId = extractOrderId(req.getParameter("orderId"));
+        if (path.equals("/payment/vnpay/return")) {
+            Integer orderId = extractOrderId(req.getParameter("vnp_OrderInfo"));
             String ctx = req.getContextPath();
             String url = String.format("%s/orders/detail?id=%s",  // trang xem chi tiết đơn
                     ctx,
                     orderId == null ? "" : orderId);
             resp.sendRedirect(url);
         }
-    }
+        else if (path.equals("/payment/vnpay/ipn")) {
+            Integer orderId = extractOrderId(req.getParameter("vnp_OrderInfo"));
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Map<String,String> map = readParams(req);
-        if (map.isEmpty()) {
-            resp.sendError(400, "Empty callback payload");
-            return;
-        }
-
-        boolean valid = momoService.verifyCallback(map);
-        if (!valid) {
-            return;
-        }
-
-        String path = req.getServletPath();
-        if (path.equals("/payment/momo/ipn")) {
-            Integer orderId = extractOrderId(String.valueOf(map.get("orderId")));
             if (orderId == null) {
                 resp.getWriter().write("{\"message\":\"Order Id not found\"}");
                 return;
             }
 
-            int resultCode = Integer.parseInt(String.valueOf(map.get("resultCode")));
-            String transId = String.valueOf(map.get("transId"));
-            String amount = String.valueOf(map.get("amount"));
+            String resultCode = String.valueOf(map.get("vnp_TransactionStatus"));
+            String transId = String.valueOf(map.get("vnp_TxnRef"));
+            String amountx100 = String.valueOf(map.get("vnp_Amount"));
+            String amount = amountx100.substring(0, amountx100.length() - 2);
 
             Orders orders = orderDao.findById(orderId);
             Payments payments = orders.getPayment();
 
-            if (resultCode == 0) {
+            if (resultCode.equals("00")) {
                 orders.setPaymentStatus(OrderEnums.PaymentStatus.PAID);
 
                 payments.setStatus(PaymentEnums.Status.SUCCESS);

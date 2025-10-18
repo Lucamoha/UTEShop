@@ -15,4 +15,11 @@ public interface ICartsDao {
     void clearCart(Integer userId);
     int getCartItemCount(Integer userId);
     Integer findVariantByOptions(Integer productId, List<Integer> optionValueIds);
+    
+    /**
+     * Xóa các cart items có variant.status = false
+     * @param userId ID người dùng
+     * @return List chứa thông tin các sản phẩm bị xóa (tên sản phẩm và SKU)
+     */
+    List<java.util.Map<String, String>> removeInactiveVariantItems(Integer userId);
 }
