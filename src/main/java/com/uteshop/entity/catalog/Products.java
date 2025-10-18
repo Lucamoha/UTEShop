@@ -22,6 +22,7 @@ import java.util.List;
         @NamedQuery(
                 name = "Products.findLatestProducts",
                 query = "SELECT DISTINCT p FROM Products p " +
+                        "WHERE p.Status = true " +
                         "ORDER BY p.CreatedAt DESC"
         ),
         @NamedQuery(name = "Products.findByCategoryId",

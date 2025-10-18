@@ -75,6 +75,14 @@
                                 <span class="payment-status payment-unpaid">
                                     <i class="zmdi zmdi-time"></i> Chưa thanh toán
                                 </span>
+                                <!-- Payment button cho VNPAY và MOMO -->
+                                <c:if test="${order.paymentStatus == 0 && (order.payment.method == 1 || order.payment.method == 2)}">
+                                    <div style="margin-top: 10px;">
+                                        <button type="button" class="btn btn-primary btn-sm">
+                                            <i class="zmdi zmdi-card"></i> Thanh toán ngay
+                                        </button>
+                                    </div>
+                                </c:if>
                             </c:when>
                             <c:when test="${order.paymentStatus == 1}">
                                 <span class="payment-status payment-paid">
@@ -139,11 +147,11 @@
                                 <c:url value="/image?fname=${item.product.images[0].imageUrl}" var="imgUrl"></c:url>
                                 <img src="${imgUrl}" 
                                      alt="${item.product.name}" class="product-image me-3">
-                                <div>
+                                <div style="margin-left: 15px;">
                                     <h6 class="mb-1">${item.product.name}</h6>
                                     <c:if test="${item.variant != null}">
-                                        <small class="text-muted">
-                                            Phân loại: ${item.variant.color} - ${item.variant.storage}
+                                        <small class="text-muted" style="display: block; margin-top: 8px;">
+                                               SKU:  ${item.variant.SKU}
                                         </small>
                                     </c:if>
                                 </div>
