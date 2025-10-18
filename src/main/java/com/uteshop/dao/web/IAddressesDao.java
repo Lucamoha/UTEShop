@@ -7,4 +7,9 @@ public interface IAddressesDao {
     List<Addresses> findByUserId(Integer userId);
     Addresses findDefaultAddress(Integer userId);
     Addresses findById(Integer id);
+    void insert(Addresses address);
+    void update(Addresses address);
+    void delete(Integer id);
+    void clearDefaultAddresses(Integer userId);
+    int countByUserId(Integer userId);
 }

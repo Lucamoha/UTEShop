@@ -22,7 +22,7 @@
                             <div class="user-dropdown" style="position: relative; display: inline-flex; align-items: center;">
                                 <span class="flex-c-m trans-04 p-lr-15 user-dropdown-toggle" style="color: #fff; cursor: pointer; display: inline-flex; align-items: center;">
                                     <i class="fa fa-user" style="margin-right: 5px"></i>
-                                    <span style="display: inline-block; vertical-align: middle;">${currentUserEmail}</span>
+                                    <span style="display: inline-block; vertical-align: middle;">${sessionScope.user.fullName}</span>
                                     <i class="fa fa-caret-down" style="margin-left: 5px"></i>
                                 </span>
                                 <div class="user-dropdown-menu" style="display: none; position: absolute; top: calc(100% + 10px); right: 0; background: #ffffff; min-width: 220px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; border-radius: 6px; overflow: hidden; border: 1px solid #e0e0e0;">
