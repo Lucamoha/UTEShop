@@ -11,6 +11,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString(exclude = {"variant", "optionType", "optionValue"})
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class VariantOptions implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -42,4 +43,12 @@ public class VariantOptions implements Serializable {
         @Column(name = "OptionTypeId")
         private Integer optionTypeId;
     }
+    
+    @Override
+    public String toString() {
+        String typeCode = optionType != null ? optionType.getCode() : "";
+        String valueName = optionValue != null ? optionValue.getValue() : "";
+        return typeCode + ": " + valueName;
+    }
+
 }

@@ -47,11 +47,11 @@
 				</div>
 			</div>
 
-			<c:if test="${empty branchList}">
+			<c:if test="${empty branchDetailModels}">
 				<div class="alert alert-danger">Không tìm thấy chi nhánh</div>
 			</c:if>
 
-			<c:if test="${not empty branchList}">
+			<c:if test="${not empty branchDetailModels}">
 				<div class="table-responsive">
 					<table class="table table-striped align-middle text-center">
 						<thead class="table-dark">
@@ -62,30 +62,32 @@
 								<th>Điện Thoại Liên Hệ</th>
 								<th>Trạng Thái</th>
 								<th>Tên Người Quản Lý</th>
+								<th>Số Hàng Tồn Kho</th>
 								<th>Thao tác</th>
 							</tr>
 						</thead>
 						<tbody>
-							<c:forEach var="branch" items="${branchList}">
+							<c:forEach var="model" items="${branchDetailModels}">
 								<tr>
-									<td>${branch.id}</td>
-									<td>${branch.name}</td>
-									<td>${branch.address}</td>
-									<td>${branch.phone}</td>
-									<td>${branch.isActive ? 'Hoạt động': 'Ngừng hoạt động'}</td>
-									<td>${branch.manager.fullName}</td>
+									<td>${model.branch.id}</td>
+									<td>${model.branch.name}</td>
+									<td>${model.branch.address}</td>
+									<td>${model.branch.phone}</td>
+									<td>${model.branch.isActive ? 'Hoạt động': 'Ngừng hoạt động'}</td>
+									<td>${model.branch.manager.fullName}</td>
+									<td>${model.totalInventory}</td>
 									<td>
 										<div class="btn-group" role="group">
 											<a
-												href="${pageContext.request.contextPath}/admin/Branch/Branches/view?id=${branch.id}"
+												href="${pageContext.request.contextPath}/admin/Branch/Branches/view?id=${model.branch.id}"
 												class="btn btn-outline-info me-1" title="Xem"> <i
 												class="bi bi-eye"></i>
 											</a> <a
-												href="${pageContext.request.contextPath}/admin/Branch/Branches/saveOrUpdate?id=${branch.id}"
+												href="${pageContext.request.contextPath}/admin/Branch/Branches/saveOrUpdate?id=${model.branch.id}"
 												class="btn btn-outline-warning me-1" title="Sửa"> <i
 												class="bi bi-pencil-square"></i>
 											</a> <a href="javascript:void(0)" class="btn btn-outline-danger"
-												data-id="${branch.id}" data-name="${branch.name}"
+												data-id="${model.branch.id}" data-name="${model.branch.name}"
 												onclick="showConfirmation(this)" title="Xóa"> <i
 												class="bi bi-trash"></i>
 											</a>

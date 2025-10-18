@@ -7,7 +7,7 @@
 		<div class="alert alert-danger">${error}</div>
 	</c:if>
 
-	<div class="col-6 offset-3 mt-4">
+	<div class="col-12 mt-4">
 		<form
 			action="${pageContext.request.contextPath}/admin/Branch/Branches/saveOrUpdate"
 			method="POST">
@@ -34,13 +34,13 @@
 					<div class="mb-3">
 						<label class="form-label">Địa Chỉ:</label> <input type="text"
 							name="address" class="form-control" value="${branch.address}"
-							placeholder="Nhập địa chỉ chi nhánh" required />
+							placeholder="Nhập địa chỉ chi nhánh" />
 					</div>
 
 					<div class="mb-3">
 						<label class="form-label">Điện Thoại Liên Hệ:</label> <input
 							type="text" name="phone" class="form-control"
-							value="${branch.phone}" placeholder="Nhập số điện thoại" required />
+							value="${branch.phone}" placeholder="Nhập số điện thoại" />
 					</div>
 
 					<div class="mb-3">
@@ -58,8 +58,7 @@
 						<div class="input-group">
 							<input type="number" id="managerId" name="managerId"
 								class="form-control" placeholder="Nhập ID người quản lý"
-								value="${branch.manager != null ? branch.manager.id : ''}"
-								required>
+								value="${branch.manager != null ? branch.manager.id : ''}">
 							<button type="button" class="btn btn-outline-secondary"
 								id="checkManager">Kiểm tra</button>
 						</div>
@@ -78,6 +77,34 @@
 					</div>
 
 					<div id="managerError" class="text-danger" style="display: none;"></div>
+
+					<div class="mb-3">
+						<h4 class="mt-4">Thông Tin Tồn Kho Theo Biến Thể</h4>
+						<table class="table table-bordered">
+							<thead>
+								<tr>
+									<th>SKU</th>
+									<th>Giá</th>
+									<th>Tùy chọn</th>
+									<th>Tồn kho</th>
+								</tr>
+							</thead>
+							<tbody>
+								<c:forEach var="bi" items="${inventories}">
+									<tr>
+										<td>${bi.variant.SKU}</td>
+										<td>${bi.variant.price}</td>
+										<td><c:forEach var="opt" items="${bi.variant.options}">
+                        ${opt.optionType.code}: ${opt.optionValue.value}<br />
+											</c:forEach></td>
+										<td><input type="number" name="stock_${bi.variant.id}"
+											value="${bi.branchStock}" class="form-control" min="0" required/></td>
+									</tr>
+								</c:forEach>
+							</tbody>
+						</table>
+
+					</div>
 
 					<div class="mt-3">
 						<button type="submit" class="btn btn-primary">

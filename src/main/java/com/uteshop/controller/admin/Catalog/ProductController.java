@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.uteshop.configs.JPAConfigs;
 import com.uteshop.dto.admin.ProductAttributeDisplayModel;
 import com.uteshop.dto.admin.ProductVariantDetailsModel;
 import com.uteshop.dto.admin.ProductVariantDisplayModel;
@@ -44,7 +43,6 @@ import com.uteshop.services.impl.admin.ProductVariantsServiceImpl;
 import com.uteshop.services.impl.admin.ProductsServiceImpl;
 import com.uteshop.services.impl.admin.VariantOptionsServiceImpl;
 
-import jakarta.persistence.EntityManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -178,9 +176,11 @@ public class ProductController extends HttpServlet {
 			// nếu là sửa -> load thông tin sản phẩm hiện tại
 			if (id != null && !id.isEmpty()) {
 				loadProductDetails(req, Integer.parseInt(id));
+				req.getRequestDispatcher("/views/admin/Catalog/Products/update.jsp").forward(req, resp);
 			}
-
-			req.getRequestDispatcher("/views/admin/Catalog/Products/update.jsp").forward(req, resp);
+			else {
+				req.getRequestDispatcher("/views/admin/Catalog/Products/addOrEdit.jsp").forward(req, resp);
+			}
 		} else if (uri.contains("view")) {
 
 			String id = req.getParameter("id");

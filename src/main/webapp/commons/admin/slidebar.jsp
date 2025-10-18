@@ -96,10 +96,6 @@
 								href="${pageContext.request.contextPath}/admin/Branch/Branches/searchpaginated">
 									<span class="sub-item">Quản Lý Chi Nhánh</span>
 							</a></li>
-							<li><a
-								href="${pageContext.request.contextPath}/admin/Branch/BranchInventory/searchpaginated">
-									<span class="sub-item">Quản Lý Tồn Kho Chi Nhánh</span>
-							</a></li>
 						</ul>
 					</div></li>
 			</ul>

@@ -21,7 +21,7 @@ public class Branches {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer Id;
 
-    @Column(nullable = false, columnDefinition = "NVARCHAR(200)")
+    @Column(nullable = false, columnDefinition = "NVARCHAR(200) unique")
     String Name;
 
     @Column(columnDefinition = "NVARCHAR(300)")

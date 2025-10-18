@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString(exclude = {"product", "options"})
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductVariants implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -31,7 +32,8 @@ public class ProductVariants implements Serializable {
     String SKU;
 
     @Column(nullable = false, precision = 12, scale = 2)
-    BigDecimal price;
+    //BigDecimal price;
+    BigDecimal Price;
 
     @Column(nullable = false)
     boolean Status = true;

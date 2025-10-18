@@ -149,6 +149,11 @@ public class ProductVariantsDaoImpl extends AbstractDao<ProductVariants> impleme
 	}
 	
 	@Override
+	public List<ProductVariants> findAll() {
+		return this.findAll();
+	}
+	
+	@Override
 	public void update(ProductVariants variant) {
 		this.update(variant);
 	}

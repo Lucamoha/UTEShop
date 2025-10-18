@@ -61,7 +61,7 @@ public class DashboardController extends HttpServlet {
 		req.setAttribute("dailyValues", gson.toJson(new ArrayList<>(dailySalesMap.values())));
 		req.setAttribute("currentMonth", currentMonth);
 		
-		List<Object[]> lowStockList = productsVariantsService.getLowStockProducts(10, 10);
+		List<Object[]> lowStockList = productsVariantsService.getLowStockProducts(100, 10);
 		req.setAttribute("lowStockList", lowStockList);
 		
 		List<Object[]> topSellingList = productsService.getTopSellingProducts(10);

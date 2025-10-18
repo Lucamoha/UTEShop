@@ -1,10 +1,15 @@
 package com.uteshop.services.impl.admin;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.uteshop.dao.admin.IProductVariantsDao;
+import com.uteshop.dao.impl.admin.BranchInventoryDaoImpl;
 import com.uteshop.dao.impl.admin.BranchesDaoImpl;
+import com.uteshop.dao.impl.admin.ProductVariantsDaoImpl;
+import com.uteshop.entity.branch.BranchInventory;
 import com.uteshop.entity.branch.Branches;
-import com.uteshop.entity.catalog.Attributes;
+import com.uteshop.entity.catalog.ProductVariants;
 import com.uteshop.services.admin.IBranchesService;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -12,6 +17,8 @@ import jakarta.persistence.EntityNotFoundException;
 public class BranchesServiceImpl implements IBranchesService {
 
 	BranchesDaoImpl branchesDaoImpl = new BranchesDaoImpl();
+	BranchInventoryDaoImpl branchInventoryDaoImpl = new BranchInventoryDaoImpl();
+	IProductVariantsDao productVariantsDaoImpl = new ProductVariantsDaoImpl();
 	
 	@Override
 	public void insert(Branches branch) {
@@ -66,6 +73,52 @@ public class BranchesServiceImpl implements IBranchesService {
 	@Override
 	public List<Branches> findAll() {
 		return branchesDaoImpl.findAll();
+	}
+
+	@Override
+	public List<BranchInventory> findInventoryByBranchId(Integer branchId) {
+		return branchesDaoImpl.findInventoryByBranchId(branchId);
+	}
+
+	@Override
+	public List<BranchInventory> findOrCreateInventoriesByBranchId(Integer branchId) {
+	   return branchesDaoImpl.findOrCreateInventoriesByBranchId(branchId);
+	}
+
+	@Override
+	public void update(BranchInventory branchInventory) {
+		branchInventoryDaoImpl.update(branchInventory);
+	}
+
+	@Override
+	public List<BranchInventory> createEmptyInventoriesForAllVariants() {
+		return branchesDaoImpl.createEmptyInventoriesForAllVariants();
+	}
+
+	@Override
+	public List<BranchInventory> findInventoriesWithOptionsByBranchId(Integer branchId) {
+		List<ProductVariants> variants = productVariantsDaoImpl.findAll();
+		List<BranchInventory> inventories = new ArrayList<>();
+	    for (ProductVariants variant : variants) {
+	        BranchInventory bi = new BranchInventory();
+
+	        BranchInventory.Id id = new BranchInventory.Id();
+	        id.setBranchId(branchId);
+	        id.setVariantId(variant.getId());
+	        bi.setId(id);
+
+	        bi.setBranch(branchesDaoImpl.findById(branchId));
+	        bi.setVariant(variant);
+	        bi.setBranchStock(0);
+
+	        inventories.add(bi);
+	    }
+	    return inventories;
+	}
+
+	@Override
+	public Long countInventory(int branchId) {
+		return branchesDaoImpl.countInventory(branchId);
 	}
 
 }

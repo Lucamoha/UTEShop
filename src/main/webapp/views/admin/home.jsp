@@ -3,7 +3,8 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
-<div class="d-flex align-items-center justify-content-between pt-2 pb-4 flex-wrap">
+<div
+	class="d-flex align-items-center justify-content-between pt-2 pb-4 flex-wrap">
 	<h1 class="fw-bold mb-3 mb-md-0">DASHBOARD</h1>
 
 	<div class="col-md-4 col-sm-12">
@@ -100,7 +101,7 @@
 	</div>
 </div>
 <div class="row">
-	<div class="col-md-8">
+	<div class="col-md-12">
 		<div class="card card-round">
 			<div class="card-header">
 				<div class="card-head-row">
@@ -114,39 +115,9 @@
 			</div>
 		</div>
 	</div>
-	<div class="col-md-4">
-		<div class="card card-round">
-			<div class="card-header">
-				<div class="card-head-row card-tools-still-right">
-					<div class="card-title">10 sản phẩm sắp hết</div>
-				</div>
-			</div>
-			<div class="card-body p-0">
-				<div class="table-responsive">
-					<!-- Projects table -->
-					<table class="table align-items-center mb-0">
-						<thead class="thead-light">
-							<tr>
-								<th scope="col">Tên sản phẩm</th>
-								<th scope="col">Tồn kho</th>
-							</tr>
-						</thead>
-						<tbody>
-							<c:forEach var="item" items="${lowStockList}">
-								<tr>
-									<th>${item[1]}</th>
-									<th>${item[2]}</th>
-								</tr>
-							</c:forEach>
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
-	</div>
 </div>
 <div class="row">
-	<div class="col-md-8">
+	<div class="col-md-12">
 		<div class="card card-round">
 			<div class="card-header">
 				<div class="card-head-row">
@@ -160,11 +131,14 @@
 			</div>
 		</div>
 	</div>
-	<div class="col-md-4">
+</div>
+
+<div class="row">
+	<div class="col-md-12">
 		<div class="card card-round">
 			<div class="card-header">
 				<div class="card-head-row card-tools-still-right">
-					<div class="card-title">10 sản phẩm bán chạy</div>
+					<div class="card-title">Top 10 sản phẩm bán chạy</div>
 				</div>
 			</div>
 			<div class="card-body p-0">
@@ -192,12 +166,59 @@
 	</div>
 </div>
 
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="card card-round">
+			<div class="card-header">
+				<div class="card-head-row card-tools-still-right">
+					<div class="card-title">Sản phẩm sắp hết hàng</div>
+				</div>
+			</div>
+			<div class="card-body p-0">
+				<c:if test="${empty lowStockList}">
+					<div class="alert alert-info">Không có sản phẩm sắp hết hàng</div>
+				</c:if>
+
+				<c:if test="${not empty lowStockList}">
+					<div class="table-responsive">
+						<table class="table align-items-center mb-0">
+							<thead class="thead-light">
+								<tr>
+									<th scope="col">Tên sản phẩm</th>
+									<th scope="col">Tồn kho</th>
+								</tr>
+							</thead>
+							<tbody>
+								<c:forEach var="item" items="${lowStockList}">
+									<tr>
+										<th>${item[1]}</th>
+										<th>${item[2]}</th>
+									</tr>
+								</c:forEach>
+							</tbody>
+						</table>
+					</div>
+				</c:if>
+			</div>
+		</div>
+	</div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-	const revenueLabels = ${revenueLabels != null ? revenueLabels : '[]'};
-	const revenueValues = ${revenueValues != null ? revenueValues : '[]'};
-	const dailyLabels   = ${dailyLabels != null ? dailyLabels : '[]'};
-	const dailyValues   = ${dailyValues != null ? dailyValues : '[]'};
+	const revenueLabels = ${
+		revenueLabels != null ? revenueLabels : '[]'
+	};
+	const revenueValues = ${
+		revenueValues != null ? revenueValues : '[]'
+	};
+	const dailyLabels = ${
+		dailyLabels != null ? dailyLabels : '[]'
+	};
+	const dailyValues = ${
+		dailyValues != null ? dailyValues : '[]'
+	};
 
 	document.addEventListener("DOMContentLoaded", function() {
 		// BIỂU ĐỒ DOANH THU THEO THÁNG
