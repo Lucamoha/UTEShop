@@ -72,4 +72,8 @@ public class AttributesServiceImpl implements IAttributesService {
 		return attributesDaoImpl.count(searchKeyword, searchKeywordColumnName);
 	}
 
+	@Override
+	public List<Attributes> findAllFetchColumns(List<String> fetchColumnsName) {
+		return attributesDao.findAllFetchColumns(fetchColumnsName);
+	}
 }

@@ -5,9 +5,11 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 @Data
+@ToString(exclude = {"category", "attribute"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -42,6 +44,28 @@ public class CategoryAttributes implements Serializable {
 
         @Column(name = "AttributeId")
         private Integer attributeId;
+        
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Id id = (Id) o;
+            return Objects.equals(categoryId, id.categoryId) &&
+                   Objects.equals(attributeId, id.attributeId);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(categoryId, attributeId);
+        }
+
+        @Override
+        public String toString() {
+            return "Id{" +
+                    "categoryId=" + categoryId +
+                    ", attributeId=" + attributeId +
+                    '}';
+        }
     }
 
     @Override

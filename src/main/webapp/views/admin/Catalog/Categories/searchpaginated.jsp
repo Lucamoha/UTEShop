@@ -53,6 +53,7 @@
 								<th>Tên Danh Mục</th>
 								<th>Slug</th>
 								<th>Danh Mục Cha</th>
+								<th>Thông Số Kỹ Thuật</th>
 								<th>Thao Tác</th>
 							</tr>
 						</thead>
@@ -67,7 +68,7 @@
 												<span class="text-muted">—</span>
 											</c:otherwise>
 										</c:choose></td>
-
+									<td>${category.categoryAttributes.size()}</td>
 									<td>
 										<div class="btn-group" role="group">
 											<a

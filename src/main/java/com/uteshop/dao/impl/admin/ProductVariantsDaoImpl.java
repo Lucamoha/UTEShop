@@ -75,7 +75,7 @@ public class ProductVariantsDaoImpl extends AbstractDao<ProductVariants> impleme
 					        pv.Id,
 					        pv.product.Id,
 					        pv.SKU,
-					        pv.price,
+					        pv.Price,
 					        pv.Status,
 					        pv.CreatedAt,
 					        pv.UpdatedAt,
@@ -134,7 +134,7 @@ public class ProductVariantsDaoImpl extends AbstractDao<ProductVariants> impleme
                 em.remove(em.contains(variant) ? variant : em.merge(variant));
             }
             tx.commit();
-            System.out.println("✅ Đã xóa tất cả biến thể cho productId=" + productId);
+            //System.out.println("Đã xóa tất cả biến thể cho productId=" + productId);
         } catch (Exception e) {
             tx.rollback();
             e.printStackTrace();
