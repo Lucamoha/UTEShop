@@ -4,18 +4,26 @@
 
 <div class="bg0 p-b-85" style="padding-top: 130px;">
 <div class="container">
-    <!-- Back button and Cancel button -->
     <div class="m-b-20 d-flex justify-content-between align-items-center">
         <a href="${pageContext.request.contextPath}/orders" class="btn-back">
             <i class="zmdi zmdi-arrow-left"></i>  Quay lại danh sách
         </a>
         
-        <!-- Cancel button - only show for NEW orders -->
-        <c:if test="${order.orderStatus == ORDER_STATUS_NEW}">
-            <button type="button" class="btn btn-danger" onclick="showCancelConfirmation()">
-                <i class="zmdi zmdi-close"></i> Hủy đơn hàng
-            </button>
-        </c:if>
+        <div>
+            <!-- Cancel button - cho NEW và CONFIRMED -->
+            <c:if test="${order.orderStatus == ORDER_STATUS_NEW || order.orderStatus == ORDER_STATUS_CONFIRMED}">
+                <button type="button" class="btn btn-danger" onclick="showCancelConfirmation()">
+                    <i class="zmdi zmdi-close"></i> Hủy đơn hàng
+                </button>
+            </c:if>
+            
+            <!-- Return button - cho DELIVERED -->
+            <c:if test="${order.orderStatus == ORDER_STATUS_DELIVERED}">
+                <button type="button" class="btn btn-warning" onclick="showReturnConfirmation()">
+                    <i class="zmdi zmdi-undo"></i> Trả hàng
+                </button>
+            </c:if>
+        </div>
     </div>
 
     <!-- Order Header -->
@@ -51,7 +59,7 @@
                             </c:when>
                             <c:when test="${order.orderStatus == ORDER_STATUS_DELIVERED}">
                                 <span class="order-status status-delivered">
-                                    <i class="zmdi zmdi-check-circle"></i> Đã giao hàng
+                                    <i class="zmdi zmdi-check-circle"></i> Đã nhận
                                 </span>
                             </c:when>
                             <c:when test="${order.orderStatus == ORDER_STATUS_CANCELED}">
@@ -76,9 +84,9 @@
                                     <i class="zmdi zmdi-time"></i> Chưa thanh toán
                                 </span>
                                 <!-- Payment button cho VNPAY và MOMO -->
-                                <c:if test="${order.paymentStatus == 0 && (order.payment.method == 1 || order.payment.method == 2)}">
+                                <c:if test="${(order.orderStatus == 0 || order.orderStatus == 1) && (order.payment.method == 1 || order.payment.method == 2) && order.payment.status == 0}">
                                     <div style="margin-top: 10px;">
-                                        <button type="button" class="btn btn-primary btn-sm">
+                                        <button type="button" class="btn btn-primary btn-sm" data-order-id="${order.id}" onclick="redirectToPayment(this.getAttribute('data-order-id'))">
                                             <i class="zmdi zmdi-card"></i> Thanh toán ngay
                                         </button>
                                     </div>
@@ -279,7 +287,7 @@
 </div>
 </div>
 
-<!-- Cancel Order Confirmation Modal -->
+<!-- Modal hủy đơn hàng -->
 <div class="modal fade" id="cancelOrderModal" tabindex="-1" role="dialog" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -291,16 +299,40 @@
             </div>
             <div class="modal-body">
                 <p>Bạn có chắc chắn muốn hủy đơn hàng #${order.id}?</p>
-                <c:if test="${order.paymentStatus == 1}">
-                    <div class="alert alert-info">
-                        <i class="zmdi zmdi-info"></i> 
-                        <strong>Lưu ý:</strong> Đơn hàng này đã được thanh toán. Số tiền sẽ được hoàn lại vào tài khoản của bạn trong vòng 3-5 ngày làm việc.
-                    </div>
-                </c:if>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
                 <button type="button" class="btn btn-danger" onclick="cancelOrder()">Xác nhận hủy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Trả hàng -->
+<div class="modal fade" id="returnOrderModal" tabindex="-1" role="dialog" aria-labelledby="returnOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="returnOrderModalLabel">Xác nhận trả hàng</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn trả lại đơn hàng #${order.id}?</p>
+                <div class="alert alert-warning">
+                    <i class="zmdi zmdi-alert-triangle"></i> 
+                    <strong>Điều kiện trả hàng:</strong>
+                    <ul style="margin-top: 10px; margin-bottom: 0;">
+                        <li>Sản phẩm còn nguyên vẹn, chưa qua sử dụng</li>
+                        <li>Đầy đủ bao bì, phụ kiện kèm theo</li>
+                        <li>Trả hàng trong vòng 7 ngày kể từ ngày nhận hàng</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-warning" onclick="returnOrder()">Xác nhận trả hàng</button>
             </div>
         </div>
     </div>
@@ -311,21 +343,36 @@ function showCancelConfirmation() {
     $('#cancelOrderModal').modal('show');
 }
 
+function showReturnConfirmation() {
+    $('#returnOrderModal').modal('show');
+}
+
+function redirectToPayment(orderId) {
+    // Redirect to payment gateway
+    window.location.href = '${pageContext.request.contextPath}/payment/create?orderId=' + orderId;
+}
+
 function cancelOrder() {
     const orderId = parseInt('${order.id}');
+    const button = event.target;
     
     // Disable button to prevent double click
-    event.target.disabled = true;
-    event.target.innerHTML = '<i class="zmdi zmdi-spinner zmdi-hc-spin"></i> Đang xử lý...';
+    button.disabled = true;
+    button.innerHTML = '<i class="zmdi zmdi-spinner zmdi-hc-spin"></i> Đang xử lý...';
     
     fetch('${pageContext.request.contextPath}/orders/cancel', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: 'orderId=' + orderId
+        body: 'id=' + orderId
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             alert('Hủy đơn hàng thành công!');
@@ -333,15 +380,53 @@ function cancelOrder() {
             window.location.reload();
         } else {
             alert('Lỗi: ' + data.message);
-            event.target.disabled = false;
-            event.target.innerHTML = 'Xác nhận hủy';
+            button.disabled = false;
+            button.innerHTML = 'Xác nhận hủy';
         }
     })
     .catch(error => {
         console.error('Error:', error);
         alert('Có lỗi xảy ra khi hủy đơn hàng. Vui lòng thử lại.');
-        event.target.disabled = false;
-        event.target.innerHTML = 'Xác nhận hủy';
+        button.disabled = false;
+    });
+}
+
+function returnOrder() {
+    const orderId = parseInt('${order.id}');
+    const button = event.target;
+    
+    // Disable button to prevent double click
+    button.disabled = true;
+    button.innerHTML = '<i class="zmdi zmdi-spinner zmdi-hc-spin"></i> Đang xử lý...';
+    
+    fetch('${pageContext.request.contextPath}/orders/return', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'id=' + orderId
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            alert('Yêu cầu trả hàng đã được gửi thành công!');
+            // Reload page to show updated status
+            window.location.reload();
+        } else {
+            alert('Lỗi: ' + data.message);
+            button.disabled = false;
+            button.innerHTML = 'Xác nhận trả hàng';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi gửi yêu cầu trả hàng. Vui lòng thử lại.');
+        button.disabled = false;
     });
 }
 </script>

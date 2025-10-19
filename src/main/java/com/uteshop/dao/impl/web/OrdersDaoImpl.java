@@ -102,33 +102,5 @@ public class OrdersDaoImpl implements IOrdersDao {
         } finally {
             em.close();
         }
-    }
-
-    @Override
-    public boolean cancelOrder(Integer orderId, Integer userId) {
-        EntityManager em = JPAConfigs.getEntityManager();
-        EntityTransaction transaction = em.getTransaction();
-        try {
-            transaction.begin();
-            
-            Orders order = em.find(Orders.class, orderId);
-            if (order == null || !order.getUser().getId().equals(userId)) {
-                transaction.rollback();
-                return false;
-            }
-            
-            order.setOrderStatus(OrderEnums.OrderStatus.CANCELED);
-            em.merge(order);
-            
-            transaction.commit();
-            return true;
-        } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-            throw e;
-        } finally {
-            em.close();
-        }
-    }
+    } 
 }

@@ -18,7 +18,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
+import org.eclipse.tags.shaded.org.apache.xpath.operations.Or;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -26,7 +26,8 @@ import java.util.List;
 @WebServlet(urlPatterns = {
         "/orders",
         "/orders/detail",
-        "/orders/cancel"
+        "/orders/cancel",
+        "/orders/return"
 })
 public class OrdersController extends HttpServlet {
     
@@ -79,7 +80,6 @@ public class OrdersController extends HttpServlet {
         } else if ("/orders/detail".equals(servletPath)) {
             handleOrderDetail(req, resp, userId);
         }
-
         req.setAttribute("parentCategories", parents);
         req.setAttribute("topLatestProducts", topLatestProducts);
     }
@@ -138,7 +138,7 @@ public class OrdersController extends HttpServlet {
      */
     private void handleOrderDetail(HttpServletRequest req, HttpServletResponse resp, Integer userId) 
             throws ServletException, IOException {
-        
+
         Integer orderId = parseIntParam(req.getParameter("id"), null);
         
         if (orderId == null) {
@@ -172,37 +172,37 @@ public class OrdersController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Integer userId = getCurrentUserId(req);
+        Integer orderId = parseIntParam(req.getParameter("id"), null);
         String servletPath = req.getServletPath();
-        
-        if ("/orders/cancel".equals(servletPath)) {
-            handleCancelOrder(req, resp, userId);
-        }
-    }
-
-    /**
-     * Xử lý hủy đơn hàng
-     */
-    private void handleCancelOrder(HttpServletRequest req, HttpServletResponse resp, Integer userId) 
-            throws ServletException, IOException {
         
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
         
-        Integer orderId = parseIntParam(req.getParameter("orderId"), null);
-        
-        if (orderId == null) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write("{\"success\": false, \"message\": \"ID đơn hàng không hợp lệ\"}");
-            return;
-        }
-        
-        boolean success = ordersService.cancelOrder(orderId, userId);
-        
-        if (success) {
-            resp.getWriter().write("{\"success\": true, \"message\": \"Hủy đơn hàng thành công\"}");
-        } else {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write("{\"success\": false, \"message\": \"Không thể hủy đơn hàng. Đơn hàng đã được xác nhận hoặc không tồn tại.\"}");
+        try {
+            if (orderId == null) {
+                resp.getWriter().write("{\"success\": false, \"message\": \"ID đơn hàng không hợp lệ\"}");
+                return;
+            }
+            
+            // Verify order thuộc user
+            Orders order = ordersService.findOrderDetail(orderId, userId);
+            if (order == null) {
+                resp.getWriter().write("{\"success\": false, \"message\": \"Không tìm thấy đơn hàng\"}");
+                return;
+            }
+            
+            if ("/orders/cancel".equals(servletPath)) {
+                ordersService.updateOrderStatus(orderId, OrderEnums.OrderStatus.CANCELED);
+                resp.getWriter().write("{\"success\": true, \"message\": \"Hủy đơn hàng thành công\"}");
+            }
+            else if("/orders/return".equals(servletPath)) {
+                ordersService.updateOrderStatus(orderId, OrderEnums.OrderStatus.RETURNED);
+                resp.getWriter().write("{\"success\": true, \"message\": \"Yêu cầu trả hàng đã được gửi thành công\"}");
+            }
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            resp.getWriter().write("{\"success\": false, \"message\": \"" + e.getMessage() + "\"}");
+        } catch (Exception e) {
+            resp.getWriter().write("{\"success\": false, \"message\": \"Có lỗi xảy ra: " + e.getMessage() + "\"}");
         }
     }
 }
