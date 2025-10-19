@@ -85,4 +85,21 @@ public class UserTokensDaoImpl implements IUserTokensDao {
             em.close();
         }
     }
+
+    @Override
+    public void deleteByUserId(Integer userId) {
+        EntityManager em = JPAConfigs.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.createQuery("DELETE FROM UserTokens t WHERE t.user.id = :userId")
+                    .setParameter("userId", userId)
+                    .executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
 }
