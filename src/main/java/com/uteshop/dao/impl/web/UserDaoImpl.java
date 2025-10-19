@@ -57,4 +57,21 @@ public class UserDaoImpl extends AbstractDao<Users> implements IUsersDao {
             em.close();
         }
     }
+    
+    @Override
+    public Users getUserByPhone(String phone) {
+        if (phone == null || phone.trim().isEmpty()) {
+            return null;
+        }
+        EntityManager em = JPAConfigs.getEntityManager();
+        try {
+            Query query = em.createQuery("SELECT u FROM Users u WHERE u.Phone = :phone", Users.class);
+            query.setParameter("phone", phone);
+            return (Users) query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } finally {
+            em.close();
+        }
+    }
 }

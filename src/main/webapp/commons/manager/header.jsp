@@ -37,6 +37,9 @@
         <ul class="dropdown-menu dropdown-user animated fadeIn">
           <div class="scroll-wrapper dropdown-user-scroll scrollbar-outer" style="position: relative;"><div class="dropdown-user-scroll scrollbar-outer scroll-content" style="height: 30px; margin-bottom: 0px; margin-right: 0px; max-height: none;">
             <li>
+              <a class="dropdown-item" href="${pageContext.request.contextPath}/manager/profile">Trang cá nhân</a>
+            </li>
+            <li>
               <a class="dropdown-item" href="${pageContext.request.contextPath}/logout">Đăng xuất</a>
             </li>
           </div><div class="scroll-element scroll-x"><div class="scroll-element_outer"><div class="scroll-element_size"></div><div class="scroll-element_track"></div><div class="scroll-bar" style="width: 0px;"></div></div></div><div class="scroll-element scroll-y"><div class="scroll-element_outer"><div class="scroll-element_size"></div><div class="scroll-element_track"></div><div class="scroll-bar" style="height: 0px;"></div></div></div></div>

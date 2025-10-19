@@ -223,7 +223,7 @@
 								<i class="zmdi zmdi-alert-circle"></i> Vui lòng chọn địa chỉ giao hàng
 							</small>
 							<small class="stext-111 cl6 p-t-5" style="display: block;">
-								<a href="${pageContext.request.contextPath}/profile#addresses" class="cl4 hov-cl1">
+								<a href="${pageContext.request.contextPath}/profile/addresses" class="cl4 hov-cl1">
 									<i class="zmdi zmdi-plus"></i> Thêm địa chỉ mới
 								</a>
 							</small>

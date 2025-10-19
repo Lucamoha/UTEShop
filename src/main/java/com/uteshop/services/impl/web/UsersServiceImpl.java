@@ -16,6 +16,11 @@ public class UsersServiceImpl implements IUsersService {
     public Users findByEmail(String email) {
         return userDaoImpl.getUserByEmail(email);
     }
+    
+    @Override
+    public Users findByPhone(String phone) {
+        return userDaoImpl.getUserByPhone(phone);
+    }
 
     @Override
     public void insertUser(Users user) {

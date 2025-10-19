@@ -6,6 +6,8 @@ public interface IUsersService {
     boolean checkDuplicate(String email, String phone);
 
     Users findByEmail(String email);
+    
+    Users findByPhone(String phone);
 
     void insertUser(Users user);
 

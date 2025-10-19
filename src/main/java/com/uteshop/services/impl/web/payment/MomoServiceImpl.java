@@ -56,7 +56,7 @@ public class MomoServiceImpl implements IPaymentService {
     @Override
     public CreatePaymentResponse create(CreatePaymentRequest req) throws PaymentException {
         try {
-            String orderId   = "UTESHOP_ORDER_" + req.orderId;
+            String orderId   = "UTESHOP_ORDER" + System.currentTimeMillis() + "_" + req.orderId;
             String requestId = "UTESHOP_REQ_" + System.currentTimeMillis();
             String amountStr = req.amount.setScale(0, BigDecimal.ROUND_HALF_UP).toPlainString();
             String orderInfo = "Thanh toan don #" + req.orderId;
@@ -91,8 +91,6 @@ public class MomoServiceImpl implements IPaymentService {
             body.put("extraData", extraData);
             body.put("lang", "vi");
             body.put("signature", signature);
-
-            String payload = JsonUtil.toJson(body);
 
             String resp = sendJson(endpointCreate, JsonUtil.toJson(body));
             Map<String,String> parsed = JsonUtil.toFlatStringMap(resp);
