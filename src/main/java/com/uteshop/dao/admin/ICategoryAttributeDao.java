@@ -12,6 +12,7 @@ public interface ICategoryAttributeDao {
 	CategoryAttributes findByIdFetchColumns(Object id, int firstResult, int maxResult, List<String> fetchColumnsName);
 	void insert(CategoryAttributes categoryAttribute);
 	void update(CategoryAttributes categoryAttribute);
+	void delete(Id id);
 	CategoryAttributes findByCategoryIdAndAttributeId(int categoryId, int attributeId);
 	boolean existsById(Id id);
 }

@@ -227,7 +227,7 @@ public class BranchesController extends HttpServlet {
 				String stockStr = req.getParameter(paramName);
 				if (stockStr != null && !stockStr.isBlank()) {
 					int stock = Integer.parseInt(stockStr);
-					if (stock > 0) {
+					if (stock >= 0) {
 						bi.setBranchStock(stock);
 
 						// Gán lại branch và id nếu null khi thêm mới

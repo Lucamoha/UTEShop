@@ -9,13 +9,38 @@
 		</div>
 		<div class="card-body">
 
-			<c:if test="${not empty message}">
+			<%-- <c:if test="${not empty message}">
 				<div class="alert alert-primary" role="alert">
 					<i>${message}</i>
 				</div>
 				<c:remove var="message" scope="session" />
 				<!-- xóa message sau khi da thong bao tranh trung lai khi chuyen trang -->
-			</c:if>
+			</c:if> --%>
+
+			<c:choose>
+				<c:when test="${not empty message}">
+					<div class="alert alert-success d-flex align-items-center"
+						role="alert">
+						<i class="bi bi-check-circle-fill text-success me-2"></i> <span>${message}</span>
+					</div>
+					<c:remove var="message" scope="session" />
+				</c:when>
+				<c:when test="${not empty warningMessage}">
+					<div class="alert alert-warning d-flex align-items-center"
+						role="alert">
+						<i class="bi bi-exclamation-triangle-fill text-warning me-2"></i> <span>${warningMessage}</span>
+					</div>
+					<c:remove var="warningMessage" scope="session" />
+				</c:when>
+				<c:when test="${not empty errorMessage}">
+					<div class="alert alert-danger d-flex align-items-center"
+						role="alert">
+						<i class="bi bi-x-circle-fill text-danger me-2"></i> <span>${errorMessage}</span>
+					</div>
+					<c:remove var="errorMessage" scope="session" />
+				</c:when>
+			</c:choose>
+
 
 			<div class="row mt-2 mb-3">
 				<div class="col-md-6">
@@ -146,6 +171,9 @@
 
 <script
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"></script>
 
 <!-- Script xác nhận xóa -->
 <script>

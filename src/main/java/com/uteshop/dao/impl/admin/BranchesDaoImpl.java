@@ -2,6 +2,9 @@ package com.uteshop.dao.impl.admin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.uteshop.configs.JPAConfigs;
 import com.uteshop.dao.AbstractDao;
 import com.uteshop.entity.branch.BranchInventory;
@@ -24,12 +27,13 @@ public class BranchesDaoImpl extends AbstractDao<Branches> {
 	 * , Long.class) .setParameter("branchId", branchId).getSingleResult(); return
 	 * count; } finally { em.close(); } }
 	 */
-	
+
 	public Long countInventory(int branchId) {
 		EntityManager em = JPAConfigs.getEntityManager();
 		try {
 			Long count = em
-					.createQuery("SELECT SUM(bi.BranchStock) FROM BranchInventory bi WHERE bi.branch.Id = :branchId", Long.class)
+					.createQuery("SELECT SUM(bi.BranchStock) FROM BranchInventory bi WHERE bi.branch.Id = :branchId",
+							Long.class)
 					.setParameter("branchId", branchId).getSingleResult();
 			return count != null ? count : 0;
 		} finally {
@@ -61,85 +65,127 @@ public class BranchesDaoImpl extends AbstractDao<Branches> {
 		}
 	}
 
+	/*
+	 * public List<BranchInventory> findOrCreateInventoriesByBranchId(Integer
+	 * branchId) { EntityManager em = JPAConfigs.getEntityManager(); try {
+	 * List<BranchInventory> existing = em.createQuery(""" SELECT DISTINCT bi FROM
+	 * BranchInventory bi JOIN FETCH bi.variant v LEFT JOIN FETCH v.options o LEFT
+	 * JOIN FETCH o.optionType LEFT JOIN FETCH o.optionValue WHERE bi.branch.id =
+	 * :branchId """, BranchInventory.class) .setParameter("branchId", branchId)
+	 * .getResultList();
+	 * 
+	 * //Nếu đã có dữ liệu, ép Hibernate load đầy đủ trước khi đóng EM if
+	 * (!existing.isEmpty()) { for (BranchInventory bi : existing) { ProductVariants
+	 * v = bi.getVariant(); if (v != null && v.getOptions() != null) {
+	 * v.getOptions().size(); // ép load list for (VariantOptions vo :
+	 * v.getOptions()) { if (vo.getOptionType() != null)
+	 * vo.getOptionType().getCode(); // ép load optionType if (vo.getOptionValue()
+	 * != null) vo.getOptionValue().getValue(); // ép load optionValue } } } return
+	 * existing; }
+	 * 
+	 * //Nếu chưa có biến thể -> tạo danh sách mới cho chi nhánh đó
+	 * List<ProductVariants> variants = em.createQuery(""" SELECT DISTINCT v FROM
+	 * ProductVariants v LEFT JOIN FETCH v.options o LEFT JOIN FETCH o.optionType
+	 * LEFT JOIN FETCH o.optionValue """, ProductVariants.class) .getResultList();
+	 * 
+	 * List<BranchInventory> newList = new ArrayList<>(); Branches branchRef =
+	 * em.getReference(Branches.class, branchId);
+	 * 
+	 * for (ProductVariants v : variants) { BranchInventory bi =
+	 * BranchInventory.builder() .branch(branchRef) .variant(v) .BranchStock(0)
+	 * .build();
+	 * 
+	 * // Ép load options cho biến thể if (v.getOptions() != null) {
+	 * v.getOptions().size(); for (VariantOptions vo : v.getOptions()) { if
+	 * (vo.getOptionType() != null) vo.getOptionType().getCode(); if
+	 * (vo.getOptionValue() != null) vo.getOptionValue().getValue(); } }
+	 * 
+	 * newList.add(bi); }
+	 * 
+	 * return newList;
+	 * 
+	 * } finally { em.close(); } }
+	 */
+
 	public List<BranchInventory> findOrCreateInventoriesByBranchId(Integer branchId) {
-	    EntityManager em = JPAConfigs.getEntityManager();
-	    try {
-	        List<BranchInventory> existing = em.createQuery("""
-	                SELECT DISTINCT bi
-	                FROM BranchInventory bi
-	                JOIN FETCH bi.variant v
-	                LEFT JOIN FETCH v.options o
-	                LEFT JOIN FETCH o.optionType
-	                LEFT JOIN FETCH o.optionValue
-	                WHERE bi.branch.id = :branchId
-	            """, BranchInventory.class)
-	            .setParameter("branchId", branchId)
-	            .getResultList();
+		EntityManager em = JPAConfigs.getEntityManager();
+		try {
+			//Lấy danh sách tồn kho hiện có (load đầy đủ các quan hệ)
+			List<BranchInventory> existing = em.createQuery("""
+					    SELECT DISTINCT bi
+					    FROM BranchInventory bi
+					    JOIN FETCH bi.variant v
+					    LEFT JOIN FETCH v.options o
+					    LEFT JOIN FETCH o.optionType
+					    LEFT JOIN FETCH o.optionValue
+					    WHERE bi.branch.id = :branchId
+					""", BranchInventory.class).setParameter("branchId", branchId).getResultList();
 
-	        //Nếu đã có dữ liệu, ép Hibernate load đầy đủ trước khi đóng EM
-	        if (!existing.isEmpty()) {
-	            for (BranchInventory bi : existing) {
-	                ProductVariants v = bi.getVariant();
-	                if (v != null && v.getOptions() != null) {
-	                    v.getOptions().size(); // ép load list
-	                    for (VariantOptions vo : v.getOptions()) {
-	                        if (vo.getOptionType() != null)
-	                            vo.getOptionType().getCode(); // ép load optionType
-	                        if (vo.getOptionValue() != null)
-	                            vo.getOptionValue().getValue(); // ép load optionValue
-	                    }
-	                }
-	            }
-	            return existing;
-	        }
+			//Ép Hibernate load đầy đủ dữ liệu trước khi đóng EM
+			for (BranchInventory bi : existing) {
+				ProductVariants v = bi.getVariant();
+				if (v != null && v.getOptions() != null) {
+					v.getOptions().size();
+					for (VariantOptions vo : v.getOptions()) {
+						if (vo.getOptionType() != null)
+							vo.getOptionType().getCode();
+						if (vo.getOptionValue() != null)
+							vo.getOptionValue().getValue();
+					}
+				}
+			}
 
-	        //Nếu chưa có tồn tại -> tạo danh sách mới cho chi nhánh đó
-	        List<ProductVariants> variants = em.createQuery("""
-	                SELECT DISTINCT v
-	                FROM ProductVariants v
-	                LEFT JOIN FETCH v.options o
-	                LEFT JOIN FETCH o.optionType
-	                LEFT JOIN FETCH o.optionValue
-	            """, ProductVariants.class)
-	            .getResultList();
+			//Lấy toàn bộ danh sách biến thể sản phẩm
+			List<ProductVariants> variants = em.createQuery("""
+					    SELECT DISTINCT v
+					    FROM ProductVariants v
+					    LEFT JOIN FETCH v.options o
+					    LEFT JOIN FETCH o.optionType
+					    LEFT JOIN FETCH o.optionValue
+					""", ProductVariants.class).getResultList();
 
-	        List<BranchInventory> newList = new ArrayList<>();
-	        Branches branchRef = em.getReference(Branches.class, branchId);
+			//Tạo map chứa variantId đã có tồn kho
+			Set<Integer> existingVariantIds = existing.stream().map(bi -> bi.getVariant().getId())
+					.collect(Collectors.toSet());
 
-	        for (ProductVariants v : variants) {
-	            BranchInventory bi = BranchInventory.builder()
-	                    .branch(branchRef)
-	                    .variant(v)
-	                    .BranchStock(0)
-	                    .build();
+			// 4Tạo mới tồn kho cho các variant chưa có
+			List<BranchInventory> newList = new ArrayList<>(existing);
+			Branches branchRef = em.getReference(Branches.class, branchId);
 
-	            // Ép load options cho biến thể
-	            if (v.getOptions() != null) {
-	                v.getOptions().size();
-	                for (VariantOptions vo : v.getOptions()) {
-	                    if (vo.getOptionType() != null)
-	                        vo.getOptionType().getCode();
-	                    if (vo.getOptionValue() != null)
-	                        vo.getOptionValue().getValue();
-	                }
-	            }
+			for (ProductVariants v : variants) {
+				if (!existingVariantIds.contains(v.getId())) {
+					BranchInventory bi = BranchInventory.builder().branch(branchRef).variant(v).BranchStock(0)
+							.build();
 
-	            newList.add(bi);
-	        }
+					// Ép load options cho biến thể
+					if (v.getOptions() != null) {
+						v.getOptions().size();
+						for (VariantOptions vo : v.getOptions()) {
+							if (vo.getOptionType() != null)
+								vo.getOptionType().getCode();
+							if (vo.getOptionValue() != null)
+								vo.getOptionValue().getValue();
+						}
+					}
 
-	        return newList;
+					newList.add(bi);
+				}
+			}
 
-	    } finally {
-	        em.close();
-	    }
+			return newList;
+
+		} finally {
+			em.close();
+		}
 	}
 
 	// Dùng khi thêm mới chi nhánh (branch chưa có id)
 	public List<BranchInventory> createEmptyInventoriesForAllVariants() {
 		EntityManager em = JPAConfigs.getEntityManager();
 		try {
-			List<ProductVariants> variants = em.createQuery("SELECT pv FROM ProductVariants pv LEFT JOIN FETCH pv.options o LEFT JOIN FETCH o.optionType LEFT JOIN FETCH o.optionValue", ProductVariants.class)
-					.getResultList();
+			List<ProductVariants> variants = em.createQuery(
+					"SELECT pv FROM ProductVariants pv LEFT JOIN FETCH pv.options o LEFT JOIN FETCH o.optionType LEFT JOIN FETCH o.optionValue",
+					ProductVariants.class).getResultList();
 
 			List<BranchInventory> inventories = new ArrayList<>();
 			for (ProductVariants v : variants) {

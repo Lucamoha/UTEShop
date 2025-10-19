@@ -18,6 +18,8 @@ import com.uteshop.services.impl.admin.CategoriesServiceImpl;
 import com.uteshop.services.impl.admin.CategoryAttributeServiceImpl;
 import com.uteshop.services.impl.admin.ProductsServiceImpl;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -25,8 +27,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet(urlPatterns = { "/admin/Catalog/Categories/searchpaginated", "/admin/Catalog/Categories/saveOrUpdate",
-		"/admin/Catalog/Categories/delete", "/admin/Catalog/Categories/view",
-		"/admin/Catalog/Categories/saveOrUpdateCategoryAttribute" })
+		"/admin/Catalog/Categories/delete", "/admin/Catalog/Categories/deleteCategoryAttribute",
+		"/admin/Catalog/Categories/view", "/admin/Catalog/Categories/saveOrUpdateCategoryAttribute" })
 public class CategoriesController extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
@@ -116,9 +118,21 @@ public class CategoriesController extends HttpServlet {
 			req.setAttribute("size", size);
 			req.setAttribute("searchKeyword", searchKeyword);
 			req.getRequestDispatcher("/views/admin/Catalog/Categories/view.jsp").forward(req, resp);
+		} else if (uri.contains("deleteCategoryAttribute")) {
+			String categoryId = req.getParameter("categoryId");
+			String attributeId = req.getParameter("attributeId");
+			categoryAttributeService.delete(new Id(Integer.parseInt(categoryId), Integer.parseInt(attributeId)));
+			resp.sendRedirect(req.getContextPath() + "/admin/Catalog/Categories/view?id=" + categoryId);
 		} else if (uri.contains("delete")) {
-			String id = req.getParameter("id");
-			categoriesService.delete(Integer.parseInt(id));
+			try {
+				String idStr = req.getParameter("id");
+				if (idStr != null && !idStr.trim().isEmpty()) {
+					categoriesService.delete(Integer.parseInt(idStr));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				req.getSession().setAttribute("errorMessage", "Không thể xóa danh mục vì dữ liệu đang được sử dụng ở nơi khác!");
+			}
 			resp.sendRedirect(req.getContextPath() + "/admin/Catalog/Categories/searchpaginated");
 		} else if (uri.contains("saveOrUpdateCategoryAttribute")) {
 			String categoryId = req.getParameter("categoryId");
@@ -138,8 +152,8 @@ public class CategoriesController extends HttpServlet {
 				} catch (NumberFormatException e) {
 					e.printStackTrace();
 				}
-			} 
-			
+			}
+
 			req.setAttribute("categoryId", categoryId);
 			req.setAttribute("attributeList", attributeList);
 			req.getRequestDispatcher("/views/admin/Catalog/Categories/categoryAttributesAddOrEdit.jsp").forward(req,
@@ -212,7 +226,7 @@ public class CategoriesController extends HttpServlet {
 			String isFilterable = req.getParameter("isFilterable");
 			String isComparable = req.getParameter("isComparable");
 			String categoryId = req.getParameter("categoryId");
-			
+
 			int categoryIdInt = Integer.parseInt(categoryId);
 			int attributeIdInt = Integer.parseInt(attributeId);
 
@@ -223,13 +237,13 @@ public class CategoriesController extends HttpServlet {
 
 			// Nếu tồn tại Id trong db -> update
 			if (categoryAttributeService.existsById(id)) {
-			    categoryAttribute = categoryAttributeService.findById(id);
+				categoryAttribute = categoryAttributeService.findById(id);
 			} else {
-			    // Tạo mới
-			    categoryAttribute = new CategoryAttributes();
-			    categoryAttribute.setId(id);
+				// Tạo mới
+				categoryAttribute = new CategoryAttributes();
+				categoryAttribute.setId(id);
 			}
-			
+
 			// Fetch entity thật để set vào quan hệ
 			categoryAttribute.setCategory(categoriesService.findById(categoryIdInt));
 			categoryAttribute.setAttribute(attributeService.findById(attributeIdInt));
@@ -238,16 +252,16 @@ public class CategoriesController extends HttpServlet {
 			categoryAttribute.setIsFilterable(Boolean.parseBoolean(isFilterable));
 
 			// Kiểm tra attribute trùng
-			CategoryAttributes existing = categoryAttributeService
-					.findByCategoryIdAndAttributeId(categoryIdInt, attributeIdInt);
+			CategoryAttributes existing = categoryAttributeService.findByCategoryIdAndAttributeId(categoryIdInt,
+					attributeIdInt);
 			System.out.println("Existing: " + existing);
-			
+
 			// Nếu là thêm mới (chưa có trong DB)
 			CategoryAttributes current = categoryAttributeService.findById(id);
 			System.out.println("Current: " + current);
 
 			boolean isUpdate = current != null;
-			
+
 			if (!isUpdate && existing != null) {
 				req.setAttribute("error",
 						"Thông số kỹ thuật theo danh mục đã tồn tại! Vui lòng chọn thông số kỹ thuật khác!");
