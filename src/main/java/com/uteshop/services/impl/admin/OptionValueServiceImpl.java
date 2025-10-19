@@ -55,4 +55,8 @@ public class OptionValueServiceImpl implements IOptionValueService {
 		return optionValuesDaoImpl.findAllFetchColumns(all, firstResult, maxResult, searchKeyword, searchKeywordColumnName, fetchColumnsName);
 	}
 
+	@Override
+	public OptionValues findById(int id) {
+		return optionValuesDaoImpl.findById(id);
+	}
 }
