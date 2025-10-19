@@ -18,8 +18,6 @@ import com.uteshop.services.impl.admin.CategoriesServiceImpl;
 import com.uteshop.services.impl.admin.CategoryAttributeServiceImpl;
 import com.uteshop.services.impl.admin.ProductsServiceImpl;
 
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
