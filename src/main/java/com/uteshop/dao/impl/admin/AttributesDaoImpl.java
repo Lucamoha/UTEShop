@@ -51,4 +51,8 @@ public class AttributesDaoImpl extends AbstractDao<Attributes> implements IAttri
 	    }
 	}
 
+	@Override
+	public List<Attributes> findAllFetchColumns(List<String> fetchColumnsName) {
+		return super.findAllFetchColumns(fetchColumnsName);
+	}
 }

@@ -31,4 +31,13 @@ public class CategoriesDaoImpl extends AbstractDao<Categories> implements ICateg
 		return enma.find(Categories.class, id);
 	}
 
+	@Override
+	public Categories findByIdFetchColumns(Object id, List<String> columns) {
+		return super.findByIdFetchColumns(id, columns);
+	}
+	
+	@Override
+	public Categories findByIdFetchColumns(Object id, int firstResult, int maxResult, List<String> fetchColumnsName) {
+		return super.findByIdFetchColumns(id, firstResult, maxResult, fetchColumnsName);
+	}
 }

@@ -49,6 +49,9 @@ public class Categories implements Serializable {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     List<Products> products = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    List<CategoryAttributes> categoryAttributes = new ArrayList<>();
 
     @Override
     public int hashCode() {
