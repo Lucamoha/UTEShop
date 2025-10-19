@@ -85,7 +85,7 @@ public class OptionTypesController extends HttpServlet {
 			try {
 				int id = Integer.parseInt(req.getParameter("id"));
 				optionTypesService.delete(id);
-				req.getSession().setAttribute("message", "Đã xóa loại biến thể thành công!");
+				req.getSession().setAttribute("message", "Đã xóa loại tùy chọn thành công!");
 			} catch (Exception e) {
 				req.getSession().setAttribute("errorMessage", "Không thể xóa vì dữ liệu đang được sử dụng ở nơi khác");
 			}
@@ -127,14 +127,14 @@ public class OptionTypesController extends HttpServlet {
 				return;
 			}
 
-			// Lưu loại biến thể vào db nếu không lỗi
+			// Lưu vào db nếu không lỗi
 			String message;
 			if (idStr != null && !idStr.isEmpty()) {
 				optionTypesService.update(optionType);
-				message = "Loại biến thể sửa thành công!";
+				message = "Loại tùy chọn sửa thành công!";
 			} else {
 				optionTypesService.insert(optionType);
-				message = "Loại biến thể thêm thành công!";
+				message = "Loại tùy chọn thêm thành công!";
 			}
 
 			req.getSession().setAttribute("message", message);

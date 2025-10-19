@@ -5,53 +5,34 @@
 <div class="container mt-4">
 	<div class="card">
 		<div class="card-header">
-			<h4>Danh mục sản phẩm</h4>
+			<h4>Danh Sách Giá Trị Tùy Chọn</h4>
 		</div>
 		<div class="card-body">
 
-			<%-- <c:if test="${not empty message}">
+			<c:if test="${not empty message}">
 				<div class="alert alert-primary" role="alert">
 					<i>${message}</i>
 				</div>
 				<c:remove var="message" scope="session" />
 				<!-- xóa message sau khi da thong bao tranh trung lai khi chuyen trang -->
-			</c:if> --%>
+			</c:if>
 
-			<c:choose>
-				<c:when test="${not empty message}">
-					<div class="alert alert-success d-flex align-items-center"
-						role="alert">
-						<i class="bi bi-check-circle-fill text-success me-2"></i> <span>${message}</span>
-					</div>
-					<c:remove var="message" scope="session" />
-				</c:when>
-				<c:when test="${not empty warningMessage}">
-					<div class="alert alert-warning d-flex align-items-center"
-						role="alert">
-						<i class="bi bi-exclamation-triangle-fill text-warning me-2"></i> <span>${warningMessage}</span>
-					</div>
-					<c:remove var="warningMessage" scope="session" />
-				</c:when>
-				<c:when test="${not empty errorMessage}">
-					<div class="alert alert-danger d-flex align-items-center"
-						role="alert">
-						<i class="bi bi-x-circle-fill text-danger me-2"></i> <span>${errorMessage}</span>
-					</div>
-					<c:remove var="errorMessage" scope="session" />
-				</c:when>
-			</c:choose>
-
+			<c:if test="${not empty sessionScope.errorMessage}">
+				<div class="alert alert-danger">${sessionScope.errorMessage}</div>
+				<c:remove var="errorMessage" scope="session" />
+			</c:if>
 
 			<div class="row mt-2 mb-3">
 				<div class="col-md-6">
 					<form
-						action="${pageContext.request.contextPath}/admin/Catalog/Categories/searchpaginated"
+						action="${pageContext.request.contextPath}/admin/Catalog/OptionValues/searchpaginated"
 						method="get">
 						<div class="input-group">
 							<input type="text" class="form-control" name="searchKeyword"
-								placeholder="Nhập từ khóa tên để tìm" value="${searchKeyword}">
+								placeholder="Nhập từ khóa giá trị để tìm"
+								value="${searchKeyword}">
 							<button class="btn btn-outline-primary">
-								<i class="fa fa-search search-icon"></i> Search
+								<i class="fa fa-search search-icon"></i> Tìm kiếm
 							</button>
 						</div>
 					</form>
@@ -60,52 +41,45 @@
 				<div class="col-md-6">
 					<div class="float-end">
 						<a class="btn btn-outline-success"
-							href="${pageContext.request.contextPath}/admin/Catalog/Categories/saveOrUpdate"><i
-							class="bi bi-plus-circle"></i> Thêm danh mục </a>
+							href="${pageContext.request.contextPath}/admin/Catalog/OptionValues/saveOrUpdate"><i
+							class="bi bi-plus-circle"></i> Thêm Giá Trị Tùy Chọn</a>
 					</div>
 				</div>
 			</div>
 
-			<c:if test="${empty categoryList}">
-				<div class="alert alert-danger">Không tìm thấy danh mục</div>
+			<c:if test="${empty optionValueList}">
+				<div class="alert alert-danger">Không tìm thấy giá trị tùy chọn</div>
 			</c:if>
 
-			<c:if test="${not empty categoryList}">
+			<c:if test="${not empty optionValueList}">
 				<div class="table-responsive">
 					<table class="table table-striped align-middle text-center">
 						<thead class="table-dark">
 							<tr>
-								<th>Tên Danh Mục</th>
-								<th>Slug</th>
-								<th>Danh Mục Cha</th>
-								<th>Thông Số Kỹ Thuật</th>
-								<th>Thao Tác</th>
+								<th>ID</th>
+								<th>Loại Tùy Chọn</th>
+								<th>Giá Trị</th>
+								<th>Thao tác</th>
 							</tr>
 						</thead>
 						<tbody>
-							<c:forEach var="category" items="${categoryList}">
+							<c:forEach var="optionValue" items="${optionValueList}">
 								<tr>
-									<td>${category.name}</td>
-									<td>${category.slug}</td>
-									<td><c:choose>
-											<c:when test="${category.parent != null}">${category.parent.name}</c:when>
-											<c:otherwise>
-												<span class="text-muted">—</span>
-											</c:otherwise>
-										</c:choose></td>
-									<td>${category.categoryAttributes.size()}</td>
+									<td>${optionValue.id}</td>
+									<td>${optionValue.optionType.code}</td>
+									<td>${optionValue.value}</td>
 									<td>
 										<div class="btn-group" role="group">
 											<a
-												href="${pageContext.request.contextPath}/admin/Catalog/Categories/view?id=${category.id}"
+												href="${pageContext.request.contextPath}/admin/Catalog/OptionValues/view?id=${optionValue.id}"
 												class="btn btn-outline-info me-1" title="Xem"> <i
 												class="bi bi-eye"></i> <!-- me-1 (margin-end) -->
 											</a> <a
-												href="${pageContext.request.contextPath}/admin/Catalog/Categories/saveOrUpdate?id=${category.id}"
+												href="${pageContext.request.contextPath}/admin/Catalog/OptionValues/saveOrUpdate?id=${optionValue.id}"
 												class="btn btn-outline-warning me-1" title="Sửa"> <i
 												class="bi bi-pencil-square"></i>
 											</a> <a href="javascript:void(0)" class="btn btn-outline-danger"
-												data-id="${category.id}" data-name="${category.name}"
+												data-id="${optionValue.id}" data-name="${optionValue.value}"
 												onclick="showConfirmation(this)" title="Xóa"> <i
 												class="bi bi-trash"></i>
 											</a>
@@ -125,20 +99,20 @@
 
 						<li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
 							<a class="page-link"
-							href="${pageContext.request.contextPath}/admin/Catalog/Categories/searchpaginated?page=1&size=${size}">First</a>
+							href="${pageContext.request.contextPath}/admin/Catalog/OptionValues/searchpaginated?page=1&size=${size}">First</a>
 						</li>
 
 						<c:forEach begin="1" end="${totalPages}" var="i">
 							<li class="page-item ${i == currentPage ? 'active' : ''}"><a
 								class="page-link"
-								href="${pageContext.request.contextPath}/admin/Catalog/Categories/searchpaginated?page=${i}&size=${size}">
+								href="${pageContext.request.contextPath}/admin/Catalog/OptionValues/searchpaginated?page=${i}&size=${size}">
 									${i} </a></li>
 						</c:forEach>
 
 						<li
 							class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
 							<a class="page-link"
-							href="${pageContext.request.contextPath}/admin/Catalog/Categories/searchpaginated?page=${totalPages}&size=${size}">Last</a>
+							href="${pageContext.request.contextPath}/admin/Catalog/OptionValues/searchpaginated?page=${totalPages}&size=${size}">Last</a>
 						</li>
 					</ul>
 				</nav>
@@ -158,7 +132,7 @@
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				Bạn có chắc muốn xóa <b><span id="categoryName"></span></b>?
+				Bạn có chắc muốn xóa <b><span id="optionValueValue"></span></b>?
 			</div>
 			<div class="modal-footer">
 				<a id="yesOption" href="#" class="btn btn-danger">Có</a>
@@ -171,19 +145,16 @@
 
 <script
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-	
-<script
-	src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"></script>
 
 <!-- Script xác nhận xóa -->
 <script>
 	function showConfirmation(el) {
 		var id = el.getAttribute("data-id");
-		var name = el.getAttribute("data-name");
-		document.getElementById("categoryName").innerText = name;
+		var code = el.getAttribute("data-name");
+		document.getElementById("optionValueValue").innerText = code;
 		document.getElementById("yesOption").setAttribute(
 				"href",
-				'${pageContext.request.contextPath}/admin/Catalog/Categories/delete?id='
+				'${pageContext.request.contextPath}/admin/Catalog/OptionValues/delete?id='
 						+ id);
 		var modal = new bootstrap.Modal(document
 				.getElementById('confirmationId'));

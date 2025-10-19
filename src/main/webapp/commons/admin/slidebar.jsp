@@ -89,6 +89,10 @@
 									<span class="sub-item">Quản Lý Loại Tùy Chọn</span>
 							</a></li>
 							<li><a
+								href="${pageContext.request.contextPath}/admin/Catalog/OptionValues/searchpaginated">
+									<span class="sub-item">Quản Lý Giá Trị Tùy Chọn</span>
+							</a></li>
+							<li><a
 								href="${pageContext.request.contextPath}/admin/Catalog/Attributes/searchpaginated">
 									<span class="sub-item">Quản Lý Thông Số Kỹ Thuật</span>
 							</a></li>

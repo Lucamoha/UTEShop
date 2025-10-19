@@ -72,4 +72,9 @@ public class CategoryAttributesDaoImpl extends AbstractDao<CategoryAttributes> i
 			em.close();
 		}
 	}
+
+	@Override
+	public void delete(Id id) {
+		super.delete(id);
+	}
 }

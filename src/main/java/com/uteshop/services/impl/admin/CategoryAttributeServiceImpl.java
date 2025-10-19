@@ -51,4 +51,9 @@ public class CategoryAttributeServiceImpl implements ICategoryAttributeService{
 	public boolean existsById(Id id) {
 		return categoryAttributeDao.existsById(id);
 	}
+
+	@Override
+	public void delete(Id id) {
+		categoryAttributeDao.delete(id);
+	}
 }
