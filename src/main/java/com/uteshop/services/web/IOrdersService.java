@@ -10,5 +10,5 @@ public interface IOrdersService {
     PageResult<Orders> findByUserIdPaged(Integer userId, int page, int size);
     Orders findOrderDetail(Integer orderId, Integer userId);
     PageResult<Orders> findByUserIdAndStatus(Integer userId, Integer orderStatus, int page, int size);
-    boolean cancelOrder(Integer orderId, Integer userId);
+    void updateOrderStatus(Integer orderId, Integer toStatus);
 }

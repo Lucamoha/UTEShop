@@ -13,6 +13,4 @@ public interface IOrdersDao {
     Orders findOrderDetail(Integer orderId, Integer userId);
     // Tìm đơn hàng của user theo userId và trạng thái với phân trang
     PageResult<Orders> findByUserIdAndStatus(Integer userId, Integer orderStatus, int page, int size);
-    // Hủy đơn hàng
-    boolean cancelOrder(Integer orderId, Integer userId);
 }

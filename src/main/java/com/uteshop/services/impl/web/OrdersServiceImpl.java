@@ -6,6 +6,8 @@ import com.uteshop.dao.manager.common.PageResult;
 import com.uteshop.dao.web.IOrdersDao;
 import com.uteshop.entity.order.Orders;
 import com.uteshop.enums.OrderEnums;
+import com.uteshop.services.impl.manager.OrdersManagerServiceImpl;
+import com.uteshop.services.manager.IOrdersManagerService;
 import com.uteshop.services.web.IOrdersService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -14,6 +16,7 @@ import java.util.List;
 
 public class OrdersServiceImpl implements IOrdersService {
     IOrdersDao ordersDao = new OrdersDaoImpl();
+    IOrdersManagerService ordersManagerService = new OrdersManagerServiceImpl();
 
     @Override
     public List<Orders> findByUserId(Integer userId) {
@@ -36,7 +39,7 @@ public class OrdersServiceImpl implements IOrdersService {
     }
 
     @Override
-    public boolean cancelOrder(Integer orderId, Integer userId) {
-        return ordersDao.cancelOrder(orderId, userId);
+    public void updateOrderStatus(Integer orderId, Integer toStatus) {
+        ordersManagerService.updateOrderStatus(orderId, toStatus);
     }
 }
