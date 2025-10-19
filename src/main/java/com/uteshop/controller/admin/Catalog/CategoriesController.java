@@ -138,9 +138,9 @@ public class CategoriesController extends HttpServlet {
 				} catch (NumberFormatException e) {
 					e.printStackTrace();
 				}
-			} else {
-				req.setAttribute("categoryId", categoryId);// khi add
-			}
+			} 
+			
+			req.setAttribute("categoryId", categoryId);
 			req.setAttribute("attributeList", attributeList);
 			req.getRequestDispatcher("/views/admin/Catalog/Categories/categoryAttributesAddOrEdit.jsp").forward(req,
 					resp);
@@ -212,32 +212,43 @@ public class CategoriesController extends HttpServlet {
 			String isFilterable = req.getParameter("isFilterable");
 			String isComparable = req.getParameter("isComparable");
 			String categoryId = req.getParameter("categoryId");
+			
+			int categoryIdInt = Integer.parseInt(categoryId);
+			int attributeIdInt = Integer.parseInt(attributeId);
 
 			CategoryAttributes categoryAttribute = null;
-			Id id = new Id(Integer.parseInt(categoryId), Integer.parseInt(attributeId));
+			Id id = new Id();
+			id.setCategoryId(categoryIdInt);
+			id.setAttributeId(attributeIdInt);
 
-			// Nếu có attributeId -> update
-			if (attributeId != null && !attributeId.isEmpty()) {
-				categoryAttribute = categoryAttributeService.findById(id);
+			// Nếu tồn tại Id trong db -> update
+			if (categoryAttributeService.existsById(id)) {
+			    categoryAttribute = categoryAttributeService.findById(id);
+			} else {
+			    // Tạo mới
+			    categoryAttribute = new CategoryAttributes();
+			    categoryAttribute.setId(id);
 			}
-
-			if (categoryAttribute == null) {
-				categoryAttribute = new CategoryAttributes();
-			}
-
-			// Gán ID tổng hợp
-			categoryAttribute.setId(id);
+			
 			// Fetch entity thật để set vào quan hệ
-			categoryAttribute.setCategory(categoriesService.findById(Integer.parseInt(categoryId)));
-			categoryAttribute.setAttribute(attributeService.findById(Integer.parseInt(attributeId)));
+			categoryAttribute.setCategory(categoriesService.findById(categoryIdInt));
+			categoryAttribute.setAttribute(attributeService.findById(attributeIdInt));
 
 			categoryAttribute.setIsComparable(Boolean.parseBoolean(isComparable));
 			categoryAttribute.setIsFilterable(Boolean.parseBoolean(isFilterable));
 
 			// Kiểm tra attribute trùng
 			CategoryAttributes existing = categoryAttributeService
-					.findByCategoryIdAndAttributeId(Integer.parseInt(categoryId), Integer.parseInt(attributeId));
-			if (existing != null && !Objects.equals(existing.getId(), id)) {
+					.findByCategoryIdAndAttributeId(categoryIdInt, attributeIdInt);
+			System.out.println("Existing: " + existing);
+			
+			// Nếu là thêm mới (chưa có trong DB)
+			CategoryAttributes current = categoryAttributeService.findById(id);
+			System.out.println("Current: " + current);
+
+			boolean isUpdate = current != null;
+			
+			if (!isUpdate && existing != null) {
 				req.setAttribute("error",
 						"Thông số kỹ thuật theo danh mục đã tồn tại! Vui lòng chọn thông số kỹ thuật khác!");
 			}
@@ -247,7 +258,7 @@ public class CategoriesController extends HttpServlet {
 				List<Attributes> attributeList = attributeService.findAll();
 				req.setAttribute("attributeList", attributeList);
 				req.setAttribute("categoryAttribute", categoryAttribute);
-				req.setAttribute("categoryId", categoryId);
+				req.setAttribute("categoryId", categoryIdInt);
 				req.getRequestDispatcher("/views/admin/Catalog/Categories/categoryAttributesAddOrEdit.jsp").forward(req,
 						resp);
 				return;
@@ -255,12 +266,12 @@ public class CategoriesController extends HttpServlet {
 
 			// Lưu vào db
 			String message;
-			if (attributeId != null && !attributeId.isEmpty()) {
-				categoryAttributeService.update(categoryAttribute);
-				message = "Thông số danh mục sửa thành công!";
-			} else {
+			if (existing == null) {
 				categoryAttributeService.insert(categoryAttribute);
 				message = "Thông số danh mục thêm thành công!";
+			} else {
+				categoryAttributeService.update(categoryAttribute);
+				message = "Thông số danh mục sửa thành công!";
 			}
 
 			req.getSession().setAttribute("message", message);

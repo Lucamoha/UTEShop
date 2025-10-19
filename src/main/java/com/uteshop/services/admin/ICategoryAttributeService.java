@@ -13,4 +13,5 @@ public interface ICategoryAttributeService {
 	void insert(CategoryAttributes categoryAttribute);
 	void update(CategoryAttributes categoryAttribute);
 	CategoryAttributes findByCategoryIdAndAttributeId(int categoryId, int attributeId);
+	boolean existsById(Id id);
 }

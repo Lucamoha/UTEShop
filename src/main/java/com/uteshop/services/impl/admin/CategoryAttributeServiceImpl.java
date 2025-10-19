@@ -46,4 +46,9 @@ public class CategoryAttributeServiceImpl implements ICategoryAttributeService{
 	public CategoryAttributes findByIdFetchColumns(Object id, List<String> fetchColumnsName) {
 		return categoryAttributeDao.findByIdFetchColumns(id, fetchColumnsName);
 	}
+
+	@Override
+	public boolean existsById(Id id) {
+		return categoryAttributeDao.existsById(id);
+	}
 }

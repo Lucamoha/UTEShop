@@ -10,6 +10,7 @@ import java.util.List;
 
 @Entity
 @Data
+@ToString(exclude = {"parent", "children", "categoryAttributes"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

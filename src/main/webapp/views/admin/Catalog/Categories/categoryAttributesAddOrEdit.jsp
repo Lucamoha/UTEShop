@@ -24,20 +24,46 @@
 
 					<!-- Hidden ID (nếu đang edit) -->
 					<input type="hidden" name="id" value="${categoryAttribute.id}" />
-					
+
 					<!-- Khi add có thêm categoryId từ req -->
 					<input type="hidden" name="categoryId" value="${categoryId}" />
 
 					<div class="mb-3">
-						<label class="form-label">Thông Số:</label> <select
-							name="attributeId" class="form-select" required>
-							<!-- <option value="">NULL</option> -->
-							<c:forEach var="attr" items="${attributeList}">
-								<option value="${attr.id}"
-									<c:if test="${categoryAttribute.attribute.id == attr.id}">selected</c:if>>
-									${attr.name}</option>
-							</c:forEach>
-						</select>
+						<label class="form-label">Thông Số:</label>
+						<c:choose>
+							<c:when test="${not empty categoryAttribute.id}">
+								<input type="hidden" name="attributeId"
+									value="${categoryAttribute.attribute.id}" />
+								<input type="text" class="form-control"
+									value="${categoryAttribute.attribute.name}" readonly />
+							</c:when>
+							<c:otherwise>
+								<select name="attributeId" class="form-select" required>
+									<c:forEach var="attr" items="${attributeList}">
+										<option value="${attr.id}">${attr.name}</option>
+									</c:forEach>
+								</select>
+							</c:otherwise>
+						</c:choose>
+
+						<%-- <c:choose>
+							<c:when test="${not empty categoryAttribute.id}">
+								<input type="hidden" name="attributeId"
+									value="${categoryAttribute.attribute.id}" />
+								<input type="text" class="form-control"
+									value="${categoryAttribute.attribute.name}" readonly />
+							</c:when>
+							<c:otherwise>
+								<!-- form thêm mới -->
+								<select name="attributeId" class="form-select" required>
+									<c:forEach var="attr" items="${attributeList}">
+										<option value="${attr.id}"
+											<c:if test="${categoryAttribute.attribute.id == attr.id}">selected</c:if>>
+											${attr.name}</option>
+									</c:forEach>
+								</select>
+							</c:otherwise>
+						</c:choose> --%>
 					</div>
 
 					<div class="mb-3">
@@ -51,7 +77,7 @@
 								Cho Phép</option>
 						</select>
 					</div>
-					
+
 					<div class="mb-3">
 						<label class="form-label">Cho Phép So Sánh:</label> <select
 							name="isComparable" class="form-control" required>
@@ -65,7 +91,8 @@
 					</div>
 
 					<div class="mt-3">
-						<button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Lưu
+						<button type="submit" class="btn btn-primary">
+							<i class="bi bi-save"></i> Lưu
 						</button>
 						<a
 							href="${pageContext.request.contextPath}/admin/Catalog/Categories/view?id=${categoryAttribute.category.id}"

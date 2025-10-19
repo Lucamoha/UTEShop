@@ -57,7 +57,19 @@ public class CategoryAttributesDaoImpl extends AbstractDao<CategoryAttributes> i
 	}
 
 	@Override
-	public CategoryAttributes findByIdFetchColumns(Object id, int firstResult, int maxResult, List<String> fetchColumnsName) {
+	public CategoryAttributes findByIdFetchColumns(Object id, int firstResult, int maxResult,
+			List<String> fetchColumnsName) {
 		return super.findByIdFetchColumns(id, firstResult, maxResult, fetchColumnsName);
+	}
+
+	@Override
+	public boolean existsById(Id id) {
+		EntityManager em = JPAConfigs.getEntityManager();
+		try {
+			CategoryAttributes ca = em.find(CategoryAttributes.class, id);
+			return ca != null;
+		} finally {
+			em.close();
+		}
 	}
 }
