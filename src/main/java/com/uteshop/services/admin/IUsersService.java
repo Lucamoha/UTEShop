@@ -9,6 +9,7 @@ public interface IUsersService {
 	UserDaoImpl daoImpl = new UserDaoImpl();
 	List<Users> findAll();
 	Users findById(int id);
+	List<Users> getManagerNotManagedBranch();
 	void delete(int id);
 	long getNewCustomersThisMonth();
 	long getTotalCustomers();

@@ -139,7 +139,7 @@ document.getElementById('checkManager').addEventListener('click', function() {
             } else {
                 document.getElementById('managerInfo').style.display = 'none';
                 document.getElementById('managerError').style.display = 'block';
-                document.getElementById('managerError').textContent = 'Không tìm thấy người quản lý với ID này';
+                document.getElementById('managerError').textContent = 'Không tìm thấy người quản lý với ID này hoặc người quản lý này đã quản lý một chi nhánh khác';
             }
         })
         .catch(() => {
