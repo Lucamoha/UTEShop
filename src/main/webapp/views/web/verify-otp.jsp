@@ -1,12 +1,28 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 pageEncoding="UTF-8"%> <%@ include file="/commons/taglib.jsp"%>
+<%
+    // Xác định loại OTP: register hoặc forgot-password
+    String otpType = (String) request.getAttribute("otpType");
+    if (otpType == null) {
+        otpType = request.getParameter("type");
+    }
+    boolean isRegister = "register".equals(otpType);
+    
+    String pageTitle = isRegister ? "Xác thực OTP đăng ký" : "Xác thực OTP";
+    String actionUrl = isRegister ? "verify-otp-register" : "verify-otp";
+    String backUrl = isRegister ? "register" : "forgot-password";
+%>
 <!DOCTYPE html>
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Xác Thực OTP - UTEShop</title>
+    <title><%= pageTitle %> - UTEShop</title>
     <link href="templates/css/register.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
     <style>
       .otp-container {
         display: flex;
@@ -45,14 +61,14 @@ pageEncoding="UTF-8"%> <%@ include file="/commons/taglib.jsp"%>
         <img src="templates/images/icons/logo-01.png" alt="Logo" />
       </div>
 
-      <div class="welcome-text">Xác thực OTP</div>
+      <div class="welcome-text"><%= pageTitle %></div>
 
       <div class="terms" style="margin-bottom: 20px; text-align: center">
         Mã xác thực đã được gửi đến email của bạn
       </div>
 
       <form
-        action="${pageContext.request.contextPath}/verify-otp"
+        action="${pageContext.request.contextPath}/<%= actionUrl %>"
         method="post"
         id="otpForm"
       >
@@ -135,7 +151,7 @@ pageEncoding="UTF-8"%> <%@ include file="/commons/taglib.jsp"%>
 
       <div class="terms" style="margin-top: 20px">
         Không nhận được mã?
-        <a href="${pageContext.request.contextPath}/forgot-password">Gửi lại</a>
+        <a href="${pageContext.request.contextPath}/<%= backUrl %>"><%= isRegister ? "Đăng ký lại" : "Gửi lại" %></a>
       </div>
 
       <div class="divider">
@@ -143,7 +159,7 @@ pageEncoding="UTF-8"%> <%@ include file="/commons/taglib.jsp"%>
       </div>
 
       <div class="login-link">
-        <a href="${pageContext.request.contextPath}/forgot-password"
+        <a href="${pageContext.request.contextPath}/<%= backUrl %>"
           >← Quay lại</a
         >
       </div>

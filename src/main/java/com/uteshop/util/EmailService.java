@@ -48,10 +48,18 @@ public class EmailService {
         return emailConfig.getProperty("smtp.from.name", "UTEShop");
     }
 
-    // Gửi OTP qua email
+    // Gửi OTP qua email đặt lại mật khẩu
     public static boolean sendOTP(String toEmail, String otp) {
         String subject = "Mã OTP đặt lại mật khẩu - UTEShop";
         String htmlContent = buildOTPEmailTemplate(otp);
+
+        return sendEmail(toEmail, subject, htmlContent);
+    }
+
+    // Gửi OTP đăng ký tài khoản
+    public static boolean sendRegistrationOTP(String toEmail, String otp) {
+        String subject = "Mã OTP xác thực đăng ký - UTEShop";
+        String htmlContent = buildRegistrationOTPTemplate(otp);
 
         return sendEmail(toEmail, subject, htmlContent);
     }
@@ -122,6 +130,50 @@ public class EmailService {
                         <h2 class="header">🔐 Đặt lại mật khẩu UTEShop</h2>
                         <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.</p>
                         <p>Vui lòng sử dụng mã xác thực bên dưới:</p>
+
+                        <div class="otp-box">
+                            <div class="otp-code">%s</div>
+                        </div>
+
+                        <p><strong>Lưu ý:</strong></p>
+                        <ul>
+                            <li>Mã có hiệu lực trong <strong>5 phút</strong></li>
+                            <li>Không chia sẻ mã này với bất kỳ ai</li>
+                            <li>Nếu bạn không yêu cầu, vui lòng bỏ qua email này</li>
+                        </ul>
+
+                        <div class="footer">
+                            <p>Email tự động từ hệ thống UTEShop</p>
+                            <p>&copy; 2025 UTEShop. All rights reserved.</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """
+                .formatted(otp);
+    }
+
+    // Mẫu email OTP đăng ký tài khoản
+    private static String buildRegistrationOTPTemplate(String otp) {
+        return """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>
+                        body { font-family: Arial, sans-serif; background-color: #f4f4f4; }
+                        .container { max-width: 600px; margin: 20px auto; background: white; padding: 30px; border-radius: 10px; }
+                        .header { text-align: center; color: #333; }
+                        .otp-box { background: #f0f0f0; padding: 20px; text-align: center; margin: 20px 0; border-radius: 5px; }
+                        .otp-code { font-size: 32px; font-weight: bold; color: #4CAF50; letter-spacing: 5px; }
+                        .footer { color: #666; font-size: 12px; text-align: center; margin-top: 20px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <h2 class="header">🎉 Chào mừng đến với UTEShop</h2>
+                        <p>Cảm ơn bạn đã đăng ký tài khoản tại UTEShop!</p>
+                        <p>Vui lòng sử dụng mã xác thực bên dưới để hoàn tất đăng ký:</p>
 
                         <div class="otp-box">
                             <div class="otp-code">%s</div>

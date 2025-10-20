@@ -37,6 +37,7 @@ public class ForgotPasswordController extends HttpServlet {
                 break;
 
             case "/verify-otp":
+                req.setAttribute("otpType", "forgot-password");
                 req.getRequestDispatcher("/views/web/verify-otp.jsp").forward(req, resp);
                 break;
 
@@ -113,6 +114,7 @@ public class ForgotPasswordController extends HttpServlet {
 
         if (sent) {
             req.setAttribute("success", "Mã xác thực đã được gửi đến email: " + email);
+            req.setAttribute("otpType", "forgot-password");
             req.getRequestDispatcher("/views/web/verify-otp.jsp").forward(req, resp);
         } else {
             req.setAttribute("error", "Không thể gửi email. Vui lòng thử lại!");
@@ -132,6 +134,7 @@ public class ForgotPasswordController extends HttpServlet {
 
         if (token == null) {
             req.setAttribute("error", "Mã OTP không hợp lệ hoặc đã được sử dụng!");
+            req.setAttribute("otpType", "forgot-password");
             req.getRequestDispatcher("/views/web/verify-otp.jsp").forward(req, resp);
             return;
         }

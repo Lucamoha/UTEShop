@@ -10,4 +10,6 @@ public interface IUserTokensDao {
     void markAsUsed(Integer tokenId);
 
     void deleteExpiredTokens();
+
+    void deleteByUserId(Integer userId);
 }

@@ -31,4 +31,9 @@ public class UsersServiceImpl implements IUsersService {
     public void update(Users user) {
         userDaoImpl.update(user);
     }
+
+    @Override
+    public void delete(Integer userId) {
+        userDaoImpl.delete(userId);
+    }
 }
