@@ -82,10 +82,10 @@
                 
                 <form method="post" action="${pageContext.request.contextPath}/profile" class="profile-form" id="profileForm" novalidate>
                     <div class="form-group">
-                        <label class="form-label form-label-required">Email</label>
+                        <label class="form-label">Email</label>
                         <input type="email" name="email" id="emailInput" class="form-input" 
-                               value="${user.email}" required
-                               placeholder="Nhập email của bạn">
+                               value="${user.email}" disabled>
+                        <small style="color: #999; font-size: 13px; margin-top: 5px; display: block;">Email không thể thay đổi</small>
                     </div>
                     
                     <div class="form-group">
@@ -113,7 +113,6 @@
 
 <script>
     // Track original values
-    const originalEmail = document.getElementById('emailInput').value;
     const originalFullName = document.getElementById('fullNameInput').value;
     const originalPhone = document.getElementById('phoneInput').value;
     
@@ -123,12 +122,10 @@
     
     // Check if form has changes
     function checkFormChanges() {
-        const currentEmail = document.getElementById('emailInput').value;
         const currentFullName = document.getElementById('fullNameInput').value;
         const currentPhone = document.getElementById('phoneInput').value;
         
-        const hasChanges = currentEmail !== originalEmail || 
-                          currentFullName !== originalFullName || 
+        const hasChanges = currentFullName !== originalFullName || 
                           currentPhone !== originalPhone;
         
         // Không disable nút save nữa, chỉ show/hide nút cancel
@@ -136,13 +133,11 @@
     }
     
     // Listen for input changes
-    document.getElementById('emailInput').addEventListener('input', checkFormChanges);
     document.getElementById('fullNameInput').addEventListener('input', checkFormChanges);
     document.getElementById('phoneInput').addEventListener('input', checkFormChanges);
     
     // Cancel button - reset form
     cancelBtn.addEventListener('click', function() {
-        document.getElementById('emailInput').value = originalEmail;
         document.getElementById('fullNameInput').value = originalFullName;
         document.getElementById('phoneInput').value = originalPhone;
         checkFormChanges();
@@ -150,29 +145,14 @@
     
     // Validate form before submit
     form.addEventListener('submit', function(e) {
-        const emailInput = document.getElementById('emailInput');
         const phoneInput = document.getElementById('phoneInput');
         const fullNameInput = document.getElementById('fullNameInput');
         
         // Reset all borders
-        emailInput.style.borderColor = '';
         phoneInput.style.borderColor = '';
         fullNameInput.style.borderColor = '';
         
         let hasError = false;
-        
-        // Validate email format
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailPattern.test(emailInput.value.trim())) {
-            emailInput.style.borderColor = '#dc3545';
-            hasError = true;
-            swal({
-                title: "Email không hợp lệ",
-                text: "Vui lòng nhập đúng định dạng email (ví dụ: name@example.com)",
-                icon: "error",
-                button: "OK"
-            });
-        }
         
         // Validate phone format (10-11 digits)
         if (phoneInput.value.trim()) {
@@ -180,14 +160,12 @@
             if (!phonePattern.test(phoneInput.value.trim())) {
                 phoneInput.style.borderColor = '#dc3545';
                 hasError = true;
-                if (!hasError || emailInput.style.borderColor !== 'rgb(220, 53, 69)') {
-                    swal({
-                        title: "Số điện thoại không hợp lệ",
-                        text: "Số điện thoại phải có 10-11 chữ số",
-                        icon: "error",
-                        button: "OK"
-                    });
-                }
+                swal({
+                    title: "Số điện thoại không hợp lệ",
+                    text: "Số điện thoại phải có 10-11 chữ số",
+                    icon: "error",
+                    button: "OK"
+                });
             }
         }
         

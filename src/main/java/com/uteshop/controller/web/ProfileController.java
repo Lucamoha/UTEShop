@@ -113,22 +113,8 @@ public class ProfileController extends HttpServlet {
     private void updateProfile(HttpServletRequest req, HttpServletResponse resp, Users user, HttpSession session) 
             throws ServletException, IOException {
         try {
-            String email = req.getParameter("email");
             String fullName = req.getParameter("fullName");
             String phone = req.getParameter("phone");
-            
-            if (email == null || email.trim().isEmpty()) {
-                req.setAttribute("error", "Email không được để trống!");
-                showProfile(req, resp, user);
-                return;
-            }
-            
-            // Validate email format
-            if (!isValidEmail(email.trim())) {
-                req.setAttribute("error", "Email không hợp lệ!");
-                showProfile(req, resp, user);
-                return;
-            }
             
             if (fullName == null || fullName.trim().isEmpty()) {
                 req.setAttribute("error", "Họ và tên không được để trống!");
@@ -143,22 +129,12 @@ public class ProfileController extends HttpServlet {
                 return;
             }
             
-            // Kiểm tra email đã tồn tại chưa (nếu user đổi email)
-            if (!email.trim().equals(user.getEmail())) {
-                Users existingUser = usersService.findByEmail(email.trim());
-                if (existingUser != null) {
-                    req.setAttribute("error", "Email đã được sử dụng bởi tài khoản khác!");
-                    showProfile(req, resp, user);
-                    return;
-                }
-            }
-            
             // Kiểm tra SĐT đã tồn tại chưa (nếu user đổi SĐT)
             if (phone != null && !phone.trim().isEmpty()) {
                 String currentPhone = user.getPhone();
                 if (currentPhone == null || !phone.trim().equals(currentPhone)) {
                     Users existingUser = usersService.findByPhone(phone.trim());
-                    if (existingUser != null) {
+                    if (existingUser != null && !existingUser.getId().equals(user.getId())) {
                         req.setAttribute("error", "Số điện thoại đã được sử dụng bởi tài khoản khác!");
                         showProfile(req, resp, user);
                         return;
@@ -166,10 +142,9 @@ public class ProfileController extends HttpServlet {
                 }
             }
             
-            // Cập nhật thông tin
-            user.setEmail(email.trim());
+            // Cập nhật thông tin (không cho phép thay đổi email)
             user.setFullName(fullName.trim());
-            user.setPhone(phone != null ? phone.trim() : null);
+            user.setPhone(phone != null && !phone.trim().isEmpty() ? phone.trim() : null);
             
             usersService.update(user);
             
