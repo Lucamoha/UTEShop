@@ -169,7 +169,7 @@
 
     <a class="btn btn-outline-secondary px-4"
        href="${pageContext.request.contextPath}/manager/invoice?id=${o.id}"
-       target="_blank" rel="noopener">Xuất hóa đơn (PDF)
+       rel="noopener">Xuất hóa đơn (PDF)
     </a>
 
     <!-- Modal Xác nhận -->
