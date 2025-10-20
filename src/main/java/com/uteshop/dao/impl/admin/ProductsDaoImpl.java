@@ -5,6 +5,7 @@ import java.util.List;
 import com.uteshop.configs.JPAConfigs;
 import com.uteshop.dao.AbstractDao;
 import com.uteshop.dao.admin.IProductsDao;
+import com.uteshop.entity.catalog.Attributes;
 import com.uteshop.entity.catalog.Products;
 
 import jakarta.persistence.EntityManager;
@@ -40,5 +41,22 @@ public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsD
 		} catch (NoResultException e) {
 			return null;
 		}
+	}
+
+	@Override
+	public List<Attributes> findAttributesByCategoryId(Integer categoryId) {
+		EntityManager em = JPAConfigs.getEntityManager();
+	    try {
+	        return em.createQuery("""
+	            SELECT DISTINCT a
+	            FROM CategoryAttributes ca
+	            JOIN ca.attribute a
+	            WHERE ca.category.Id = :categoryId
+	        """, Attributes.class)
+	        .setParameter("categoryId", categoryId)
+	        .getResultList();
+	    } finally {
+	        em.close();
+	    }
 	}
 }

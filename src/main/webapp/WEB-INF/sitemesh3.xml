@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemesh>
+	<mapping path="/admin/Catalog/Products/loadAttributes" exclude="true" />
 	<mapping path="/admin/*" name="admin" decorator="admin.jsp" />
 	<mapping path="/manager/*" name="manager" decorator="manager.jsp" />
 	<mapping path="/*" name="web" decorator="web.jsp" />

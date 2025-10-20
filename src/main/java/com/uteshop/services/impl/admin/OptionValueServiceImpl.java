@@ -2,6 +2,7 @@ package com.uteshop.services.impl.admin;
 
 import java.util.List;
 
+import com.uteshop.dao.admin.IOptionValuesDao;
 import com.uteshop.dao.impl.admin.OptionValuesDaoImpl;
 import com.uteshop.entity.catalog.OptionValues;
 import com.uteshop.services.admin.IOptionValueService;
@@ -9,6 +10,7 @@ import com.uteshop.services.admin.IOptionValueService;
 public class OptionValueServiceImpl implements IOptionValueService {
 
 	OptionValuesDaoImpl optionValuesDaoImpl = new OptionValuesDaoImpl();
+	IOptionValuesDao optionValuesDao = new OptionValuesDaoImpl();
 	
 	@Override
 	public OptionValues findByIdFetchColumn(int id, String fetchColumnName) {
@@ -58,5 +60,10 @@ public class OptionValueServiceImpl implements IOptionValueService {
 	@Override
 	public OptionValues findById(int id) {
 		return optionValuesDaoImpl.findById(id);
+	}
+	
+	@Override
+	public List<OptionValues> findByOptionTypeId(int optionTypeId) {
+		return optionValuesDao.findByOptionTypeId(optionTypeId);
 	}
 }

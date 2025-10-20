@@ -1,6 +1,7 @@
 package com.uteshop.controller.admin.Catalog;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.google.gson.Gson;
+import com.uteshop.dto.admin.OptionValueDTO;
 import com.uteshop.dto.admin.ProductAttributeDisplayModel;
 import com.uteshop.dto.admin.ProductVariantDetailsModel;
 import com.uteshop.dto.admin.ProductVariantDisplayModel;
@@ -27,7 +30,6 @@ import com.uteshop.services.admin.ICategoriesService;
 import com.uteshop.services.admin.IOptionTypesService;
 import com.uteshop.services.admin.IOptionValueService;
 import com.uteshop.services.admin.IProductAttributeValuesService;
-import com.uteshop.services.admin.IProductAttributesService;
 import com.uteshop.services.admin.IProductImagesService;
 import com.uteshop.services.admin.IProductsService;
 import com.uteshop.services.admin.IProductsVariantsService;
@@ -37,7 +39,6 @@ import com.uteshop.services.impl.admin.CategoriesServiceImpl;
 import com.uteshop.services.impl.admin.OptionTypesServiceImpl;
 import com.uteshop.services.impl.admin.OptionValueServiceImpl;
 import com.uteshop.services.impl.admin.ProductAttributeValuesServiceImpl;
-import com.uteshop.services.impl.admin.ProductAttributesServiceImpl;
 import com.uteshop.services.impl.admin.ProductImagesServiceImpl;
 import com.uteshop.services.impl.admin.ProductVariantsServiceImpl;
 import com.uteshop.services.impl.admin.ProductsServiceImpl;
@@ -56,7 +57,8 @@ import java.nio.file.StandardCopyOption;
 
 @WebServlet(urlPatterns = { "/admin/Catalog/Products/searchpaginated", "/admin/Catalog/Products/saveOrUpdate",
 		"/admin/Catalog/Products/delete", "/admin/Catalog/Products/view", "/admin/Catalog/Products/image/saveOrUpdate",
-		"/admin/Catalog/Products/image/delete" })
+		"/admin/Catalog/Products/image/delete", "/admin/Catalog/Products/loadAttributes",
+		"/admin/Catalog/Products/loadOptionValues" })
 @MultipartConfig
 public class ProductController extends HttpServlet {
 
@@ -65,15 +67,12 @@ public class ProductController extends HttpServlet {
 	private IProductsService productsService = new ProductsServiceImpl();
 	private IProductsVariantsService productsVariantsService = new ProductVariantsServiceImpl();
 	private IProductImagesService productImagesService = new ProductImagesServiceImpl();
-	private IProductAttributesService productAttributesService = new ProductAttributesServiceImpl();
 	private ICategoriesService categoriesService = new CategoriesServiceImpl();
 	private IOptionTypesService optionTypeService = new OptionTypesServiceImpl();
 	private IOptionValueService optionValueService = new OptionValueServiceImpl();
 	private IVariantOptionsService variantOptionsService = new VariantOptionsServiceImpl();
 	private IAttributesService attributesService = new AttributesServiceImpl();
 	private IProductAttributeValuesService productAttributeValuesService = new ProductAttributeValuesServiceImpl();
-	// private IProductAttributeValuesService productAttributeValuesService = new
-	// ProductAttributeValuesServiceImpl();
 
 	private void loadProductDetails(HttpServletRequest req, int id) {
 
@@ -103,8 +102,10 @@ public class ProductController extends HttpServlet {
 		// Chuyển thành list để JSP dễ duyệt
 		List<ProductVariantDisplayModel> displayList = new ArrayList<>(grouped.values());
 
-		List<ProductAttributeDisplayModel> attributes = productAttributesService
-				.getAttributesByProductId(product.getId());
+		/*
+		 * List<ProductAttributeDisplayModel> attributes = productAttributesService
+		 * .getAttributesByProductId(product.getId());
+		 */
 
 		List<String> imageNames = productsDetailModel.getProductImages().stream().map(ProductImages::getImageUrl)
 				.toList();
@@ -113,7 +114,7 @@ public class ProductController extends HttpServlet {
 		// Gửi sang JSP
 		req.setAttribute("variantList", displayList);
 		req.setAttribute("productsDetailModel", productsDetailModel);
-		req.setAttribute("productAttributes", attributes);
+		// req.setAttribute("productAttributes", attributes);
 	}
 
 	@Override
@@ -121,7 +122,15 @@ public class ProductController extends HttpServlet {
 
 		String uri = req.getRequestURI();
 
-		if (uri.contains("searchpaginated")) {
+		if (uri.contains("loadAttributes")) {
+			handleLoadAttributes(req, resp);
+			return;
+
+		} else if (uri.contains("loadOptionValues")) {
+			handleLoadOptionValues(req, resp);
+			return;
+
+		} else if (uri.contains("searchpaginated")) {
 
 			int page = 1;
 			int size = 6;
@@ -167,18 +176,29 @@ public class ProductController extends HttpServlet {
 			List<Categories> categoryList = categoriesService.findAll();
 			req.setAttribute("categoryList", categoryList);
 
-			List<Attributes> availableAttributes = attributesService.findAll();
-			req.setAttribute("availableAttributes", availableAttributes);
+			/*
+			 * List<Attributes> availableAttributes = attributesService.findAll();
+			 * req.setAttribute("availableAttributes", availableAttributes);
+			 */
+
+			/*
+			 * Products product;
+			 * 
+			 * if (id != null && !id.isEmpty()) { // Sửa sản phẩm product =
+			 * productsService.findByIdFetchColumns(Integer.parseInt(id),
+			 * List.of("category")); } else { // Thêm sản phẩm mới int categoryId =
+			 * Integer.parseInt(req.getParameter("categoryId")); product = new Products();
+			 * product.setCategory(categoriesService.findById(categoryId)); }
+			 */
 
 			List<OptionTypes> optionTypes = optionTypeService.findAll();
-			req.setAttribute("availableOptionTypes", optionTypes);
+			req.setAttribute("optionTypes", optionTypes);
 
 			// nếu là sửa -> load thông tin sản phẩm hiện tại
 			if (id != null && !id.isEmpty()) {
 				loadProductDetails(req, Integer.parseInt(id));
 				req.getRequestDispatcher("/views/admin/Catalog/Products/update.jsp").forward(req, resp);
-			}
-			else {
+			} else {
 				req.getRequestDispatcher("/views/admin/Catalog/Products/addOrEdit.jsp").forward(req, resp);
 			}
 		} else if (uri.contains("view")) {
@@ -341,40 +361,41 @@ public class ProductController extends HttpServlet {
 				List<String> remaining = (remainingImgs != null) ? Arrays.asList(remainingImgs) : new ArrayList<>();
 
 				productImagesService.deleteRemovedImages(product.getId(), remaining, uploadPath);
-				
+
 				String[] existingVariantIds = req.getParameterValues("existingVariants.id");
 				String[] existingVariantSkus = req.getParameterValues("existingVariants.sku");
 				String[] existingVariantPrices = req.getParameterValues("existingVariants.price");
 				String[] existingVariantStatuses = req.getParameterValues("existingVariants.status");
 
 				if (existingVariantIds != null) {
-				    for (int i = 0; i < existingVariantIds.length; i++) {
-				        int variantId = Integer.parseInt(existingVariantIds[i]);
-				        ProductVariants variant = productsVariantsService.findById(variantId);
+					for (int i = 0; i < existingVariantIds.length; i++) {
+						int variantId = Integer.parseInt(existingVariantIds[i]);
+						ProductVariants variant = productsVariantsService.findById(variantId);
 
-				        if (variant != null) {
-				            variant.setSKU(existingVariantSkus[i]);
-				            variant.setPrice(new BigDecimal(existingVariantPrices[i]));
-				            variant.setStatus(Boolean.parseBoolean(existingVariantStatuses[i]));
-				            productsVariantsService.update(variant);
-				        }
-				    }
+						if (variant != null) {
+							variant.setSKU(existingVariantSkus[i]);
+							variant.setPrice(new BigDecimal(existingVariantPrices[i]));
+							variant.setStatus(Boolean.parseBoolean(existingVariantStatuses[i]));
+							productsVariantsService.update(variant);
+						}
+					}
 				}
-				
+
 				String[] existingAttrIds = req.getParameterValues("existingAttributes.attributeId");
 				String[] existingAttrValues = req.getParameterValues("existingAttributes.value");
 
 				if (existingAttrIds != null) {
-				    for (int i = 0; i < existingAttrIds.length; i++) {
-				        int attrId = Integer.parseInt(existingAttrIds[i]);
-				        String value = existingAttrValues[i];
+					for (int i = 0; i < existingAttrIds.length; i++) {
+						int attrId = Integer.parseInt(existingAttrIds[i]);
+						String value = existingAttrValues[i];
 
-				        ProductAttributeValues pav = productAttributeValuesService.findByProductIdAndAttributeId(product.getId(), attrId);
-				        if (pav != null) {
-				            pav.setValueText(value);
-				            productAttributeValuesService.update(pav);
-				        }
-				    }
+						ProductAttributeValues pav = productAttributeValuesService
+								.findByProductIdAndAttributeId(product.getId(), attrId);
+						if (pav != null) {
+							pav.setValueText(value);
+							productAttributeValuesService.update(pav);
+						}
+					}
 				}
 
 			}
@@ -503,6 +524,75 @@ public class ProductController extends HttpServlet {
 
 			req.getSession().setAttribute("message", message);
 			resp.sendRedirect(req.getContextPath() + "/admin/Catalog/Products/searchpaginated");
+		}
+	}
+
+	private void handleLoadAttributes(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		resp.setContentType("text/html;charset=UTF-8");
+
+		try {
+			int categoryId = Integer.parseInt(req.getParameter("categoryId"));
+			List<Attributes> attributes = productsService.findAttributesByCategoryId(categoryId);
+
+			PrintWriter out = resp.getWriter();
+
+			if (attributes.isEmpty()) {
+				out.print("<p class='text-muted fst-italic'>Không có thuộc tính nào cho danh mục này.</p>");
+				return;
+			}
+
+			for (Attributes attr : attributes) {
+				out.print("<div class='mb-3'>");
+				out.print("<label class='form-label'>" + attr.getName() + "</label>");
+				switch (attr.getDataType()) {
+				case 2:
+					out.print("<input type='number' name='attr_" + attr.getId() + "' class='form-control'/>");
+					break;
+				case 3:
+					out.print("<select name='attr_" + attr.getId() + "' class='form-select'>"
+							+ "<option value='true'>Có</option>" + "<option value='false'>Không</option>"
+							+ "</select>");
+					break;
+				default:
+					out.print("<input type='text' name='attr_" + attr.getId() + "' class='form-control'/>");
+					break;
+				}
+				out.print("</div>");
+			}
+
+		} catch (Exception e) {
+			resp.getWriter().print("<p class='text-danger'>Lỗi khi tải thuộc tính!</p>");
+		}
+	}
+
+	private void handleLoadOptionValues(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		/*
+		 * resp.setContentType("application/json;charset=UTF-8"); int typeId =
+		 * Integer.parseInt(req.getParameter("typeId")); List<OptionValues> list =
+		 * optionValueService.findByOptionTypeId(typeId);
+		 * 
+		 * Gson gson = new Gson(); resp.getWriter().print(gson.toJson(list));
+		 */
+
+		resp.setContentType("application/json; charset=UTF-8");
+
+		String typeIdParam = req.getParameter("typeId");
+		if (typeIdParam == null || typeIdParam.isEmpty()) {
+			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			resp.getWriter().write("{\"error\":\"Missing typeId\"}");
+			return;
+		}
+
+		try {
+			int typeId = Integer.parseInt(typeIdParam);
+			List<OptionValues> values = optionValueService.findByOptionTypeId(typeId);
+			List<OptionValueDTO> dtoValues = values.stream().map(v -> new OptionValueDTO(v.getId(), v.getValue()))
+					.toList();
+			new Gson().toJson(dtoValues, resp.getWriter());
+		} catch (Exception e) {
+			e.printStackTrace();
+			resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			resp.getWriter().write("{\"error\":\"Server error\"}");
 		}
 	}
 }

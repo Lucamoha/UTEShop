@@ -11,7 +11,7 @@
 	<div class="col-12 mt-4">
 		<form
 			action="${pageContext.request.contextPath}/admin/Catalog/Products/saveOrUpdate"
-			method="POST" enctype="multipart/form-data">
+			id="productForm" method="POST" enctype="multipart/form-data">
 			<div class="card">
 				<div class="card-header">
 					<h2>
@@ -27,35 +27,37 @@
 
 					<!-- Tên sản phẩm -->
 					<div class="mb-3">
-						<label class="form-label">Tên Sản Phẩm:</label> <input type="text"
-							id="name" name="name" class="form-control"
+						<label class="form-label fw-bold">Tên Sản Phẩm:</label> <input
+							type="text" id="name" name="name" class="form-control"
 							value="${product.name}" placeholder="Nhập tên sản phẩm" />
 					</div>
 
 					<!-- Slug -->
 					<div class="mb-3">
-						<label class="form-label">Slug (tự động tạo):</label> <input
+						<label class="form-label fw-bold">Slug (tự động tạo):</label> <input
 							type="text" id="slug" name="slug" class="form-control"
 							value="${product.slug}" readonly />
 					</div>
 
 					<!-- Mô tả -->
 					<div class="mb-3">
-						<label class="form-label">Mô Tả:</label>
+						<label class="form-label fw-bold">Mô Tả:</label>
 						<textarea name="description" class="form-control" rows="3">${product.description}</textarea>
 					</div>
 
 					<!-- Giá gốc -->
 					<div class="mb-3">
-						<label class="form-label">Giá Gốc:</label> <input type="number"
-							name="basePrice" min="1000" max="9999999999" class="form-control"
-							value="${product.basePrice.intValue()}" required />
+						<label class="form-label fw-bold">Giá Gốc:</label> <input
+							type="number" name="basePrice" min="1000" max="9999999999"
+							class="form-control" value="${product.basePrice.intValue()}"
+							required />
 					</div>
 
 					<!-- Danh mục -->
 					<div class="mb-3">
-						<label class="form-label">Danh Mục:</label> <select
-							name="categoryId" class="form-select" required>
+						<label class="form-label fw-bold">Danh Mục:</label> <select
+							name="categoryId" id="categorySelect" class="form-select"
+							required>
 							<option value="">-- Chọn từ danh sách --</option>
 							<c:forEach var="cat" items="${categoryList}">
 								<option value="${cat.id}"
@@ -67,7 +69,7 @@
 
 					<!-- Trạng thái -->
 					<div class="mb-3">
-						<label class="form-label">Trạng Thái:</label> <select
+						<label class="form-label fw-bold">Trạng Thái:</label> <select
 							name="status" class="form-select" required>
 							<option value="true"
 								<c:if test="${product.status}">selected</c:if>>Đang Bán</option>
@@ -79,7 +81,7 @@
 
 					<!-- Ảnh sản phẩm -->
 					<div class="mb-3">
-						<label class="form-label">Hình Ảnh Sản Phẩm:</label>
+						<label class="form-label fw-bold">Hình Ảnh Sản Phẩm:</label>
 						<div class="card-body">
 							<div class="table-responsive">
 								<table class="table table-striped align-middle text-center">
@@ -114,8 +116,17 @@
 						</div>
 					</div>
 
-					<!-- Thông số kỹ thuật -->
 					<div class="mb-3">
+						<label class="form-label fw-bold">Thông Số Kỹ Thuật:</label>
+						<div class="card p-3">
+							<div id="attributeContainer">
+								<p class="text-muted mb-0">Vui lòng chọn danh mục để hiển
+									thị thuộc tính.</p>
+							</div>
+						</div>
+					</div>
+
+					<%-- <div class="mb-3">
 						<label class="form-label">Thông Số Kỹ Thuật:</label>
 						<div class="card-body">
 							<div class="table-responsive">
@@ -156,34 +167,83 @@
 								<i class="bi bi-plus-circle"></i> Thêm thông số
 							</button>
 						</div>
-					</div>
+					</div> --%>
 
 					<!-- Biến thể -->
-					<div class="mb-3">
-						<label class="form-label">Chi Tiết Biến Thể Sản Phẩm:</label>
-						<div class="card-body">
-							<div class="table-responsive">
-								<table class="table table-striped align-middle text-center">
-									<thead class="table-dark">
-										<tr>
-											<th>SKU</th>
-											<th>Giá</th>
-											<th>Trạng Thái</th>
-											<th>Tùy chọn</th>
-											<th>Thao Tác</th>
-										</tr>
-									</thead>
-									<tbody id="variants-tbody">
-										<c:forEach var="v" items="${variantList}"></c:forEach>
-									</tbody>
-								</table>
+					<%-- <div class="mb-3">
+						<label class="form-label fw-bold">Chi Tiết Biến Thể Sản
+							Phẩm</label>
+						<div id="variantContainer">
+							<div class="variant-item mb-3 border rounded p-3">
+								<div class="row mb-2">
+									<div class="col-md-4">
+										<label class="form-label">Loại tùy chọn</label> <select
+											class="form-select option-type-select">
+											<option value="">-- Chọn loại tùy chọn --</option>
+											<c:forEach var="type" items="${optionTypes}">
+												<option value="${type.id}">${type.code}</option>
+											</c:forEach>
+										</select>
+									</div>
+
+									<div class="col-md-4">
+										<label class="form-label">Giá trị tùy chọn</label> <select
+											class="form-select option-value-select">
+											<option value="">-- Chọn giá trị --</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-md-4">
+										<label class="form-label">SKU</label> <input type="text"
+											name="sku" class="form-control" />
+									</div>
+									<div class="col-md-4">
+										<label class="form-label">Giá</label> <input type="number"
+											name="price" class="form-control" />
+									</div>
+									<div class="col-md-4">
+										<label class="form-label">Trạng thái</label> <select
+											name="status" class="form-select">
+											<option value="true">Hoạt động</option>
+											<option value="false">Ngừng</option>
+										</select>
+									</div>
+								</div>
 							</div>
 						</div>
-						<div class="card-footer text-right">
-							<button type="button" class="btn btn-outline-success"
-								id="add-variant-btn">
-								<i class="bi bi-plus-circle"></i> Thêm Biến Thể
-							</button>
+
+						<button type="button" id="addVariantBtn"
+							class="btn btn-outline-primary mt-2">+ Thêm biến thể</button>
+					</div> --%>
+
+
+					<div class="mb-3">
+						<label class="form-label fw-bold">Chi Tiết Biến Thể Sản
+							Phẩm:</label>
+						<div class="card p-3">
+							<div class="mb-3">
+								<label class="form-label ">Loại tùy chọn</label>
+								<div id="optionTypeContainer">
+									<c:forEach var="type" items="${optionTypes}">
+										<div class="form-check mb-2">
+											<input class="form-check-input option-type-checkbox"
+												type="checkbox" id="type_${type.id}" value="${type.id}"
+												data-name="${type.code}"> <label
+												class="form-check-label" for="type_${type.id}">
+												${type.code} </label>
+
+											<!-- Nơi hiện checkbox giá trị -->
+											<div class="option-values-container ms-4 mt-2"></div>
+										</div>
+									</c:forEach>
+								</div>
+							</div>
+							<div id="variantTableContainer" class="mt-4">
+								<p class="text-muted fst-italic">Chọn các tùy chọn để hiển
+									thị biến thể...</p>
+							</div>
 						</div>
 					</div>
 
@@ -217,27 +277,71 @@
     });
 </script>
 
-<!-- ====== Dữ liệu JS từ server ====== -->
 <script>
-    const availableAttributes = [
-        <c:forEach var="attr" items="${availableAttributes}" varStatus="status">
-            { id: ${attr.id}, name: "${attr.name}" }<c:if test="${!status.last}">,</c:if>
-        </c:forEach>
-    ];
+document.getElementById("categorySelect").addEventListener("change", function() {
+    const categoryId = this.value;
+    const container = document.getElementById("attributeContainer");
+    const contextPath = "${pageContext.request.contextPath}";
 
-    const availableOptionTypes = [
-        <c:forEach var="optionType" items="${availableOptionTypes}" varStatus="typeStatus">
-            {
-                id: ${optionType.id},
-                code: "${optionType.code}",
-                values: [
-                    <c:forEach var="optionValue" items="${optionType.values}" varStatus="valueStatus">
-                        { id: ${optionValue.id}, value: "${optionValue.value}" }<c:if test="${!valueStatus.last}">,</c:if>
-                    </c:forEach>
-                ]
-            }<c:if test="${!typeStatus.last}">,</c:if>
-        </c:forEach>
-    ];
+    if (!categoryId) {
+        container.innerHTML = "<p class='text-muted'>Vui lòng chọn danh mục để hiển thị thuộc tính.</p>";
+        return;
+    }
+
+    fetch(contextPath + "/admin/Catalog/Products/loadAttributes?categoryId=" + categoryId)
+        .then(response => {
+            if (!response.ok) throw new Error("HTTP error " + response.status);
+            return response.text();
+        })
+        .then(html => {
+            container.innerHTML = html;
+        })
+        .catch(err => {
+            console.error(err);
+            container.innerHTML = "<p class='text-danger'>Lỗi khi tải thuộc tính!</p>";
+        });
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const contextPath = "${pageContext.request.contextPath}";
+
+  document.addEventListener("change", function (e) {
+    if (e.target.classList.contains("option-type-select")) {
+      const optionTypeId = e.target.value;
+      const valueSelect = e.target
+        .closest(".variant-item")
+        .querySelector(".option-value-select");
+
+      if (!optionTypeId) {
+        valueSelect.innerHTML =
+          "<option value=''>-- Chọn giá trị --</option>";
+        return;
+      }
+
+      fetch(contextPath + "/admin/Catalog/Products/loadOptionValues?typeId=" + optionTypeId)
+        .then((res) => res.json())
+        .then((values) => {
+          valueSelect.innerHTML = values
+            .map((v) => `<option value='${v.id}'>${v.value}</option>`)
+            .join("");
+        })
+        .catch(() => {
+          valueSelect.innerHTML =
+            "<option value=''>Lỗi tải giá trị!</option>";
+        });
+    }
+  });
+
+  // Thêm biến thể mới
+  document.getElementById("addVariantBtn").addEventListener("click", function () {
+    const container = document.getElementById("variantContainer");
+    const clone = container.firstElementChild.cloneNode(true);
+    clone.querySelectorAll("input, select").forEach(el => el.value = "");
+    container.appendChild(clone);
+  });
+});
 </script>
 
 <!-- ====== Hiển thị ảnh preview + upload tạm + xóa ảnh ====== -->
@@ -357,71 +461,124 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-<!-- ====== Thêm biến thể ====== -->
+<!-- Thêm biến thể theo loại tùy chọn -->
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    let variantIndex = document.querySelectorAll('#variants-tbody tr').length;
-    const addVariantBtn = document.getElementById('add-variant-btn');
-    const variantsTbody = document.getElementById('variants-tbody');
+document.addEventListener("DOMContentLoaded", function () {
+  const ctx = "${pageContext.request.contextPath}";
 
-    addVariantBtn.addEventListener('click', function () {
-        const tr = document.createElement('tr');
+  // Khi chọn loại tùy chọn
+  document.addEventListener("change", async function (e) {
+    if (e.target.classList.contains("option-type-checkbox")) {
+      const checkbox = e.target;
+      const container = checkbox.closest(".form-check").querySelector(".option-values-container");
 
-        // SKU
-        const skuTd = document.createElement('td');
-        skuTd.innerHTML = `<input type="text" name="newVariants.sku" class="form-control form-control-sm" placeholder="SKU">`;
+      if (checkbox.checked) {
+        // Gọi API lấy danh sách OptionValue
+        const res = await fetch(ctx + "/admin/Catalog/Products/loadOptionValues?typeId=" + checkbox.value);
+        const values = await res.json();
+        
+        console.log("Option values JSON:", values);
 
-        // Giá
-        const priceTd = document.createElement('td');
-        priceTd.innerHTML = `<input type="number" name="newVariants.price" class="form-control form-control-sm" min="1000" required>`;
-
-        // Trạng thái
-        const statusTd = document.createElement('td');
-        statusTd.innerHTML = `<select name="newVariants.status" class="form-select form-select-sm">
-            <option value="true" selected>Đang bán</option>
-            <option value="false">Ngừng bán</option>
-        </select>`;
-
-        // Tùy chọn
-        const optionsTd = document.createElement('td');
-        availableOptionTypes.forEach(group => {
-            const div = document.createElement('div');
-            const sel = document.createElement('select');
-            sel.className = 'form-select form-select-sm';
-            sel.name = `newVariants.optionValueIds[]`;
-            const def = document.createElement('option');
-            def.textContent = `-- Chọn ${group.code} --`;
-            def.value = '';
-            sel.appendChild(def);
-            group.values.forEach(v => {
-                const o = document.createElement('option');
-                o.value = v.id;
-                o.textContent = v.value;
-                sel.appendChild(o);
-            });
-            div.appendChild(sel);
-            optionsTd.appendChild(div);
+        // Hiển thị các giá trị dưới dạng checkbox
+        let html = `<div class="border rounded p-2 bg-light">
+                      <label class="form-label small mb-2 d-block">Chọn giá trị cho ${checkbox.dataset.name}</label>`;
+        values.forEach(v => {
+          html += `
+            <div class="form-check form-check-inline">
+              <input class="form-check-input option-value-checkbox" type="checkbox"
+                     value="\${v.id}" data-type-id="\${checkbox.value}" data-value="\${v.value}">
+              <label class="form-check-label">\${v.value}</label>
+            </div>`;
         });
+        
+        html += "</div>";
+        container.innerHTML = html;
+      } else {
+        container.innerHTML = "";
+        generateVariantTable(); // cập nhật lại bảng
+      }
+    }
 
-        // Xóa
-        const actionTd = document.createElement('td');
-        const del = document.createElement('button');
-        del.type = 'button';
-        del.className = 'btn btn-outline-danger btn-sm';
-        del.innerHTML = '<i class="bi bi-trash"></i>';
-        del.onclick = () => tr.remove();
-        actionTd.appendChild(del);
+    // Khi chọn giá trị tùy chọn
+    if (e.target.classList.contains("option-value-checkbox")) {
+      generateVariantTable();
+    }
+  });
 
-        tr.appendChild(skuTd);
-        tr.appendChild(priceTd);
-        tr.appendChild(statusTd);
-        tr.appendChild(optionsTd);
-        tr.appendChild(actionTd);
-        variantsTbody.appendChild(tr);
+  // Hàm sinh bảng các biến thể
+  function generateVariantTable() {
+    const typeMap = {};
 
-        variantIndex++;
+    // Gom dữ liệu từ checkbox
+    document.querySelectorAll(".option-type-checkbox:checked").forEach(type => {
+      const typeId = type.value;
+      const typeName = type.dataset.name;
+      const values = Array.from(
+        document.querySelectorAll(`.option-value-checkbox[data-type-id='\${typeId}']:checked`)
+      ).map(v => v.dataset.value);
+
+      if (values.length > 0) {
+        typeMap[typeName] = values;
+      }
     });
+
+    const variantContainer = document.getElementById("variantTableContainer");
+    if (Object.keys(typeMap).length === 0) {
+      variantContainer.innerHTML = "<p class='text-muted fst-italic'>Chưa có biến thể nào được chọn.</p>";
+      return;
+    }
+
+    const combinations = cartesian(Object.values(typeMap));
+    const typeNames = Object.keys(typeMap);
+    
+    console.log("typeMap:", typeMap);
+    console.log("typeNames:", Object.keys(typeMap));
+    console.log("combinations:", cartesian(Object.values(typeMap)));
+
+
+    // Sinh bảng
+    let html ='<table class="table table-bordered align-middle"><thead class="table-dark"><tr>'
+    	typeNames.forEach(n => {
+            html += `
+    	      <th>\${n}</th>
+    	  `;
+        });
+    html += '<th>SKU</th><th>GIÁ</th><th>TRẠNG THÁI</th></tr></thead><tbody>'
+        
+       /*  let html ='<table class="table table-bordered align-middle"><thead class="table-dark"><tr>'
+        	typeNames.forEach(n => {
+                html += `
+        	    <c:forEach var="n" items="\${typeNames}">
+        	      <th>"\${n}"</th>
+        	    </c:forEach>
+        	  </tr>
+        	</thead>
+            <tbody>'; */
+
+    combinations.forEach(combo => {
+      html += "<tr>";
+      combo.forEach(val => html += `<td>\${val}</td>`);
+      html += `
+        <td><input type="text" name="sku[]" class="form-control form-control-sm"></td>
+        <td><input type="number" name="price[]" class="form-control form-control-sm"></td>
+        <td>
+          <select name="status[]" class="form-select form-select-sm">
+            <option value="true">Hoạt động</option>
+            <option value="false">Ngừng</option>
+          </select>
+        </td>
+      </tr>`;
+    });
+    html += "</tbody></table>";
+
+    variantContainer.innerHTML = html;
+  }
+
+  // Cartesian product (tổ hợp tất cả biến thể)
+  function cartesian(arr) {
+    return arr.reduce((a, b) =>
+      a.flatMap(d => b.map(e => [d, e].flat()))
+    );
+  }
 });
 </script>
-
-

@@ -13,5 +13,6 @@ public interface IOptionValueService {
 	OptionValues findByIdFetchColumn(int id, String fetchColumnName);
 	OptionValues findById(int id);
 	OptionValues findByValue(String value);
+	List<OptionValues> findByOptionTypeId(int optionTypeId);
 	int count(String searchKeyword, String searchKeywordColumnName);
 }
