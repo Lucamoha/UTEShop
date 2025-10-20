@@ -80,17 +80,28 @@
                          <fmt:formatNumber value="${product.basePrice}" type="number" /> VND
                     </span>
                     
+                    <!-- Thông báo sản phẩm ngừng kinh doanh - Hiển thị khi product status = false -->
+                    <c:if test="${!product.status}">
+                        <div class="alert alert-warning" style="margin-top: 15px; padding: 15px; background-color: #fff3cd; border-left: 4px solid #ff9800; border-radius: 4px;">
+                            <p style="margin: 0; color: #856404; font-size: 14px;">
+                                <i class="zmdi zmdi-alert-triangle" style="margin-right: 8px; font-size: 18px;"></i>
+                                <strong>Sản phẩm này đã ngừng kinh doanh.</strong><br/>
+                                <span style="font-size: 13px;">Chúng tôi rất tiếc, sản phẩm này hiện không còn được bán. Vui lòng xem các sản phẩm khác.</span>
+                            </p>
+                        </div>
+                    </c:if>
+                    
                     <!-- Thông tin variant (ẩn ban đầu) -->
                     <div id="variant-info" style="display: none; margin-top: 10px;">
                         <p class="stext-102 cl3">
                             <strong>SKU:</strong> <span id="variant-sku"></span>
                         </p>
                         
-                        <!-- Thông báo sản phẩm ngừng kinh doanh -->
+                        <!-- Thông báo variant ngừng kinh doanh -->
                         <div id="discontinued-warning" style="display: none; margin-top: 10px; padding: 10px 12px; background-color: #fff3cd; border-left: 4px solid #ff9800; border-radius: 4px;">
                             <p style="margin: 0; color: #856404; font-size: 13px;">
                                 <i class="zmdi zmdi-alert-triangle" style="margin-right: 5px;"></i>
-                                <strong>Sản phẩm này đã ngừng kinh doanh.</strong> Vui lòng chọn phiên bản khác.
+                                <strong>Phiên bản này đã ngừng kinh doanh.</strong> Vui lòng chọn phiên bản khác.
                             </p>
                         </div>
                     </div>
@@ -103,74 +114,78 @@
                     </p>
 
                     <!--  -->
-                    <div class="p-t-33">
-                        <!-- Duyệt qua từng nhóm option đã được group theo optionTypeCode -->
-                        <c:forEach var="optionGroup" items="${groupedOptions}">
-                            <c:set var="optionType" value="${optionGroup.key}" />
-                            <c:set var="optionList" value="${optionGroup.value}" />
-                            
-                            <div class="flex-w flex-r-m p-b-10">
-                                <div class="size-203 flex-c-m respon6">${optionType}</div>
-                                <div class="size-204 respon6-next">
-                                    <div class="rs1-select2 bor8 bg0">
-                                        <select class="js-select2 product-option" name="${optionType}" data-option-type="${optionType}">
-                                            <option value="">Choose an option</option>
-                                            <c:forEach var="opt" items="${optionList}">
-                                                <option value="${opt.optionValueId}">${opt.optionValue}</option>
-                                            </c:forEach>
-                                        </select>
-                                        <div class="dropDownSelect2"></div>
+                    <!-- Chỉ hiển thị options khi sản phẩm còn kinh doanh -->
+                    <c:if test="${product.status}">
+                        <div class="p-t-33">
+                            <!-- Duyệt qua từng nhóm option đã được group theo optionTypeCode -->
+                            <c:forEach var="optionGroup" items="${groupedOptions}">
+                                <c:set var="optionType" value="${optionGroup.key}" />
+                                <c:set var="optionList" value="${optionGroup.value}" />
+                                
+                                <div class="flex-w flex-r-m p-b-10">
+                                    <div class="size-203 flex-c-m respon6">${optionType}</div>
+                                    <div class="size-204 respon6-next">
+                                        <div class="rs1-select2 bor8 bg0">
+                                            <select class="js-select2 product-option" name="${optionType}" data-option-type="${optionType}">
+                                                <option value="">Choose an option</option>
+                                                <c:forEach var="opt" items="${optionList}">
+                                                    <option value="${opt.optionValueId}">${opt.optionValue}</option>
+                                                </c:forEach>
+                                            </select>
+                                            <div class="dropDownSelect2"></div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </c:forEach>
-                    </div>
+                            </c:forEach>
+                        </div>
+                    </c:if>
             <!----->
 
+                        <!-- Chỉ hiển thị phần chọn số lượng và nút mua hàng khi sản phẩm còn kinh doanh -->
+                        <c:if test="${product.status}">
+                            <div class="flex-w flex-r-m p-b-10">
+                                <div class="size-204 flex-w flex-m respon6-next">
+                                    <div class="wrap-num-product flex-w m-r-20 m-tb-10">
+                                        <div
+                                                class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m"
+                                        >
+                                            <i class="fs-16 zmdi zmdi-minus"></i>
+                                        </div>
 
+                                        <input
+                                                class="mtext-104 cl3 txt-center num-product"
+                                                type="number"
+                                                name="num-product"
+                                                value="1"
+                                        />
 
-                        <div class="flex-w flex-r-m p-b-10">
-                            <div class="size-204 flex-w flex-m respon6-next">
-                                <div class="wrap-num-product flex-w m-r-20 m-tb-10">
-                                    <div
-                                            class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m"
-                                    >
-                                        <i class="fs-16 zmdi zmdi-minus"></i>
+                                        <div
+                                                class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m"
+                                        >
+                                            <i class="fs-16 zmdi zmdi-plus"></i>
+                                        </div>
                                     </div>
 
-                                    <input
-                                            class="mtext-104 cl3 txt-center num-product"
-                                            type="number"
-                                            name="num-product"
-                                            value="1"
-                                    />
-
-                                    <div
-                                            class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m"
+                                    <button
+                                            id="btn-add-to-cart"
+                                            class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail"
+                                            type="button"
+                                            onclick="addToCart(<c:out value='${product.id}'/>)"
                                     >
-                                        <i class="fs-16 zmdi zmdi-plus"></i>
-                                    </div>
+                                        Thêm vào giỏ hàng
+                                    </button>
+                                    
+                                    <!-- Nút mở modal so sánh -->
+                                    <button type="button"
+                                            class="flex-c-m stext-101 cl0 size-101 bg3 bor1 hov-btn3 p-lr-15 trans-04 m-l-10"
+                                            data-toggle="modal" 
+                                            data-target="#compareModal"
+                                            style="background-color: #6c7ae0;">
+                                        <i class="zmdi zmdi-swap m-r-5"></i> So sánh
+                                    </button>
                                 </div>
-
-                                <button
-                                        id="btn-add-to-cart"
-                                        class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail"
-                                        type="button"
-                                        onclick="addToCart(<c:out value='${product.id}'/>)"
-                                >
-                                    Thêm vào giỏ hàng
-                                </button>
-                                
-                                <!-- Nút mở modal so sánh -->
-                                <button type="button"
-                                        class="flex-c-m stext-101 cl0 size-101 bg3 bor1 hov-btn3 p-lr-15 trans-04 m-l-10"
-                                        data-toggle="modal" 
-                                        data-target="#compareModal"
-                                        style="background-color: #6c7ae0;">
-                                    <i class="zmdi zmdi-swap m-r-5"></i> So sánh
-                                </button>
                             </div>
-                        </div>
+                        </c:if>
                     </div>
                 </div>
             </div>
