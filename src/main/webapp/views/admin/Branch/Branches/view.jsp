@@ -140,7 +140,7 @@
 			document.getElementById("branchName").innerText = code;
 			document.getElementById("yesOption").setAttribute(
 					"href",
-					'${pageContext.request.contextPath}/admin/Catalog/Categories/delete?id='
+					'${pageContext.request.contextPath}/admin/Branch/Branches/delete?id='
 							+ id);
 			var modal = new bootstrap.Modal(document
 					.getElementById('confirmationId'));

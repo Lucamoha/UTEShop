@@ -82,16 +82,16 @@
 											<div class="btn-group" role="group">
 												<a
 													href="${pageContext.request.contextPath}/admin/Catalog/Products/view?id=${productsDetailModel.product.id}"
-													class="btn btn-outline-info me-1" title="View"> <i
+													class="btn btn-outline-info me-1" title="Xem"> <i
 													class="bi bi-eye"></i> <!-- me-1 (margin-end) -->
 												</a> <a
 													href="${pageContext.request.contextPath}/admin/Catalog/Products/saveOrUpdate?id=${productsDetailModel.product.id}"
-													class="btn btn-outline-warning me-1" title="Edit"> <i
+													class="btn btn-outline-warning me-1" title="Chỉnh sửa"> <i
 													class="bi bi-pencil-square"></i>
 												</a> <a href="javascript:void(0)"
 													class="btn btn-outline-danger"
 													data-id="${productsDetailModel.product.id}" data-name="${productsDetailModel.product.name}"
-													onclick="showConfirmation(this)" title="Delete"> <i
+													onclick="showConfirmation(this)" title="Xóa"> <i
 													class="bi bi-trash"></i>
 												</a>
 											</div>

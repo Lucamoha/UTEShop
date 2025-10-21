@@ -143,7 +143,7 @@ public class BranchesController extends HttpServlet {
 		        }
 		        
 				branchesService.delete(id);
-				req.getSession().setAttribute("message", "Đã xóa chi nhánh " + branch.getName() + " thành công!");
+				req.getSession().setAttribute("message", "Đã xóa chi nhánh thành công!");
 			} catch (NumberFormatException e) {
 		        req.getSession().setAttribute("errorMessage", "ID chi nhánh không hợp lệ!");
 		    } catch (EntityNotFoundException e) {
