@@ -117,7 +117,7 @@
 													</c:if>
 												</td>
 											<td class="column-3"><fmt:formatNumber value="${price}"
-													type="number" groupingUsed="true" /> VND</td>
+													type="number" groupingUsed="true" />đ</td>
 											<td class="column-4">
 												<div class="wrap-num-product flex-w m-l-auto m-r-0">
 													<div
@@ -149,7 +149,7 @@
 											</td>
 											<td class="column-6" id="total-<c:out value='${item.id}'/>">
 												<fmt:formatNumber value="${itemTotal}" type="number"
-													groupingUsed="true" /> VND
+													groupingUsed="true" />đ
 											</td>
 											<td class="column-7">
 												<button type="button" class="btn-remove-item"
@@ -236,7 +236,7 @@
 
 							<div class="size-209">
 								<span class="mtext-110 cl2" id="cart-subtotal"> <fmt:formatNumber
-										value="${subtotal}" type="number" groupingUsed="true" /> VND
+										value="${subtotal}" type="number" groupingUsed="true" />đ
 								</span>
 							</div>
 						</div>
@@ -249,7 +249,7 @@
 							</div>
 
 							<div class="size-209">
-								<span class="mtext-110" style="color: #e74c3c;" id="discount-amount">-0 VND</span>
+								<span class="mtext-110" style="color: #e74c3c;" id="discount-amount">-0đ</span>
 								<button type="button" onclick="removeVoucher()" class="btn-remove-voucher"
 										style="border: none; background: none; cursor: pointer; margin-left: 10px; color: #e74c3c; padding: 5px; font-size: 20px; line-height: 1; font-family: 'Segoe UI', Arial, sans-serif;">
 									×
@@ -263,7 +263,7 @@
 							</div>
 
 							<div class="size-209 p-t-1">
-								<span class="stext-111 cl6"> 0 VND </span>
+								<span class="stext-111 cl6"> 0đ </span>
 							</div>
 						</div>
 						
@@ -282,7 +282,7 @@
 
 							<div class="size-209 p-t-1">
 								<span class="mtext-110 cl2" id="cart-total"> <fmt:formatNumber
-										value="${subtotal}" type="number" groupingUsed="true" /> VND
+										value="${subtotal}" type="number" groupingUsed="true" />đ
 								</span>
 							</div>
 						</div>
@@ -551,7 +551,7 @@ function updateCartItem(itemId, quantity) {
                 
                 // Update item total
                 const totalCell = document.getElementById('total-' + itemId);
-                totalCell.textContent = new Intl.NumberFormat('vi-VN').format(itemTotal) + ' VND';
+                totalCell.textContent = new Intl.NumberFormat('vi-VN').format(itemTotal) + 'đ';
             }
             
             // Update cart totals
@@ -654,7 +654,7 @@ function updateCartTotals() {
     });
     
     // Update subtotal display FIRST
-    const subtotalFormatted = new Intl.NumberFormat('vi-VN').format(subtotal) + ' VND';
+    const subtotalFormatted = new Intl.NumberFormat('vi-VN').format(subtotal) + 'đ';
     const subtotalEl = document.getElementById('cart-subtotal');
     if (subtotalEl) {
         subtotalEl.textContent = subtotalFormatted;
@@ -974,10 +974,10 @@ function updateVoucherDisplay(data) {
         // Fallback: use server data if subtotal is invalid
         const discountAmount = document.getElementById('discount-amount');
         const discountValue = parseFloat(data.discountAmount);
-        discountAmount.textContent = '-' + new Intl.NumberFormat('vi-VN').format(discountValue) + ' VND';
+        discountAmount.textContent = '-' + new Intl.NumberFormat('vi-VN').format(discountValue) + 'đ';
         
         const total = parseFloat(data.total);
-        document.getElementById('cart-total').textContent = new Intl.NumberFormat('vi-VN').format(total) + ' VND';
+        document.getElementById('cart-total').textContent = new Intl.NumberFormat('vi-VN').format(total) + 'đ';
         return;
     }
     
@@ -1056,7 +1056,7 @@ function recalculateVoucher(newSubtotal) {
     // Update discount display
     const discountAmountEl = document.getElementById('discount-amount');
     if (discountAmountEl) {
-        discountAmountEl.textContent = '-' + new Intl.NumberFormat('vi-VN').format(discountAmount) + ' VND';
+        discountAmountEl.textContent = '-' + new Intl.NumberFormat('vi-VN').format(discountAmount) + 'đ';
         console.log('Updated discount display:', discountAmountEl.textContent);
     } else {
         console.error('Discount amount element not found!');
@@ -1067,7 +1067,7 @@ function recalculateVoucher(newSubtotal) {
     const totalEl = document.getElementById('cart-total');
     
     if (totalEl) {
-        const formattedTotal = new Intl.NumberFormat('vi-VN').format(total) + ' VND';
+        const formattedTotal = new Intl.NumberFormat('vi-VN').format(total) + 'đ';
         totalEl.textContent = formattedTotal;
         
         // Force DOM update
