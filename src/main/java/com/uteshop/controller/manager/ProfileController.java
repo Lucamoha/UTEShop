@@ -8,12 +8,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
 
-@WebServlet(urlPatterns = {"/manager/profile",
-                           "/manager/profile/reset-password"})
+@WebServlet("/manager/profile")
 public class ProfileController extends HttpServlet {
     EntityDaoImpl<Branches> branchesDao = new EntityDaoImpl<>(Branches.class);
     EntityDaoImpl<Users> usersDao = new EntityDaoImpl<>(Users.class);
@@ -59,49 +57,21 @@ public class ProfileController extends HttpServlet {
         if (user == null) {
             req.setAttribute("error", "Không tìm thấy người dùng");
         }
-        
-        String path = req.getServletPath();
-        
-        if (path.equals("/manager/profile")) {
-            String name = req.getParameter("fullName");
-            String phone = req.getParameter("phone");
 
-            try {
-                user.setFullName(name);
-                user.setPhone(phone);
-                usersDao.update(user);
+        String name = req.getParameter("fullName");
+        String phone = req.getParameter("phone");
 
-                req.getSession().setAttribute("flash_ok", true);
-                resp.sendRedirect(req.getContextPath() + "/manager/profile");
-            } catch (Exception e) {
-                req.setAttribute("error", "Cập nhật thất bại: " + e.getMessage());
-                doGet(req, resp);
-            }
-        } else if (path.equals("/manager/profile/reset-password")) {
-            String currentPassword = req.getParameter("currentPassword");
-            String newPassword = req.getParameter("newPassword");
-            String confirmPassword = req.getParameter("confirmPassword");
+        try {
+            user.setFullName(name);
+            user.setPhone(phone);
+            usersDao.update(user);
 
-            if (!BCrypt.checkpw(currentPassword, user.getPasswordHash())) {
-                req.setAttribute("error", "Cập nhật thất bại: Mật khẩu hiện tại không chính xác");
-                doGet(req, resp);
-            }
-
-            if (!newPassword.equals(confirmPassword)) {
-                req.setAttribute("error", "Cập nhật thất bại: Mật khẩu không khớp");
-                doGet(req, resp);
-            }
-
-            try {
-                user.setPasswordHash(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
-                usersDao.update(user);
-
-                req.getSession().setAttribute("flash_ok", true);
-                resp.sendRedirect(req.getContextPath() + "/manager/profile");
-            } catch (Exception e) {
-                req.setAttribute("error", "Cập nhật thất bại: " + e.getMessage());
-                doGet(req, resp);
-            }
+            req.getSession().setAttribute("flash_ok", true);
+            resp.sendRedirect(req.getContextPath() + "/manager/profile");
+        }
+        catch (Exception e) {
+            req.setAttribute("error", "Cập nhật thất bại: " + e.getMessage());
+            doGet(req, resp);
         }
     }
 }

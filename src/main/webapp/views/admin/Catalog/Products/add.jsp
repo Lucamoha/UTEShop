@@ -124,100 +124,8 @@
 									thị thuộc tính.</p>
 							</div>
 						</div>
+						<small class="text-muted fst-italic">* Các thuộc tính sẽ được tải tự động khi chọn danh mục</small>
 					</div>
-
-					<%-- <div class="mb-3">
-						<label class="form-label">Thông Số Kỹ Thuật:</label>
-						<div class="card-body">
-							<div class="table-responsive">
-								<table class="table table-striped align-middle text-center">
-									<thead class="table-dark">
-										<tr>
-											<th>Thuộc tính</th>
-											<th>Giá trị</th>
-											<th>Thao tác</th>
-										</tr>
-									</thead>
-									<tbody id="attributes-tbody">
-										<c:forEach var="attr" items="${productAttributes}"
-											varStatus="loop">
-											<tr>
-												<td><select
-													name="newAttributes[${loop.index}].attributeId"
-													class="form-select">
-														<c:forEach var="a" items="${availableAttributes}">
-															<option value="${a.id}"
-																<c:if test="${a.id == attr.attributeId}">selected</c:if>>
-																${a.name}</option>
-														</c:forEach>
-												</select></td>
-												<td><input type="text"
-													name="newAttributes[${loop.index}].value"
-													class="form-control" value="${attr.displayValue}" /></td>
-											</tr>
-										</c:forEach>
-									</tbody>
-
-								</table>
-							</div>
-						</div>
-						<div class="card-footer text-right">
-							<button type="button" class="btn btn-outline-success"
-								id="add-attribute-btn">
-								<i class="bi bi-plus-circle"></i> Thêm thông số
-							</button>
-						</div>
-					</div> --%>
-
-					<!-- Biến thể -->
-					<%-- <div class="mb-3">
-						<label class="form-label fw-bold">Chi Tiết Biến Thể Sản
-							Phẩm</label>
-						<div id="variantContainer">
-							<div class="variant-item mb-3 border rounded p-3">
-								<div class="row mb-2">
-									<div class="col-md-4">
-										<label class="form-label">Loại tùy chọn</label> <select
-											class="form-select option-type-select">
-											<option value="">-- Chọn loại tùy chọn --</option>
-											<c:forEach var="type" items="${optionTypes}">
-												<option value="${type.id}">${type.code}</option>
-											</c:forEach>
-										</select>
-									</div>
-
-									<div class="col-md-4">
-										<label class="form-label">Giá trị tùy chọn</label> <select
-											class="form-select option-value-select">
-											<option value="">-- Chọn giá trị --</option>
-										</select>
-									</div>
-								</div>
-
-								<div class="row">
-									<div class="col-md-4">
-										<label class="form-label">SKU</label> <input type="text"
-											name="sku" class="form-control" />
-									</div>
-									<div class="col-md-4">
-										<label class="form-label">Giá</label> <input type="number"
-											name="price" class="form-control" />
-									</div>
-									<div class="col-md-4">
-										<label class="form-label">Trạng thái</label> <select
-											name="status" class="form-select">
-											<option value="true">Hoạt động</option>
-											<option value="false">Ngừng</option>
-										</select>
-									</div>
-								</div>
-							</div>
-						</div>
-
-						<button type="button" id="addVariantBtn"
-							class="btn btn-outline-primary mt-2">+ Thêm biến thể</button>
-					</div> --%>
-
 
 					<div class="mb-3">
 						<label class="form-label fw-bold">Chi Tiết Biến Thể Sản
@@ -249,13 +157,13 @@
 
 					<!-- Submit -->
 					<div class="mt-3">
-						<button type="submit" class="btn btn-primary">
-							<i class="bi bi-save"></i> Save
+						<button type="submit" class="btn btn-primary" id="submitBtn">
+							<i class="bi bi-save"></i> Lưu
 						</button>
 						<a
 							href="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated"
 							class="btn btn-secondary"><i class="bi bi-x-circle"></i>
-							Cancel</a>
+							Hủy</a>
 					</div>
 				</div>
 			</div>
@@ -274,6 +182,46 @@
     }
     document.getElementById('name').addEventListener('input', function () {
         document.getElementById('slug').value = toSlug(this.value);
+    });
+
+    // ====== Validation form ======
+    document.getElementById('productForm').addEventListener('submit', function(e) {
+        const name = document.getElementById('name').value.trim();
+        const categoryId = document.getElementById('categorySelect').value;
+        const basePrice = document.querySelector('input[name="basePrice"]').value;
+
+        if (!name) {
+            alert('Vui lòng nhập tên sản phẩm!');
+            e.preventDefault();
+            return false;
+        }
+
+        if (!categoryId) {
+            alert('Vui lòng chọn danh mục!');
+            e.preventDefault();
+            return false;
+        }
+
+        if (!basePrice || parseFloat(basePrice) < 1000) {
+            alert('Giá gốc phải từ 1,000 VNĐ trở lên!');
+            e.preventDefault();
+            return false;
+        }
+
+        // Kiểm tra biến thể nếu có
+        const variantSkus = document.querySelectorAll('input[name="newVariants.sku"]');
+        if (variantSkus.length > 0) {
+            for (let i = 0; i < variantSkus.length; i++) {
+                if (!variantSkus[i].value.trim()) {
+                    alert('Vui lòng nhập đầy đủ thông tin cho tất cả các biến thể!');
+                    variantSkus[i].focus();
+                    e.preventDefault();
+                    return false;
+                }
+            }
+        }
+
+        return true;
     });
 </script>
 
@@ -508,17 +456,22 @@ document.addEventListener("DOMContentLoaded", function () {
   // Hàm sinh bảng các biến thể
   function generateVariantTable() {
     const typeMap = {};
+    const typeIdMap = {}; // Thêm map để lưu typeId
+    const valueIdMap = {}; // Thêm map để lưu valueId của mỗi option
 
     // Gom dữ liệu từ checkbox
     document.querySelectorAll(".option-type-checkbox:checked").forEach(type => {
       const typeId = type.value;
       const typeName = type.dataset.name;
-      const values = Array.from(
-        document.querySelectorAll(`.option-value-checkbox[data-type-id='\${typeId}']:checked`)
-      ).map(v => v.dataset.value);
+      
+      const valueCheckboxes = document.querySelectorAll(`.option-value-checkbox[data-type-id='\${typeId}']:checked`);
+      const values = Array.from(valueCheckboxes).map(v => v.dataset.value);
+      const valueIds = Array.from(valueCheckboxes).map(v => v.value);
 
       if (values.length > 0) {
         typeMap[typeName] = values;
+        typeIdMap[typeName] = typeId;
+        valueIdMap[typeName] = valueIds;
       }
     });
 
@@ -528,44 +481,48 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    const combinations = cartesian(Object.values(typeMap));
     const typeNames = Object.keys(typeMap);
+    const combinations = cartesian(Object.values(typeMap));
+    const valueCombinations = cartesian(Object.values(valueIdMap)); // Tạo tổ hợp của value IDs
     
     console.log("typeMap:", typeMap);
-    console.log("typeNames:", Object.keys(typeMap));
-    console.log("combinations:", cartesian(Object.values(typeMap)));
-
+    console.log("valueIdMap:", valueIdMap);
+    console.log("combinations:", combinations);
+    console.log("valueCombinations:", valueCombinations);
 
     // Sinh bảng
     let html ='<table class="table table-bordered align-middle"><thead class="table-dark"><tr>'
     	typeNames.forEach(n => {
-            html += `
-    	      <th>\${n}</th>
-    	  `;
+            html += `<th>\${n}</th>`;
         });
     html += '<th>SKU</th><th>GIÁ</th><th>TRẠNG THÁI</th></tr></thead><tbody>'
-        
-       /*  let html ='<table class="table table-bordered align-middle"><thead class="table-dark"><tr>'
-        	typeNames.forEach(n => {
-                html += `
-        	    <c:forEach var="n" items="\${typeNames}">
-        	      <th>"\${n}"</th>
-        	    </c:forEach>
-        	  </tr>
-        	</thead>
-            <tbody>'; */
 
-    combinations.forEach(combo => {
+    combinations.forEach((combo, index) => {
       html += "<tr>";
       combo.forEach(val => html += `<td>\${val}</td>`);
+      
+      // Thêm các option value IDs dưới dạng hidden inputs
+      let optionValueIdsHtml = '';
+      if (valueCombinations[index]) {
+        const valueIds = Array.isArray(valueCombinations[index]) ? valueCombinations[index] : [valueCombinations[index]];
+        valueIds.forEach(vid => {
+          optionValueIdsHtml += `<input type="hidden" name="newVariants.optionValueIds[]" value="\${vid}">`;
+        });
+      }
+      
       html += `
-        <td><input type="text" name="sku[]" class="form-control form-control-sm"></td>
-        <td><input type="number" name="price[]" class="form-control form-control-sm"></td>
         <td>
-          <select name="status[]" class="form-select form-select-sm">
+          <input type="text" name="newVariants.sku" class="form-control form-control-sm" required>
+        </td>
+        <td>
+          <input type="number" name="newVariants.price" class="form-control form-control-sm" min="0" step="0.01" required>
+        </td>
+        <td>
+          <select name="newVariants.status" class="form-select form-select-sm">
             <option value="true">Hoạt động</option>
             <option value="false">Ngừng</option>
           </select>
+          \${optionValueIdsHtml}
         </td>
       </tr>`;
     });

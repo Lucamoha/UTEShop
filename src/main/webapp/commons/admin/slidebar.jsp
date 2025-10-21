@@ -37,40 +37,46 @@
 				</a>
 					<div class="collapse" id="base">
 						<ul class="nav nav-collapse">
-							<li><a href="components/avatars.html"> <span
-									class="sub-item">Avatars</span>
+							<li><a
+								href="${pageContext.request.contextPath}/admin/User/Users/list">
+									<span class="sub-item">Quản Lý Người Dùng</span>
 							</a></li>
-							<li><a href="components/buttons.html"> <span
-									class="sub-item">Buttons</span>
-							</a></li>
-							<li><a href="components/gridsystem.html"> <span
-									class="sub-item">Grid System</span>
-							</a></li>
-							<li><a href="components/panels.html"> <span
-									class="sub-item">Panels</span>
-							</a></li>
-							<li><a href="components/notifications.html"> <span
-									class="sub-item">Notifications</span>
-							</a></li>
-							<li><a href="components/sweetalert.html"> <span
-									class="sub-item">Sweet Alert</span>
-							</a></li>
-							<li><a href="components/font-awesome-icons.html"> <span
-									class="sub-item">Font Awesome Icons</span>
-							</a></li>
-							<li><a href="components/simple-line-icons.html"> <span
-									class="sub-item">Simple Line Icons</span>
-							</a></li>
-							<li><a href="components/typography.html"> <span
-									class="sub-item">Typography</span>
+							<li><a
+								href="${pageContext.request.contextPath}/admin/Address/Addresses/list">
+									<span class="sub-item">Quản Lý Địa Chỉ</span>
 							</a></li>
 						</ul>
 					</div></li>
 				<li class="nav-item"><a data-bs-toggle="collapse"
-					href="#sidebarLayouts"> <i class="bi bi-box-seam me-2"></i>
+					href="#reviewsSection"> <i class="fas fa-star"></i>
+						<p>Đánh Giá</p> <span class="caret"></span>
+				</a>
+					<div class="collapse" id="reviewsSection">
+						<ul class="nav nav-collapse">
+							<li><a
+								href="${pageContext.request.contextPath}/admin/Review/Reviews/list">
+									<span class="sub-item">Quản Lý Đánh Giá</span>
+							</a></li>
+						</ul>
+					</div></li>
+				<li class="nav-item"><a data-bs-toggle="collapse"
+					href="#vouchersSection"> <i class="fas fa-tags"></i>
+						<p>Voucher</p> <span class="caret"></span>
+				</a>
+					<div class="collapse" id="vouchersSection">
+						<ul class="nav nav-collapse">
+							<li><a
+								href="${pageContext.request.contextPath}/admin/Voucher/Vouchers/list">
+									<span class="sub-item">Quản Lý Voucher</span>
+							</a></li>
+						</ul>
+					</div></li>
+				<li class="nav-item"><a data-bs-toggle="collapse"
+					href="#catalogSection"> <i class="bi bi-box-seam"></i>
+
 						<p>Sản phẩm</p> <span class="caret"></span>
 				</a>
-					<div class="collapse" id="sidebarLayouts">
+					<div class="collapse" id="catalogSection">
 						<ul class="nav nav-collapse">
 							<li><a
 								href="${pageContext.request.contextPath}/admin/Catalog/Categories/searchpaginated">
@@ -95,10 +101,10 @@
 						</ul>
 					</div></li>
 				<li class="nav-item"><a data-bs-toggle="collapse"
-					href="#sidebarLayouts"> <i class="fas fa-store"></i>
+					href="#branchSection"> <i class="fas fa-store"></i>
 						<p>Chi nhánh</p> <span class="caret"></span>
 				</a>
-					<div class="collapse" id="sidebarLayouts">
+					<div class="collapse" id="branchSection">
 						<ul class="nav nav-collapse">
 							<li><a
 								href="${pageContext.request.contextPath}/admin/Branch/Branches/searchpaginated">

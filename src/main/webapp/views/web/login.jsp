@@ -99,14 +99,16 @@
             </div>
 
             <div class="social-login">
-                <button class="social-button google"
-                        onclick="window.location.href='${pageContext.request.contextPath}/login/oauth/google'"
-                        title="Google">
-                </button>
-                <button class="social-button facebook"
-                        onclick="window.location.href='${pageContext.request.contextPath}/login/oauth/facebook'"
-                        title="Facebook">
-                </button>
+                <button
+                        class="social-button google"
+                        onclick="showAlert('Đăng nhập với Google')"
+                        title="Google"
+                ></button>
+                <button
+                        class="social-button facebook"
+                        onclick="showAlert('Đăng nhập với Facebook')"
+                        title="Facebook"
+                ></button>
             </div>
 
             <div class="register-link">

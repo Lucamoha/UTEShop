@@ -75,12 +75,6 @@
                             data-bs-target="#confirmModal"
                             id="btnOpenEdit">Chỉnh sửa
                     </button>
-                    <button type="button"
-                            class="btn btn-danger"
-                            data-bs-toggle="modal"
-                            data-bs-target="#resetPasswordModal"
-                            id="btnOpenResetPass">Đặt lại mật khẩu
-                    </button>
                 </div>
             </div>
         </div>
@@ -140,97 +134,4 @@
             </div>
         </div>
     </div>
-
-    <%-- Modal đặt lại mật khẩu --%>
-    <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered"> <!-- centered -->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Đặt lại mật khẩu</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                </div>
-
-                <!-- FORM cập nhật -->
-                <form id="resetPasswordForm"
-                      method="post"
-                      action="${pageContext.request.contextPath}/manager/profile/reset-password"
-                      novalidate>
-
-                    <div class="modal-body">
-                        <input type="hidden" name="userId" value="${u.id}" />
-
-                        <div class="mb-3">
-                            <label for="currentPassword" class="form-label">Mật khẩu hiện tại</label>
-                            <input type="password"
-                                   class="form-control"
-                                   id="currentPassword"
-                                   name="currentPassword"
-                                   required
-                                   placeholder="Nhập mật khẩu hiện tại">
-                            <div class="invalid-feedback">Vui lòng nhập mật khẩu hiện tại.</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="newPassword" class="form-label">Mật khẩu mới</label>
-                            <input type="password"
-                                   class="form-control"
-                                   id="newPassword"
-                                   name="newPassword"
-                                   required
-                                   minlength="6"
-                                   maxlength="50"
-                                   placeholder="Tối thiểu 6 ký tự">
-                            <div class="invalid-feedback">Mật khẩu mới không hợp lệ (tối thiểu 6 ký tự).</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="confirmPassword" class="form-label">Xác nhận mật khẩu mới</label>
-                            <input type="password"
-                                   class="form-control"
-                                   id="confirmPassword"
-                                   name="confirmPassword"
-                                   required
-                                   placeholder="Nhập lại mật khẩu mới">
-                            <div class="invalid-feedback">Mật khẩu xác nhận không khớp.</div>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button"
-                                class="btn btn-outline-secondary"
-                                data-bs-dismiss="modal">Hủy</button>
-                        <button type="submit"
-                                class="btn btn-primary">Xác nhận</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const form = document.getElementById("resetPasswordForm");
-
-            form.addEventListener("submit", function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                const newPass = form.newPassword.value.trim();
-                const confirm = form.confirmPassword.value.trim();
-
-                if (newPass !== confirm) {
-                    form.confirmPassword.classList.add("is-invalid");
-                    return;
-                } else {
-                    form.confirmPassword.classList.remove("is-invalid");
-                }
-
-                if (!form.checkValidity()) {
-                    form.classList.add("was-validated");
-                } else {
-                    form.submit(); // submit nếu hợp lệ
-                }
-            });
-        });
-    </script>
 </div>

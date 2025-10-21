@@ -9,7 +9,7 @@
 	</c:if>
 
 	<div class="col-12 mt-4">
-		<form
+		<form id ="productForm"
 			action="${pageContext.request.contextPath}/admin/Catalog/Products/saveOrUpdate"
 			method="POST" enctype="multipart/form-data">
 
@@ -126,18 +126,39 @@
 								<c:forEach var="attr" items="${productAttributes}"
 									varStatus="loop">
 									<tr>
-										<td><select
-											name="newAttributes[${loop.index}].attributeId"
-											class="form-select">
+										<td><input type="hidden"
+											name="existingAttributes.attributeId"
+											value="${attr.attributeId}" /> <select
+											name="existingAttributes.attributeId" class="form-select"
+											disabled>
 												<c:forEach var="a" items="${availableAttributes}">
 													<option value="${a.id}"
 														<c:if test="${a.id == attr.attributeId}">selected</c:if>>
 														${a.name}</option>
 												</c:forEach>
 										</select></td>
-										<td><input type="text"
-											name="newAttributes[${loop.index}].value"
-											class="form-control" value="${attr.displayValue}" /></td>
+										<td><c:choose>
+												<c:when test="${attr.dataType == 3}">
+													<!-- Boolean: Combobox -->
+													<select name="existingAttributes.value" class="form-select">
+														<option value="">-- Chọn --</option>
+														<option value="true"
+															<c:if test="${attr.valueText == 'true' || attr.valueText == 'Có'}">selected</c:if>>Có</option>
+														<option value="false"
+															<c:if test="${attr.valueText == 'false' || attr.valueText == 'Không'}">selected</c:if>>Không</option>
+													</select>
+												</c:when>
+												<c:when test="${attr.dataType == 2}">
+													<!-- Number -->
+													<input type="number" name="existingAttributes.value"
+														class="form-control" value="${attr.valueText}" step="0.01" />
+												</c:when>
+												<c:otherwise>
+													<!-- Text (default) -->
+													<input type="text" name="existingAttributes.value"
+														class="form-control" value="${attr.valueText}" />
+												</c:otherwise>
+											</c:choose></td>
 										<td>
 											<button type="button"
 												class="btn btn-outline-danger btn-sm remove-attribute">
@@ -169,20 +190,20 @@
 							</thead>
 							<tbody id="variants-tbody">
 								<c:forEach var="v" items="${variantList}" varStatus="loop">
-									<tr>
+									<tr data-variant-id="${v.id}">
 										<!-- SKU -->
-										<td><input type="hidden"
-											name="existingVariants[${loop.index}].id" value="${v.id}" />
-											<input type="text" name="existingVariants[${loop.index}].sku"
-											value="${v.SKU}" class="form-control form-control-sm" /></td>
+										<td><input type="hidden" name="existingVariants.id"
+											value="${v.id}" /> <input type="text"
+											name="existingVariants.sku" value="${v.SKU}"
+											class="form-control form-control-sm" /></td>
 
 										<!-- Giá -->
-										<td><input type="number"
-											name="existingVariants[${loop.index}].price"
-											value="${v.price}" class="form-control form-control-sm" /></td>
+										<td><input type="number" name="existingVariants.price"
+											value="${v.price}" min="1000"
+											class="form-control form-control-sm" /></td>
 
 										<!-- Trạng thái -->
-										<td><select name="existingVariants[${loop.index}].status"
+										<td><select name="existingVariants.status"
 											class="form-select form-select-sm">
 												<option value="true" ${v.status ? 'selected' : ''}>Đang
 													bán</option>
@@ -246,7 +267,7 @@
 <script>
     const availableAttributes = [
         <c:forEach var="attr" items="${availableAttributes}" varStatus="status">
-            { id: ${attr.id}, name: "${attr.name}" }<c:if test="${!status.last}">,</c:if>
+            { id: ${attr.id}, name: "${attr.name}", dataType: ${attr.dataType} }<c:if test="${!status.last}">,</c:if>
         </c:forEach>
     ];
 
@@ -341,13 +362,27 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+<!-- Khởi tạo biến toàn cục để lưu các variant đã xóa -->
+<script>
+let deletedVariantIds = [];
+</script>
+
 <!-- xóa biến thể cũ khỏi giao diện -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelector("#variants-tbody").addEventListener("click", (e) => {
         const btn = e.target.closest(".remove-variant");
         if (btn) {
-            btn.closest("tr").remove();
+            const tr = btn.closest("tr");
+            const variantId = tr.getAttribute("data-variant-id");
+            
+            // Nếu là biến thể đã có trong DB, lưu lại để xóa sau
+            if (variantId) {
+                deletedVariantIds.push(variantId);
+                console.log("Đã đánh dấu xóa variant ID:", variantId);
+            }
+            
+            tr.remove();
         }
     });
 });
@@ -369,7 +404,6 @@ document.addEventListener("DOMContentLoaded", () => {
 <!-- ====== Thêm thông số kỹ thuật ====== -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    let attributeIndex = 0;
     const addAttributeBtn = document.getElementById('add-attribute-btn');
     const attributesTbody = document.getElementById('attributes-tbody');
 
@@ -377,9 +411,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const tr = document.createElement('tr');
 
         const tdName = document.createElement('td');
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'attributeIds';
+        
         const select = document.createElement('select');
         select.className = 'form-select';
-        select.name = `newAttributes[${attributeIndex}].attributeId`;
         select.required = true;
 
         const defaultOpt = document.createElement('option');
@@ -391,20 +428,65 @@ document.addEventListener('DOMContentLoaded', function () {
             const opt = document.createElement('option');
             opt.value = a.id;
             opt.textContent = a.name;
+            opt.dataset.dataType = a.dataType; // Lưu dataType vào option
             select.appendChild(opt);
         });
+        
+        const tdVal = document.createElement('td');
+        
+        // Function để render input dựa trên dataType
+        function renderValueInput(dataType) {
+            tdVal.innerHTML = ''; // Clear old input
+            
+            if (dataType == 3) {
+                // Boolean: Combobox
+                const selectBool = document.createElement('select');
+                selectBool.name = 'attributeValues';
+                selectBool.className = 'form-select';
+                selectBool.innerHTML = `
+                    <option value="">-- Chọn --</option>
+                    <option value="true">Có</option>
+                    <option value="false">Không</option>
+                `;
+                tdVal.appendChild(selectBool);
+            } else if (dataType == 2) {
+                // Number
+                const inputNum = document.createElement('input');
+                inputNum.type = 'number';
+                inputNum.name = 'attributeValues';
+                inputNum.className = 'form-control';
+                inputNum.placeholder = 'Nhập giá trị số';
+                inputNum.step = '0.01';
+                tdVal.appendChild(inputNum);
+            } else {
+                // Text (default)
+                const inputText = document.createElement('input');
+                inputText.type = 'text';
+                inputText.name = 'attributeValues';
+                inputText.className = 'form-control';
+                inputText.placeholder = 'Nhập giá trị';
+                tdVal.appendChild(inputText);
+            }
+        }
+        
+        // Sync hidden input và render input khi chọn attribute
+        select.addEventListener('change', function() {
+            hiddenInput.value = this.value;
+            const selectedOption = this.options[this.selectedIndex];
+            const dataType = selectedOption.dataset.dataType;
+            renderValueInput(dataType);
+        });
+        
+        tdName.appendChild(hiddenInput);
         tdName.appendChild(select);
 
-        const tdVal = document.createElement('td');
-        const input = document.createElement('input');
-        input.type = 'text'; input.className = 'form-control';
-        input.name = `newAttributes[${attributeIndex}].value`;
-        input.required = true;
-        tdVal.appendChild(input);
+        // Khởi tạo với text input mặc định
+        renderValueInput(1);
 
         const tdAction = document.createElement('td');
         const del = document.createElement('button');
-        del.type = 'button'; del.className = 'btn btn-outline-danger btn-sm';
+        del.type = 'button'; 
+        del.className = 'btn btn-outline-danger btn-sm';
         del.innerHTML = '<i class="bi bi-trash"></i>';
         del.onclick = () => tr.remove();
         tdAction.appendChild(del);
@@ -413,7 +495,6 @@ document.addEventListener('DOMContentLoaded', function () {
         tr.appendChild(tdVal);
         tr.appendChild(tdAction);
         attributesTbody.appendChild(tr);
-        attributeIndex++;
     });
 });
 </script>
@@ -428,22 +509,18 @@ document.addEventListener('DOMContentLoaded', function () {
     addVariantBtn.addEventListener('click', function () {
         const tr = document.createElement('tr');
 
-        // SKU
         const skuTd = document.createElement('td');
         skuTd.innerHTML = `<input type="text" name="newVariants.sku" class="form-control form-control-sm" placeholder="SKU">`;
 
-        // Giá
         const priceTd = document.createElement('td');
         priceTd.innerHTML = `<input type="number" name="newVariants.price" class="form-control form-control-sm" min="1000" required>`;
 
-        // Trạng thái
         const statusTd = document.createElement('td');
         statusTd.innerHTML = `<select name="newVariants.status" class="form-select form-select-sm">
             <option value="true" selected>Đang bán</option>
             <option value="false">Ngừng bán</option>
         </select>`;
 
-        // Tùy chọn
         const optionsTd = document.createElement('td');
         availableOptionTypes.forEach(group => {
             const div = document.createElement('div');
@@ -464,13 +541,17 @@ document.addEventListener('DOMContentLoaded', function () {
             optionsTd.appendChild(div);
         });
 
-        // Xóa
+        //Xóa biến thể
         const actionTd = document.createElement('td');
         const del = document.createElement('button');
         del.type = 'button';
         del.className = 'btn btn-outline-danger btn-sm';
         del.innerHTML = '<i class="bi bi-trash"></i>';
-        del.onclick = () => tr.remove();
+        del.onclick = () => {
+            // Biến thể mới được tạo trong form không cần track xóa
+            tr.remove();
+        };
+        
         actionTd.appendChild(del);
 
         tr.appendChild(skuTd);
@@ -479,8 +560,20 @@ document.addEventListener('DOMContentLoaded', function () {
         tr.appendChild(optionsTd);
         tr.appendChild(actionTd);
         variantsTbody.appendChild(tr);
-
+        
         variantIndex++;
     });
+});
+</script>
+
+<script>
+document.getElementById("productForm").addEventListener("submit", function (e) {
+    if (deletedVariantIds.length > 0) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "deletedVariantIds";
+        input.value = deletedVariantIds.join(","); // ví dụ: "3,5,7"
+        this.appendChild(input);
+    }
 });
 </script>

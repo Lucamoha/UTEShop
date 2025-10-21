@@ -88,7 +88,7 @@ public class InvoiceController extends HttpServlet {
         String encoded = URLEncoder.encode(fileName, StandardCharsets.UTF_8).replace("+", "%20");
 
         resp.setContentType("application/pdf");
-        resp.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encoded);
+        resp.setHeader("Content-Disposition", "inline; filename*=UTF-8''" + encoded);
 
         try {
             Document doc = new Document(PageSize.A4, 36, 36, 48, 36);

@@ -46,7 +46,7 @@ public class ProductImagesDaoImpl extends AbstractDao<ProductImages> implements 
 		}
 
 		// Xóa trong db
-		this.delete(this.findById(productId));
+		super.delete(super.findById(productId));
 	}
 
 	@Override

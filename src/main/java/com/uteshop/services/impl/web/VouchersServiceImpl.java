@@ -3,6 +3,7 @@ package com.uteshop.services.impl.web;
 import com.uteshop.dao.impl.web.VouchersDaoImpl;
 import com.uteshop.dao.web.IVouchersDao;
 import com.uteshop.entity.cart.Vouchers;
+import com.uteshop.services.admin.IVoucherService;
 import com.uteshop.services.web.IVouchersService;
 
 import java.math.BigDecimal;
@@ -75,7 +76,6 @@ public class VouchersServiceImpl implements IVouchersService {
         
         return result;
     }
-
     @Override
     public Vouchers findByCode(String code) {
         return vouchersDao.findByCode(code);
@@ -90,4 +90,5 @@ public class VouchersServiceImpl implements IVouchersService {
     public List<Vouchers> getAvailableVouchers() {
         return vouchersDao.findAvailableVouchers();
     }
+
 }
