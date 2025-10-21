@@ -237,7 +237,7 @@
 					<!-- Submit -->
 					<div class="mt-3">
 						<button type="submit" class="btn btn-primary">
-							<i class="bi bi-save"></i> Cập nhật
+							<i class="bi bi-save"></i> Lưu
 						</button>
 						<a
 							href="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated"
