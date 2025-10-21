@@ -15,6 +15,5 @@ public interface IProductsVariantsService {
 	ProductVariants findById(int variantId);
 	void insert(ProductVariants productVariant);
 	void deleteAllByProductId(Integer productId);
-	void delete(int id);
 	void update(ProductVariants variant);
 }

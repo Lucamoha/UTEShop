@@ -80,11 +80,6 @@
                          <fmt:formatNumber value="${product.basePrice}" type="number" /> VND
                     </span>
                     
-                    <!-- Số lượng đã bán -->
-                    <p class="stext-102 cl3 p-t-10">
-                        <strong>Đã bán:</strong> <fmt:formatNumber value="${product.sold}" type="number" /> sản phẩm
-                    </p>
-                    
                     <!-- Thông báo sản phẩm ngừng kinh doanh - Hiển thị khi product status = false -->
                     <c:if test="${!product.status}">
                         <div class="alert alert-warning" style="margin-top: 15px; padding: 15px; background-color: #fff3cd; border-left: 4px solid #ff9800; border-radius: 4px;">
@@ -514,6 +509,26 @@
                                 <c:url value="/image?fname=${product.getImages()[0].getImageUrl()}" var="imgUrl"></c:url>
                                 <img src="${imgUrl}" alt="${product.name}">
 
+                                <!-- Nút Yêu thích, Giỏ hàng và So sánh -->
+                                <div class="block2-icons">
+                                    <a href="#" class="block2-icon js-addwish-b2 dis-block icon-heart cl2 trans-04"
+                                       data-product-id="${product.id}"
+                                       title="Thêm vào yêu thích">
+                                        <i class="zmdi zmdi-favorite-outline"></i>
+                                    </a>
+                                    <a href="#" class="block2-icon js-addcart-detail dis-block icon-cart cl2 trans-04 m-l-10"
+                                       data-product-id="${product.id}"
+                                       title="Thêm vào giỏ hàng">
+                                        <i class="zmdi zmdi-shopping-cart"></i>
+                                    </a>
+                                    <a href="#" class="block2-icon js-compare-product dis-block icon-compare cl2 trans-04 m-l-10"
+                                       data-product-slug="${product.slug}"
+                                       data-product-id="${product.id}"
+                                       title="So sánh với sản phẩm này"
+                                       onclick="compareWithCurrentProduct('${product.slug}'); return false;">
+                                        <i class="zmdi zmdi-swap"></i>
+                                    </a>
+                                </div>
 
                                 <a href="${pageContext.request.contextPath}/product-detail?product=${product.slug}"
                                    class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">

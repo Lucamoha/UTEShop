@@ -47,24 +47,6 @@
         </div>
     </c:if>
 
-    <!-- Thông báo cho user đăng nhập bằng Google/Facebook -->
-    <c:if test="${isSocialLogin}">
-        <div class="alert alert-info alert-dismissible fade show" role="alert">
-            <h5 class="alert-heading">
-                <i class="fas fa-info-circle"></i> Tài khoản đăng nhập qua Google/Facebook
-            </h5>
-            <p>
-                Bạn hiện đang đăng nhập bằng tài khoản Google hoặc Facebook. Nếu bạn muốn thiết lập mật khẩu riêng cho tài khoản này, 
-                vui lòng sử dụng tính năng <strong>Quên mật khẩu</strong> để tạo mật khẩu mới.
-            </p>
-            <hr>
-            <button type="button" onclick="redirectToForgotPassword()" class="btn btn-primary btn-sm">
-                <i class="fas fa-key"></i> Thiết lập mật khẩu mới
-            </button>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    </c:if>
-
     <div class="row">
         <!-- Change Password Form -->
         <div class="col-md-8">
@@ -314,30 +296,5 @@
     const successParam = new URLSearchParams(window.location.search).get('success');
     if (successParam === 'true') {
         resetForm();
-    }
-    
-    // Function to redirect to forgot password page with logout
-    function redirectToForgotPassword() {
-        swal({
-            title: "Xác nhận thiết lập mật khẩu",
-            text: "Tài khoản của bạn sẽ được đăng xuất để thiết lập lại mật khẩu. Bạn có muốn tiếp tục?",
-            icon: "warning",
-            buttons: {
-                cancel: {
-                    text: "Hủy",
-                    visible: true,
-                    className: "btn btn-secondary"
-                },
-                confirm: {
-                    text: "Tiếp tục",
-                    className: "btn btn-primary"
-                }
-            }
-        }).then((confirmed) => {
-            if (confirmed) {
-                // Chuyển đến trang quên mật khẩu
-                window.location.href = '${pageContext.request.contextPath}/forgot-password';
-            }
-        });
     }
 </script>

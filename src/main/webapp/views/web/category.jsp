@@ -345,6 +345,18 @@
 										var="imgUrl"></c:url>
 									<img class="product-img" src="${imgUrl}" alt="${product.name}">
 
+									<!-- Nút Yêu thích và Giỏ hàng -->
+									<div class="block2-icons">
+										<a href="#"
+											class="block2-icon js-addwish-b2 dis-block icon-heart cl2 trans-04"
+											data-product-id="${product.id}" title="Thêm vào yêu thích">
+											<i class="zmdi zmdi-favorite-outline"></i>
+										</a> <a href="#"
+											class="block2-icon js-addcart-detail dis-block icon-cart cl2 trans-04 m-l-10"
+											data-product-id="${product.id}" title="Thêm vào giỏ hàng">
+											<i class="zmdi zmdi-shopping-cart"></i>
+										</a>
+									</div>
 
 									<a href="${pageContext.request.contextPath}/product-detail?product=${product.slug}"
 										class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">

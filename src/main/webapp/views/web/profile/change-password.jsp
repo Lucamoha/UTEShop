@@ -129,26 +129,6 @@
                 <div class="alert alert-error">${error}</div>
             </c:if>
             
-            <!-- Thông báo cho user đăng nhập bằng Google/Facebook -->
-            <c:if test="${isSocialLogin}">
-                <div class="alert" style="background-color: #e3f2fd; border-left: 4px solid #2196F3; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
-                    <h4 style="margin: 0 0 10px 0; color: #1976D2; font-size: 16px;">
-                        <i class="fa fa-info-circle" style="margin-right: 8px;"></i>
-                        Tài khoản đăng nhập qua Google/Facebook
-                    </h4>
-                    <p style="margin: 0 0 10px 0; color: #555; font-size: 14px; line-height: 1.6;">
-                        Bạn hiện đang đăng nhập bằng tài khoản Google hoặc Facebook. Nếu bạn muốn thiết lập mật khẩu riêng cho tài khoản này, 
-                        vui lòng sử dụng tính năng <strong>Quên mật khẩu</strong> để tạo mật khẩu mới.
-                    </p>
-                    <button type="button" onclick="redirectToForgotPassword()" 
-                            class="btn btn-primary" 
-                            style="display: inline-flex; align-items: center; gap: 8px; background-color: #2196F3; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500; transition: background-color 0.3s;">
-                        <i class="fa fa-key"></i>
-                        Thiết lập mật khẩu mới
-                    </button>
-                </div>
-            </c:if>
-            
             <div class="password-requirements" id="passwordRequirements">
                 <h4>Yêu cầu mật khẩu:</h4>
                 <ul>
@@ -327,31 +307,6 @@
         passwordMatchMsg.classList.remove('success');
         passwordLengthMsg.classList.remove('error');
         passwordRequirements.classList.remove('error');
-    }
-    
-    // Function to redirect to forgot password page with logout
-    function redirectToForgotPassword() {
-        swal({
-            title: "Xác nhận thiết lập mật khẩu",
-            text: "Tài khoản của bạn sẽ được đăng xuất để thiết lập lại mật khẩu. Bạn có muốn tiếp tục?",
-            icon: "warning",
-            buttons: {
-                cancel: {
-                    text: "Hủy",
-                    visible: true,
-                    className: "swal-button--cancel"
-                },
-                confirm: {
-                    text: "Tiếp tục",
-                    className: "swal-button--confirm"
-                }
-            }
-        }).then((confirmed) => {
-            if (confirmed) {
-                // Chuyển đến trang quên mật khẩu, trang đó sẽ tự động đăng xuất
-                window.location.href = '${pageContext.request.contextPath}/forgot-password';
-            }
-        });
     }
     
     // Logout confirmation using SweetAlert

@@ -1,0 +1,149 @@
+# ========================
+# Database Config
+# ========================
+db.url=jdbc:sqlserver://{your_servername_here}:1433;databaseName=UTEShop;encrypt=true;trustServerCertificate=true
+db.username=your_username_here
+db.password=your_password_here
+
+# ========================
+# JWT Config
+# ========================
+jwt.signerKey=your_secret_here
+jwt.expiration=3600000
+
+# ========================
+# Momo config
+# ========================
+momo.partnerCode=MOMO
+momo.accessKey=F8BBA842ECF85
+momo.secretKey=K951B6PE1waDMi640xX08PD3vg6EkVlz
+momo.endpointCreate=https://test-payment.momo.vn/v2/gateway/api/create
+momo.endpointQuery=https://test-payment.momo.vn/v2/gateway/api/query
+momo.endpointRefund=https://test-payment.momo.vn/v2/gateway/api/refund
+momo.redirectUrl={your_domain}/payment/momo/return
+momo.ipnUrl={your_domain}/payment/momo/ipn
+
+# ========================
+# Vnpay config
+# ========================
+vnpay.vnp_Version=2.1.0
+vnpay.vnp_Command=pay
+vnpay.vnp_TmnCode=your_vnp_TmnCode_here
+vnpay.vnp_HashSecret=your_vnp_HashSecret_here
+vnpay.vnp_CurrCode=VND
+vnpay.vnp_OrderType=billpayment
+vnpay.vnp_Url=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+vnpay.vnp_Query=https://sandbox.vnpayment.vn/merchant_webapi/api/transaction
+vnpay.vnp_ReturnUrl={your_domain}/payment/vnpay/return
+vnpay.vnp_IpAddr=127.0.0.1
+
+# ========================
+# GOOGLE OAUTH
+# ========================
+google.clientId=your_google_clientId_here
+google.clientSecret=your_google_clientSecret_here
+google.redirectUri={your_domain}/login/oauth/google/callback
+google.scope=openid email profile
+
+# ========================
+# FACEBOOK AUTH
+# ========================
+facebook.clientId=your_facebook_clientId_here
+facebook.clientSecret=your_facebook_clientSecret_here
+facebook.redirectUri={your_domain}/login/oauth/facebook/callback
+facebook.scope=email,public_profile
+
+# ========================
+# User Roles
+# ========================
+users.role.user=USER
+users.role.manager=MANAGER
+users.role.admin=ADMIN
+
+# ========================
+# User Token
+# ========================
+user_token.type.verify_email=1
+user_token.type.reset_password=2
+
+# ========================
+# Email/SMTP Config
+# ========================
+smtp.host=smtp.gmail.com
+smtp.port=587
+smtp.from.email=your-email@gmail.com
+smtp.from.password=your-app-password
+smtp.from.name=UTEShop
+
+# ========================
+# Attribute DataType
+# ========================
+attributes.datatype.text=1
+attributes.datatype.number=2
+attributes.datatype.boolean=3
+
+# ========================
+# Product Status
+# ========================
+product.status.inactive=0
+product.status.active=1
+
+# ========================
+# Order Status Mapping
+# ========================
+orders.status.new=0
+orders.status.confirmed=1
+orders.status.shipping=2
+orders.status.delivered=3
+orders.status.canceled=4
+orders.status.returned=5
+
+# ========================
+# Payment Status Mapping
+# ========================
+payment.status.unpaid=0
+payment.status.paid=1
+payment.status.refunded=2
+
+# ========================
+# Shipments Status Mapping
+# ========================
+shipments.status.preparing=0
+shipments.status.picked=1
+shipments.status.in_transit=2
+shipments.status.delivered=3
+shipments.status.failed=4
+
+# ========================
+# Payments Method Mapping
+# ========================
+payments.method.cod=0
+payments.method.vnpay=1
+payments.method.momo=2
+
+# ========================
+# Payments Status Mapping
+# ========================
+payments.status.pending=0
+payments.status.success=1
+payments.status.failed=2
+payments.status.refunded=3
+
+# ========================
+# Vouchers Type Mapping
+# ========================
+vouchers.type.percent=1
+vouchers.type.amount=2
+vouchers.type.ship=3
+
+# ========================
+# Reviews Status Mapping
+# ========================
+reviews.status.hidden=0
+reviews.status.visible=1
+
+# ========================
+# Review Media Type
+# ========================
+reviews.media_type.image=1
+reviews.media_type.video=2
