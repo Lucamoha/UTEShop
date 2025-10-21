@@ -109,24 +109,6 @@
 			<div class="col-md-6 col-xl-4 p-b-30 m-lr-auto">
 				<!-- Block1 -->
 				<div class="block1 wrap-pic-w">
-					<img src="uploads/banner/banner-02.jpg" alt="IMG-BANNER"> <a
-						href="product.html"
-						class="block1-txt ab-t-l s-full flex-col-l-sb p-lr-38 p-tb-34 trans-03 respon3">
-						<div class="block1-txt-child1 flex-col-l">
-							<span class="block1-name ltext-102 trans-04 p-b-8"> iPad </span> <span
-								class="block1-info stext-102 trans-04"> Hiệu năng vượt trội </span>
-						</div>
-
-						<div class="block1-txt-child2 p-b-4 trans-05">
-							<div class="block1-link stext-101 cl0 trans-09">Khám phá ngay</div>
-						</div>
-					</a>
-				</div>
-			</div>
-
-			<div class="col-md-6 col-xl-4 p-b-30 m-lr-auto">
-				<!-- Block1 -->
-				<div class="block1 wrap-pic-w">
 					<img src="uploads/banner/banner-03.jpg" alt="IMG-BANNER"> <a
 						href="${pageContext.request.contextPath}/category/macbook"
 						class="block1-txt ab-t-l s-full flex-col-l-sb p-lr-38 p-tb-34 trans-03 respon3">
@@ -161,19 +143,6 @@
                             <c:url value="/image?fname=${product.getImages()[0].getImageUrl()}" var="imgUrl"></c:url>
                             <img class="product-img" src="${imgUrl}" alt="${product.name}">
 
-                            <!-- Nút Yêu thích và Giỏ hàng -->
-                            <div class="block2-icons">
-                                <a href="#" class="block2-icon js-addwish-b2 dis-block icon-heart cl2 trans-04"
-                                   data-product-id="${product.id}"
-                                   title="Thêm vào yêu thích">
-                                    <i class="zmdi zmdi-favorite-outline"></i>
-                                </a>
-                                <a href="#" class="block2-icon js-addcart-detail dis-block icon-cart cl2 trans-04 m-l-10"
-                                   data-product-id="${product.id}"
-                                   title="Thêm vào giỏ hàng">
-                                    <i class="zmdi zmdi-shopping-cart"></i>
-                                </a>
-                            </div>
 
                             <a href="${pageContext.request.contextPath}/product-detail?product=${product.slug}" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
                                 Xem chi tiết

@@ -28,7 +28,7 @@
             
             <div class="w-full" id="cart-popup-footer" style="display: none;">
                 <div class="header-cart-total w-full p-tb-40">
-                    <span id="cart-popup-total">Total: 0đ</span>
+                    <span id="cart-popup-total">Total: 0 VND</span>
                 </div>
 
                 <div class="header-cart-buttons flex-w w-full">
@@ -195,7 +195,7 @@ function renderCartItems(data) {
                     '</a>' +
                     variantInfo +
                     '<span class="header-cart-item-info">' +
-                        item.quantity + ' x ' + price + 'đ = <strong>' + itemTotal + 'đ</strong>' +
+                        item.quantity + ' x ' + price + ' VND = <strong>' + itemTotal + ' VND</strong>' +
                     '</span>' +
                 '</div>' +
             '</li>';
