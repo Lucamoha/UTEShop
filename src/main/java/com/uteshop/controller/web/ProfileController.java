@@ -46,6 +46,11 @@ public class ProfileController extends HttpServlet {
             showAddresses(req, resp, user);
         } else if (pathInfo.equals("/change-password")) {
             // Hiển thị form đổi mật khẩu
+            // Kiểm tra xem user có đăng nhập bằng Google/Facebook không
+            // User đăng nhập bằng social sẽ có passwordHash là ID của Google/Facebook (không phải BCrypt hash)
+            // BCrypt hash luôn bắt đầu bằng $2a$ hoặc $2b$
+            boolean isSocialLogin = !user.getPasswordHash().startsWith("$2");
+            req.setAttribute("isSocialLogin", isSocialLogin);
             req.getRequestDispatcher("/views/web/profile/change-password.jsp").forward(req, resp);
         } else {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
