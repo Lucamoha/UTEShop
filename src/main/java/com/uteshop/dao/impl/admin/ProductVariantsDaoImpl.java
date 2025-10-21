@@ -145,47 +145,17 @@ public class ProductVariantsDaoImpl extends AbstractDao<ProductVariants> impleme
 
 	@Override
 	public ProductVariants findById(int variantId) {
-		return super.findById(variantId);
+		return this.findById(variantId);
 	}
 	
 	@Override
 	public List<ProductVariants> findAll() {
-		return super.findAll();
+		return this.findAll();
 	}
 	
 	@Override
 	public void update(ProductVariants variant) {
-		super.update(variant);
-	}
-	
-	@Override
-	public void delete(Object id) {
-		EntityManager em = JPAConfigs.getEntityManager();
-		EntityTransaction tx = em.getTransaction();
-		try {
-			tx.begin();
-			
-			// Xóa VariantOptions liên quan trước để tránh lỗi ràng buộc khóa ngoại
-			em.createQuery("DELETE FROM VariantOptions vo WHERE vo.variant.id = :variantId")
-			  .setParameter("variantId", id)
-			  .executeUpdate();
-			
-			// Xóa ProductVariants
-			ProductVariants variant = em.find(ProductVariants.class, id);
-			if (variant != null) {
-				em.remove(variant);
-			}
-			
-			tx.commit();
-		} catch (Exception e) {
-			if (tx.isActive()) {
-				tx.rollback();
-			}
-			e.printStackTrace();
-			throw new RuntimeException("Không thể xóa variant ID = " + id, e);
-		} finally {
-			em.close();
-		}
+		this.update(variant);
 	}
 
 }

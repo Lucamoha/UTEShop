@@ -3,6 +3,24 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
+<div class="card-footer text-right">
+	<a
+		href="${pageContext.request.contextPath}/admin/Branch/Branches/searchpaginated"
+		class="btn btn-secondary"><i class="bi bi-arrow-left-circle"></i>
+		Trở lại</a>
+
+	<a
+		href="${pageContext.request.contextPath}/admin/Branch/Branches/saveOrUpdate?id=${detailModel.branch.id}"
+		class="btn btn-warning"><i class="bi bi-pencil-square"></i> Chỉnh
+		sửa</a>
+
+	<a href="javascript:void(0)" class="btn btn-danger"
+		data-id="${detailModel.branch.id}"
+		data-name="${detailModel.branch.name}"
+		onclick="showConfirmation(this)"> <i class="bi bi-trash"></i> Xóa
+	</a>
+</div>
+
 <section class="row">
 	<div class="col-12 mt-4">
 		<div class="card">
@@ -83,29 +101,8 @@
 					</table>
 				</div>
 			</div>
-
 		</div>
 	</div>
-
-	<div class="col-12 mt-4">
-		<div class="card-header">
-			<div class="card-body">
-				<a
-					href="${pageContext.request.contextPath}/admin/Branch/Branches/searchpaginated"
-					class="btn btn-secondary"><i class="bi bi-arrow-left-circle"></i>
-					Trở lại</a> <a
-					href="${pageContext.request.contextPath}/admin/Branch/Branches/saveOrUpdate?id=${detailModel.branch.id}"
-					class="btn btn-warning"><i class="bi bi-pencil-square"></i>
-					Chỉnh sửa</a> <a href="javascript:void(0)" class="btn btn-danger"
-					data-id="${detailModel.branch.id}"
-					data-name="${detailModel.branch.name}"
-					onclick="showConfirmation(this)"> <i class="bi bi-trash"></i>
-					Xóa
-				</a>
-			</div>
-		</div>
-	</div>
-
 
 	<!-- Modal xác nhận xóa -->
 	<div class="modal fade" id="confirmationId" tabindex="-1"

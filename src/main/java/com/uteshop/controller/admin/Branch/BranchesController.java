@@ -12,7 +12,6 @@ import com.uteshop.services.admin.IBranchesService;
 import com.uteshop.services.admin.IUsersService;
 import com.uteshop.services.impl.admin.BranchesServiceImpl;
 import com.uteshop.services.impl.admin.UsersServiceImpl;
-import com.uteshop.util.ValidInput;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceException;
@@ -197,10 +196,6 @@ public class BranchesController extends HttpServlet {
 			Branches existing = branchesService.findByName(name);
 			if (existing != null && !Objects.equals(existing.getId(), id)) {
 				req.setAttribute("error", "Tên chi nhánh đã tồn tại! Vui lòng nhập tên khác!");
-			}
-			
-			if(phone != null && phone.trim() != "" && !ValidInput.isValidPhoneNumber(phone)) {
-				req.setAttribute("error", "Số điện thoại phải là số hoặc chứa 1 đến 15 chữ số!");
 			}
 
 			// foward lại form nếu lỗi
