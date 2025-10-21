@@ -52,7 +52,7 @@
 					</div>
 					<div class="col col-stats ms-3 ms-sm-0">
 						<div class="numbers">
-							<p class="card-category">Khách hàng mới tháng này</p>
+							<p class="card-category">Khách hàng mới</p>
 							<h4 class="card-title">${newCustomers}</h4>
 						</div>
 					</div>

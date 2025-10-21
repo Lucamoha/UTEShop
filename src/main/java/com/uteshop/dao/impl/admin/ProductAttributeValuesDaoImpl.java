@@ -6,8 +6,6 @@ import com.uteshop.configs.JPAConfigs;
 import com.uteshop.dao.AbstractDao;
 import com.uteshop.dao.admin.IProductAttributeValuesDao;
 import com.uteshop.entity.catalog.ProductAttributeValues;
-import com.uteshop.entity.catalog.ProductVariants;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
@@ -69,7 +67,7 @@ public class ProductAttributeValuesDaoImpl extends AbstractDao<ProductAttributeV
 	
 	@Override
 	public void update(ProductAttributeValues productAttributeValue) {
-		this.update(productAttributeValue);
+		super.update(productAttributeValue);
 	}
 
 	@Override

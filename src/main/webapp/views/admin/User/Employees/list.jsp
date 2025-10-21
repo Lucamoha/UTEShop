@@ -5,7 +5,7 @@
 <section class="row">
     <div class="col mt-4">
         <div class="card">
-            <div class="card-header">DANH SÁCH NGƯỜI DÙNG</div>
+            <div class="card-header bg-dark text-white">Danh Sách Quản Lý</div>
             <div class="card-body">
 
                 <!-- Hiển thị thông báo -->
@@ -16,38 +16,34 @@
                 </c:if>
 
                 <div class="table-responsive">
-                    <a href="${pageContext.request.contextPath}/admin/User/Users/add"
-                       class="btn btn-dark mb-2">Thêm Người Dùng</a>
-                    <a href="${pageContext.request.contextPath}/admin/User/Employees/list"
-                       class="btn btn-secondary mb-2 ml-3">Nhân Viên</a>
+                    <a href="${pageContext.request.contextPath}/admin/User/Employees/add"
+                       class="btn btn-dark mb-2">Thêm Quản Lý</a>
+                    <a href="${pageContext.request.contextPath}/admin/User/Users/list"
+                       class="btn btn-secondary mb-2 ml-3">Người Dùng</a>
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <!-- <th>Id</th> -->
                             <th>Họ Tên</th>
                             <th>Email</th>
                             <th>Số Điện Thoại</th>
-                            <th>Vai Trò Người Dùng</th>
-                            <!-- <th>Created At</th>
-                            <th>Update dAt</th> -->
+                            <th>Vai Trò</th>
                             <th>Hành Động</th>
                         </tr>
                         </thead>
                         <tbody>
                         <c:forEach items="${listUser}" var="item">
                             <tr>
-                                    <%-- <td>${item.id}</td> --%>
                                 <td>${item.fullName}</td>
                                 <td>${item.email}</td>
                                 <td>${item.phone}</td>
-                                <td>${item.userRole}</td>
-                                    <%-- <td>${item.createdAt}</td>
-                                    <td>${item.updatedAt}</td> --%>
-                                <td><a
-                                        href="${pageContext.request.contextPath}/admin/User/Users/view?id=${item.id}"
-                                        class="btn btn-outline-info"><i class="fa fa-info"></i></a> <a
-                                        href="${pageContext.request.contextPath}/admin/User/Users/edit?id=${item.id}"
-                                        class="btn btn-outline-warning"><i class="fa fa-edit"></i></a>
+                                <td>${item.userRole == 'MANAGER' ? 'Quản Lý' : 'Không xác định'}</td>
+                                <td>
+                                    <a href="${pageContext.request.contextPath}/admin/User/Employees/view?id=${item.id}"
+                                       class="btn btn-outline-info"><i class="fa fa-info"></i> Xem</a>
+                                    <a href="${pageContext.request.contextPath}/admin/User/Employees/edit?id=${item.id}"
+                                       class="btn btn-outline-warning"><i class="fa fa-edit"></i> Sửa</a>
+                                    <a href="${pageContext.request.contextPath}/admin/User/Employees/delete?id=${item.id}"
+                                       class="btn btn-outline-danger" onclick="return confirm('Xóa?')"><i class="fa fa-trash"></i> Xóa</a>
                                 </td>
                             </tr>
                         </c:forEach>

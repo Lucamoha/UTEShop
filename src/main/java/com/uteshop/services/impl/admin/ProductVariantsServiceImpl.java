@@ -61,4 +61,9 @@ public class ProductVariantsServiceImpl implements IProductsVariantsService {
 	public void update(ProductVariants variant) {
 		productVariantsDao.update(variant);
 	}
+
+	@Override
+	public void delete(int id) {
+		productVariantsDao.delete(id);
+	}
 }

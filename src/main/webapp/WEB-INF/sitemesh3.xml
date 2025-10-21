@@ -12,4 +12,6 @@
 	<mapping path="/reset-password" exclude="true"/>
 	<mapping path="/product-compare" exclude="true"/>
 	<mapping path="/api*" exclude="true" />
+    <mapping path="/admin/Review/Reviews/export" exclude="true"/>
+
 </sitemesh>

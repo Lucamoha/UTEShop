@@ -181,52 +181,51 @@
     </div>
 
     <!-- Phân trang -->
+    <c:if test="${not empty pr && pr.total > pr.size}">
       <div class="card-footer">
-        <c:if test="${not empty pr && pr.total > pr.size}">
-          <%
-            com.uteshop.dao.manager.common.PageResult<?> pageRes =
-                    (com.uteshop.dao.manager.common.PageResult<?>) request.getAttribute("result");
-            int pageNow = pageRes.getPage();
-            int sizeNow = pageRes.getSize();
-            long totalPages = (pageRes.getTotal() + sizeNow - 1) / sizeNow;
-          %>
-          <nav>
-            <ul class="pagination mb-0">
-              <li class="page-item <%= pageNow<=1?"disabled":"" %>">
-                <a class="page-link"
-                   href="?q=${fn:escapeXml(q)}&category=${category}&size=${size}&sort=${curSort}&dir=${curDir}&page=<%=pageNow-1%>">«</a>
-              </li>
-              <%
-                int tp = (int) totalPages;
-                int start = Math.max(1, pageNow-2);
-                int end = Math.min(tp, pageNow+2);
-                for (int i=start; i<=end; i++) {
-              %>
-              <li class="page-item <%= i==pageNow?"active":"" %>">
-                <a class="page-link"
-                   href="?q=${fn:escapeXml(q)}&category=${category}&size=${size}&sort=${curSort}&dir=${curDir}&page=<%=i%>"><%=i%></a>
-              </li>
-              <% } %>
-              <li class="page-item <%= pageNow>=totalPages?"disabled":"" %>">
-                <a class="page-link"
-                   href="?q=${fn:escapeXml(q)}&category=${category}&size=${size}&sort=${curSort}&dir=${curDir}&page=<%=pageNow+1%>">»</a>
-              </li>
-            </ul>
-            <small class="text-muted ms-2">
-              Trang <%=pageNow%>/<%=totalPages%> • Tổng <%=pageRes.getTotal()%> biến thể
-            </small>
-          </nav>
-          <hr>
-        </c:if>
-        <div class="d-flex align-items-center justify-content-between mt-2">
-          <div></div>
-          <div>
-            <button id="btnExportExcel" type="button" class="btn btn-success">
-              Xuất tồn ra Excel
-            </button>
+        <%
+          com.uteshop.dao.manager.common.PageResult<?> pageRes =
+                  (com.uteshop.dao.manager.common.PageResult<?>) request.getAttribute("result");
+          int pageNow = pageRes.getPage();
+          int sizeNow = pageRes.getSize();
+          long totalPages = (pageRes.getTotal() + sizeNow - 1) / sizeNow;
+        %>
+        <nav>
+          <ul class="pagination mb-0">
+            <li class="page-item <%= pageNow<=1?"disabled":"" %>">
+              <a class="page-link"
+                 href="?q=${fn:escapeXml(q)}&category=${category}&size=${size}&sort=${curSort}&dir=${curDir}&page=<%=pageNow-1%>">«</a>
+            </li>
+            <%
+              int tp = (int) totalPages;
+              int start = Math.max(1, pageNow-2);
+              int end = Math.min(tp, pageNow+2);
+              for (int i=start; i<=end; i++) {
+            %>
+            <li class="page-item <%= i==pageNow?"active":"" %>">
+              <a class="page-link"
+                 href="?q=${fn:escapeXml(q)}&category=${category}&size=${size}&sort=${curSort}&dir=${curDir}&page=<%=i%>"><%=i%></a>
+            </li>
+            <% } %>
+            <li class="page-item <%= pageNow>=totalPages?"disabled":"" %>">
+              <a class="page-link"
+                 href="?q=${fn:escapeXml(q)}&category=${category}&size=${size}&sort=${curSort}&dir=${curDir}&page=<%=pageNow+1%>">»</a>
+            </li>
+          </ul>
+          <small class="text-muted ms-2">
+            Trang <%=pageNow%>/<%=totalPages%> • Tổng <%=pageRes.getTotal()%> biến thể
+          </small>
+          <div class="d-flex align-items-center justify-content-between mt-2">
+            <div></div>
+            <div>
+              <button id="btnExportExcel" type="button" class="btn btn-success">
+                Xuất tồn ra Excel
+              </button>
+            </div>
           </div>
-        </div>
+        </nav>
       </div>
+    </c:if>
   </div>
 </div>
 
@@ -283,13 +282,13 @@
         if (s.charCodeAt(0) === 0xFEFF) s = s.slice(1);
 
         const parts = s.split(SEP).filter(Boolean);
-        if (parts.length !== 2) { errors.push('Dòng ' + lineNum + ': sai định dạng'); return; }
+        if (parts.length !== 2) { errors.push(`Dòng ${lineNum}: sai định dạng`); return; }
 
         const sku = String(parts[0]).trim();
         const deltaStr = String(parts[1]).trim();
 
-        if (!/^[A-Za-z0-9._-]{1,80}$/.test(sku)) { errors.push('Dòng ' + lineNum + ': SKU không hợp lệ'); return; }
-        if (!/^[+-]?\d+$/.test(deltaStr)) { errors.push('Dòng ' + lineNum + ': số lượng không hợp lệ'); return; }
+        if (!/^[A-Za-z0-9._-]{1,80}$/.test(sku)) { errors.push(`Dòng ${lineNum}: SKU không hợp lệ`); return; }
+        if (!/^[+-]?\d+$/.test(deltaStr)) { errors.push(`Dòng ${lineNum}: số lượng không hợp lệ`); return; }
 
         const delta = parseInt(deltaStr, 10);
         items.push({ sku, delta, _line: lineNum });
@@ -311,7 +310,7 @@
         body: JSON.stringify(data)
       });
       const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error || 'HTTP: ' + res.status);
+      if (!res.ok || !json.ok) throw new Error(json.error || `HTTP ${res.status}`);
       return json;
     }
 
@@ -411,8 +410,8 @@
 
           if (deltaNum === 0) { continue; } // Bỏ qua dòng có delta bằng 0
           if (!sku) { errors.push(`Dòng ${i+1}: thiếu SKU`); continue; }
-          if (!/^[A-Za-z0-9._-]{1,80}$/.test(sku)) { errors.push('Dòng ' + i+1 + ': SKU không hợp lệ'); continue; }
-          if (!/^[+-]?\d+$/.test(deltaStr)) { errors.push('Dòng ' + i+1 + ': Delta không hợp lệ'); continue; }
+          if (!/^[A-Za-z0-9._-]{1,80}$/.test(sku)) { errors.push(`Dòng ${i+1}: SKU không hợp lệ`); continue; }
+          if (!/^[+-]?\d+$/.test(deltaStr)) { errors.push(`Dòng ${i+1}: Delta không hợp lệ`); continue; }
 
           lines.push(sku + `|` + deltaStr);
         }

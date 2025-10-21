@@ -130,7 +130,7 @@
 		<!-- Kaiadmin DEMO methods, don't include it in your project! -->
 		<script
 			src="${pageContext.request.contextPath}/templates/admin/js/setting-demo.js"></script>
-		<script
-			src="${pageContext.request.contextPath}/templates/admin/js/demo.js"></script>
+		<%-- <script
+			src="${pageContext.request.contextPath}/templates/admin/js/demo.js"></script> --%>
 </body>
 </html>
