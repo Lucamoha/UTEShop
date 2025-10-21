@@ -5,10 +5,6 @@
 	<div class="sidebar-logo">
 		<!-- Logo Header -->
 		<div class="logo-header" data-background-color="dark">
-			<a href="index.html" class="logo"> <img
-				src="${pageContext.request.contextPath}/templates/admin/img/kaiadmin/logo_light.svg"
-				alt="navbar brand" class="navbar-brand" height="20" />
-			</a>
 			<div class="nav-toggle">
 				<button class="btn btn-toggle toggle-sidebar">
 					<i class="gg-menu-right"></i>
@@ -34,10 +30,10 @@
 				<li class="nav-section"><span class="sidebar-mini-icon">
 						<i class="fa fa-ellipsis-h"></i>
 				</span>
-					<h4 class="text-section">Components</h4></li>
+					<h4 class="text-section">Thành phần</h4></li>
 				<li class="nav-item"><a data-bs-toggle="collapse" href="#base">
-						<i class="fas fa-layer-group"></i>
-						<p>User</p> <span class="caret"></span>
+						<i class="bi bi-people"></i>
+						<p>Người dùng</p> <span class="caret"></span>
 				</a>
 					<div class="collapse" id="base">
 						<ul class="nav nav-collapse">
@@ -71,8 +67,8 @@
 						</ul>
 					</div></li>
 				<li class="nav-item"><a data-bs-toggle="collapse"
-					href="#sidebarLayouts"> <i class="fas fa-th-list"></i>
-						<p>Catalog</p> <span class="caret"></span>
+					href="#sidebarLayouts"> <i class="bi bi-box-seam me-2"></i>
+						<p>Sản phẩm</p> <span class="caret"></span>
 				</a>
 					<div class="collapse" id="sidebarLayouts">
 						<ul class="nav nav-collapse">
@@ -96,6 +92,14 @@
 								href="${pageContext.request.contextPath}/admin/Catalog/Attributes/searchpaginated">
 									<span class="sub-item">Quản Lý Thông Số Kỹ Thuật</span>
 							</a></li>
+						</ul>
+					</div></li>
+				<li class="nav-item"><a data-bs-toggle="collapse"
+					href="#sidebarLayouts"> <i class="fas fa-store"></i>
+						<p>Chi nhánh</p> <span class="caret"></span>
+				</a>
+					<div class="collapse" id="sidebarLayouts">
+						<ul class="nav nav-collapse">
 							<li><a
 								href="${pageContext.request.contextPath}/admin/Branch/Branches/searchpaginated">
 									<span class="sub-item">Quản Lý Chi Nhánh</span>
