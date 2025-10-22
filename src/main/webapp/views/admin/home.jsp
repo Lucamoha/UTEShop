@@ -52,7 +52,7 @@
 					</div>
 					<div class="col col-stats ms-3 ms-sm-0">
 						<div class="numbers">
-							<p class="card-category">Khách hàng mới</p>
+							<p class="card-category">Khách hàng mới tháng này</p>
 							<h4 class="card-title">${newCustomers}</h4>
 						</div>
 					</div>
@@ -236,14 +236,42 @@
 					tension : 0.3
 				} ]
 			},
-			options : {
+			/* options : {
 				responsive : true,
 				scales : {
 					y : {
 						beginAtZero : true
 					}
 				}
+			} */
+			
+			options: {
+			    responsive: true,
+			    scales: {
+			        y: {
+			            beginAtZero: true,
+			            ticks: {
+			                callback: function(value) {
+			                    const num = Number(value);
+			                    if (isNaN(num)) return value;
+			                    return new Intl.NumberFormat('vi-VN').format(num) + ' ₫';
+			                }
+			            }
+			        }
+			    },
+			    plugins: {
+			        tooltip: {
+			            callbacks: {
+			                label: function(context) {
+			                    const value = Number(context.parsed.y);
+			                    if (isNaN(value)) return '';
+			                    return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN').format(value) + ' ₫';
+			                }
+			            }
+			        }
+			    }
 			}
+
 		});
 
 		// BIỂU ĐỒ DOANH THU THEO NGÀY
@@ -261,13 +289,39 @@
 					tension : 0.3
 				} ]
 			},
-			options : {
+			/* options : {
 				responsive : true,
 				scales : {
 					y : {
 						beginAtZero : true
 					}
 				}
+			} */
+			options: {
+			    responsive: true,
+			    scales: {
+			        y: {
+			            beginAtZero: true,
+			            ticks: {
+			                callback: function(value) {
+			                    const num = Number(value);
+			                    if (isNaN(num)) return value;
+			                    return new Intl.NumberFormat('vi-VN').format(num) + ' ₫';
+			                }
+			            }
+			        }
+			    },
+			    plugins: {
+			        tooltip: {
+			            callbacks: {
+			                label: function(context) {
+			                    const value = Number(context.parsed.y);
+			                    if (isNaN(value)) return '';
+			                    return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN').format(value) + ' ₫';
+			                }
+			            }
+			        }
+			    }
 			}
 		});
 	});

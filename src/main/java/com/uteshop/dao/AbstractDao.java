@@ -90,7 +90,13 @@ public abstract class AbstractDao<T> {
 		} catch (Exception e) {
 			if (trans.isActive())
 				trans.rollback();
-			throw new RuntimeException("Không thể xóa vì có dữ liệu đang dùng ở nơi khác!", e);
+			Throwable cause = e.getCause();
+	        if (cause instanceof org.hibernate.exception.ConstraintViolationException
+	            || (cause != null && cause.getMessage() != null && cause.getMessage().contains("constraint"))) {
+	            throw new RuntimeException("FOREIGN_KEY_CONSTRAINT");
+	        }
+
+	        throw new RuntimeException(e);
 		} finally {
 			enma.close();
 		}

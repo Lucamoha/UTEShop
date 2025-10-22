@@ -96,7 +96,7 @@
 					Trở lại</a> <a
 					href="${pageContext.request.contextPath}/admin/Branch/Branches/saveOrUpdate?id=${detailModel.branch.id}"
 					class="btn btn-warning"><i class="bi bi-pencil-square"></i>
-					Chỉnh sửa</a> <a href="javascript:void(0)" class="btn btn-danger"
+					Sửa</a> <a href="javascript:void(0)" class="btn btn-danger"
 					data-id="${detailModel.branch.id}"
 					data-name="${detailModel.branch.name}"
 					onclick="showConfirmation(this)"> <i class="bi bi-trash"></i>

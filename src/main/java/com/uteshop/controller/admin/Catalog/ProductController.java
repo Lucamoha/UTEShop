@@ -10,13 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.hibernate.exception.ConstraintViolationException;
+
 import com.google.gson.Gson;
 import com.uteshop.dto.admin.OptionValueDTO;
 import com.uteshop.dto.admin.ProductAttributeDisplayModel;
 import com.uteshop.dto.admin.ProductVariantDetailsModel;
 import com.uteshop.dto.admin.ProductVariantDisplayModel;
 import com.uteshop.dto.admin.ProductsDetailModel;
-import com.uteshop.entity.branch.Branches;
 import com.uteshop.entity.catalog.Attributes;
 import com.uteshop.entity.catalog.Categories;
 import com.uteshop.entity.catalog.OptionTypes;
@@ -233,12 +234,15 @@ public class ProductController extends HttpServlet {
 				req.getSession().setAttribute("errorMessage", "ID sản phẩm không hợp lệ!");
 			} catch (EntityNotFoundException e) {
 				req.getSession().setAttribute("errorMessage", "Sản phẩm không tồn tại hoặc đã bị xóa!");
-			} catch (PersistenceException e) {
-				req.getSession().setAttribute("errorMessage",
-						"Không thể xóa sản phẩm vì dữ liệu đang được sử dụng ở nơi khác.");
-			} catch (Exception e) {
-				e.printStackTrace();
-				req.getSession().setAttribute("errorMessage", "Đã xảy ra lỗi không mong muốn khi xóa sản phẩm!");
+			} catch (RuntimeException e) {
+			    if ("FOREIGN_KEY_CONSTRAINT".equals(e.getMessage())) {
+			        req.getSession().setAttribute("errorMessage",
+			            "Không thể xóa sản phẩm vì dữ liệu đang được sử dụng ở nơi khác!");
+			    } else {
+			        e.printStackTrace();
+			        req.getSession().setAttribute("errorMessage",
+			            "Đã xảy ra lỗi không mong muốn khi xóa sản phẩm!");
+			    }
 			}
 			resp.sendRedirect(req.getContextPath() + "/admin/Catalog/Products/searchpaginated");
 		}
@@ -318,7 +322,7 @@ public class ProductController extends HttpServlet {
 					for (int i = 0; i < skusTmp.length; i++) {
 						ProductVariants pv = new ProductVariants();
 						pv.setSKU(skusTmp[i]);
-						pv.setPrice(new BigDecimal(pricesTmp[i]));
+						pv.setPrice(BigDecimal.valueOf(Integer.parseInt(pricesTmp[i])));
 						pv.setStatus(Boolean.parseBoolean(statusesTmp[i]));
 						tempVariants.add(pv);
 					}

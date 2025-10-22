@@ -70,7 +70,7 @@
 								<c:url value='/image' var="imageUrl">
 									<c:param name="fname" value="${img.imageUrl}" />
 								</c:url>
-								<td class="text-center"><img height="500" width="500"
+								<td class="text-center"><img height="300" width="300"
 									src="${pageContext.request.contextPath}/image?dir=&fname=${img.imageUrl}" />
 								</td>
 							</tr>
