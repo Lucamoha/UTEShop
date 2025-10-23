@@ -208,6 +208,11 @@
                         </a>
                     </li>
                     <li class="nav-item p-b-10">
+                        <a class="nav-link" data-toggle="tab" href="#specifications" role="tab">
+                            Thông số kỹ thuật
+                        </a>
+                    </li>
+                    <li class="nav-item p-b-10">
                         <a class="nav-link" data-toggle="tab" href="#reviews" role="tab">
                             Đánh giá (${reviewStats.totalReviews})
                         </a>
@@ -222,6 +227,37 @@
                             <p class="stext-102 cl6">
                                 ${product.description}
                             </p>
+                        </div>
+                    </div>
+
+                    <!-- Thông số kỹ thuật Tab -->
+                    <div class="tab-pane fade" id="specifications" role="tabpanel">
+                        <div class="how-pos2 p-lr-15-md">
+                            <c:choose>
+                                <c:when test="${empty productAttributes}">
+                                    <p class="stext-102 cl6 text-center p-t-20 p-b-20">
+                                        Chưa có thông số kỹ thuật cho sản phẩm này
+                                    </p>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" style="background: white;">
+                                            <tbody>
+                                                <c:forEach var="attr" items="${productAttributes}">
+                                                    <tr>
+                                                        <td class="stext-102 cl3" style="width: 40%; font-weight: 600; padding: 12px 15px;">
+                                                            ${attr.key}
+                                                        </td>
+                                                        <td class="stext-102 cl6" style="padding: 12px 15px;">
+                                                            ${attr.value}
+                                                        </td>
+                                                    </tr>
+                                                </c:forEach>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                     </div>
 
@@ -993,7 +1029,8 @@
         // GỬI REQUEST LÊN SERVER bằng Fetch API
         fetch('${pageContext.request.contextPath}/review/submit', {
             method: 'POST',
-            body: formData // FormData tự động set Content-Type: multipart/form-data
+            body: formData, // FormData tự động set Content-Type: multipart/form-data
+            credentials: 'same-origin' //  Gửi cookie (JWT token) cùng request
         })
         // Chuyển response thành JSON
         .then(response => response.json())

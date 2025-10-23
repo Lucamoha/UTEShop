@@ -39,6 +39,7 @@ public class JWTAuthenticationFilter implements Filter {
         "/cart",
         "/checkout",
         "/orders",
+        "/review/submit",
         "/api/manager",
         "/api/web"
     );
@@ -54,20 +55,10 @@ public class JWTAuthenticationFilter implements Filter {
 
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
-        
-        String contentType = req.getContentType();
-        // KIỂM TRA: Nếu đây là một request upload file, BỎ QUA TOÀN BỘ LOGIC CỦA FILTER NÀY
-        // và cho request đi thẳng đến servlet đích.
-        if (contentType != null && contentType.startsWith("multipart/form-data")) {
-            chain.doFilter(request, response);
-            return; // Dừng filter tại đây
-        }
 
         String requestURI = req.getRequestURI();
         String contextPath = req.getContextPath();
         String path = requestURI.substring(contextPath.length());
-       
-
 
         // Cho phép các URL public đi qua không cần kiểm tra
         if (isPublicUrl(path)) {
@@ -80,15 +71,19 @@ public class JWTAuthenticationFilter implements Filter {
             String token = JWTUtil.extractTokenFromRequest(req);
 
             if (token == null) {
-                // Kiểm tra nếu là AJAX request (cart APIs)
+                // Kiểm tra nếu là AJAX request (cart APIs, review APIs)
                 if (isAjaxRequest(req, path)) {
                     // Trả về JSON cho AJAX request
                     resp.setContentType("application/json;charset=UTF-8");
+                    resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     
                     // Different response format for different endpoints
                     if ("/cart/count".equals(path)) {
                         resp.getWriter().write("{\"count\": 0, \"needLogin\": true}");
-                    } else {
+                    } else if (path.startsWith("/review/")) {
+                    resp.getWriter().write("{\"success\": false, \"needLogin\": true, \"message\": \"Vui lòng đăng nhập để đánh giá sản phẩm\"}");
+                    }
+                    else{
                         resp.getWriter().write("{\"success\": false, \"needLogin\": true, \"message\": \"Vui lòng đăng nhập để sử dụng giỏ hàng\"}");
                     }
                     return;
@@ -132,7 +127,14 @@ public class JWTAuthenticationFilter implements Filter {
                 // Xóa token không hợp lệ
                 JWTUtil.removeTokenFromCookie(resp);
 
-                redirectToLogin(req, resp, "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại");
+                // Kiểm tra nếu là AJAX request
+                if (isAjaxRequest(req, path)) {
+                    resp.setContentType("application/json;charset=UTF-8");
+                    resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    resp.getWriter().write("{\"success\": false, \"needLogin\": true, \"message\": \"Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại\"}");
+                } else {
+                    redirectToLogin(req, resp, "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại");
+                }
                 return;
             }
         } else {
@@ -171,7 +173,7 @@ public class JWTAuthenticationFilter implements Filter {
 
     private boolean isAjaxRequest(HttpServletRequest req, String path) {
         // Check if it's an AJAX request based on:
-        // 1. Path pattern (cart APIs: /cart/add, /cart/count, /cart/update, /cart/remove, /cart/items, /cart/branches, /cart/addresses, /cart/stock)
+        // 1. Path pattern (cart APIs: /cart/add, /cart/count, /cart/update, /cart/remove, /cart/items, /cart/branches, /cart/addresses, /cart/stock, Review API: /review/submit)
         // 2. X-Requested-With header
         // 3. Accept header contains application/json
         
@@ -179,10 +181,11 @@ public class JWTAuthenticationFilter implements Filter {
         String accept = req.getHeader("Accept");
         
         boolean isCartApi = path.matches("/cart/(add|count|update|remove|items|branches|addresses|stock)");
+        boolean isReviewApi = path.startsWith("/review/");
         boolean hasAjaxHeader = "XMLHttpRequest".equals(requestedWith);
         boolean acceptsJson = accept != null && accept.contains("application/json");
         
-        return isCartApi || hasAjaxHeader || acceptsJson;
+        return isCartApi || isReviewApi || hasAjaxHeader || acceptsJson;
     }
 
     private void redirectToLogin(HttpServletRequest req, HttpServletResponse resp, String message)

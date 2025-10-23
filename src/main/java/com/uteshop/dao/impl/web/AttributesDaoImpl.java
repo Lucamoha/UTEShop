@@ -116,4 +116,59 @@ public class AttributesDaoImpl implements IAttributesDao {
             em.close();
         }
     }
+
+    @Override
+    public Map<String, String> getProductAttributes(int productId) {
+        EntityManager em = JPAConfigs.getEntityManager();
+        try {
+            String jpql = """
+                SELECT a.Name, a.Unit, a.DataType, pav.ValueText, pav.ValueNumber
+                FROM ProductAttributeValues pav
+                JOIN pav.attribute a
+                WHERE pav.product.Id = :productId
+                ORDER BY a.Name
+                """;
+
+            TypedQuery<Object[]> query = em.createQuery(jpql, Object[].class);
+            query.setParameter("productId", productId);
+            List<Object[]> results = query.getResultList();
+
+            Map<String, String> attributes = new HashMap<>();
+
+            for (Object[] row : results) {
+                String attrName = (String) row[0];
+                String unit = (String) row[1];
+                Integer dataType = (Integer) row[2];
+                String valueText = (String) row[3];
+                java.math.BigDecimal valueNumber = (java.math.BigDecimal) row[4];
+
+                String displayValue;
+
+                // Xử lý theo dataType
+                if (dataType == 1) { // Text
+                    displayValue = valueText != null ? valueText : "N/A";
+                } else if (dataType == 2) { // Number
+                    if (valueNumber != null) {
+                        displayValue = valueNumber.stripTrailingZeros().toPlainString();
+                        
+                        if (unit != null && !unit.isEmpty()) {
+                            displayValue += " " + unit;
+                        }
+                    } else {
+                        displayValue = "N/A";
+                    }
+                } else if (dataType == 3) { // Boolean
+                    displayValue = valueText != null ? valueText : "N/A";
+                } else {
+                    displayValue = "N/A";
+                }
+
+                attributes.put(attrName, displayValue);
+            }
+
+            return attributes;
+        } finally {
+            em.close();
+        }
+    }
 }

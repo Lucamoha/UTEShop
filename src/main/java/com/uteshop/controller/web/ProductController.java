@@ -5,16 +5,8 @@ import com.uteshop.entity.auth.Users;
 import com.uteshop.entity.catalog.Categories;
 import com.uteshop.entity.catalog.Products;
 import com.uteshop.entity.engagement.Reviews;
-import com.uteshop.services.impl.web.CategoriesServiceImpl;
-import com.uteshop.services.impl.web.OptionsServiceImpl;
-import com.uteshop.services.impl.web.ProductsServiceImpl;
-import com.uteshop.services.impl.web.ReviewsServiceImpl;
-import com.uteshop.services.impl.web.UsersServiceImpl;
-import com.uteshop.services.web.ICategoriesService;
-import com.uteshop.services.web.IOptionsService;
-import com.uteshop.services.web.IProductsService;
-import com.uteshop.services.web.IReviewsService;
-import com.uteshop.services.web.IUsersService;
+import com.uteshop.services.impl.web.*;
+import com.uteshop.services.web.*;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -35,6 +27,7 @@ public class ProductController extends HttpServlet {
     ICategoriesService categoriesService = new CategoriesServiceImpl();
     IReviewsService reviewsService = new ReviewsServiceImpl();
     IUsersService usersService = new UsersServiceImpl();
+    IAttributesService attributesService = new AttributesServiceImpl();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -91,6 +84,9 @@ public class ProductController extends HttpServlet {
                     }
                 }
 
+                // Lấy thông số kỹ thuật
+                Map<String, String> productAttributes = attributesService.getProductAttributes(productId);
+
                 req.setAttribute("parentCategories", parents);
                 req.setAttribute("product", product);
                 req.setAttribute("groupedOptions", groupedOptions); // Thay options bằng groupedOptions
@@ -102,6 +98,7 @@ public class ProductController extends HttpServlet {
                 req.setAttribute("canReview", canReview);
                 req.setAttribute("hasPurchased", hasPurchased);
                 req.setAttribute("hasReviewed", hasReviewed);
+                req.setAttribute("productAttributes", productAttributes);
 
                 req.getRequestDispatcher("/views/web/productDetail.jsp").forward(req, resp);
 

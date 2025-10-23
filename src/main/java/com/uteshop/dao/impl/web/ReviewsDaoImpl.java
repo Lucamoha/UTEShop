@@ -154,12 +154,12 @@ public class ReviewsDaoImpl extends AbstractDao<Reviews> implements IReviewsDao 
         EntityManager em = JPAConfigs.getEntityManager();
         try {
             // Kiểm tra xem user đã mua sản phẩm này chưa
-            // OrderStatus = 2 (Hoàn tất) và PaymentStatus = 1 (Đã thanh toán)
+            // OrderStatus = 3 (Nhận hàng) và PaymentStatus = 1 (Đã thanh toán)
             String jpql = "SELECT COUNT(oi) FROM OrderItems oi " +
                     "JOIN oi.order o " +
                     "WHERE o.user.Id = :userId " +
                     "AND oi.product.Id = :productId " +
-                    "AND o.OrderStatus = 2 " +
+                    "AND o.OrderStatus = 3 " +
                     "AND o.PaymentStatus = 1";
 
             TypedQuery<Long> query = em.createQuery(jpql, Long.class);

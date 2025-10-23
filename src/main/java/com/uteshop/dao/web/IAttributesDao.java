@@ -36,4 +36,11 @@ public interface IAttributesDao {
      * @return List of distinct number values
      */
     List<Double> getPossibleNumberValues(Integer attributeId, List<Integer> categoryIds);
+
+    /**
+     * Lấy danh sách attributes và giá trị của một sản phẩm
+     * @param productId ID của sản phẩm
+     * @return Map với key là tên attribute, value là giá trị
+     */
+    Map<String, String> getProductAttributes(int productId);
 }
