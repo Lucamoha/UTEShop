@@ -171,10 +171,6 @@
 								</c:forEach>
 							</tbody>
 						</table>
-						<!-- <button type="button" class="btn btn-outline-success"
-							id="add-attribute-btn">
-							<i class="bi bi-plus-circle"></i> Thêm thông số
-						</button> -->
 					</div>
 
 					<!-- Biến thể -->
@@ -195,40 +191,76 @@
 							</thead>
 							<tbody id="variants-tbody">
 								<c:forEach var="v" items="${variantList}" varStatus="loop">
-									<tr data-variant-id="${v.id}">
-									
-										<td><input type="hidden" name="existingVariants.id"
-											value="${v.id}" /> <input type="text"
-											name="existingVariants.sku" value="${v.sku}"
-											class="form-control form-control-sm" /></td>
-											
-										<td><input type="number" step="1" name="existingVariants.price"
-											value="${v.price.intValue()}" min="1000"
-											class="form-control form-control-sm" /></td>
+									<c:choose>
+										<c:when test="${v.id > 0}">
+											<!-- Existing variant -->
+											<tr data-variant-id="${v.id}">
+												<td><input type="hidden" name="existingVariants.id"
+													value="${v.id}" /> <input type="text"
+													name="existingVariants.sku" value="${v.sku}"
+													class="form-control form-control-sm" /></td>
 
+												<td><input type="number" step="1"
+													name="existingVariants.price" value="${v.price.intValue()}"
+													min="1000" class="form-control form-control-sm" /></td>
 
-										<td><select name="existingVariants.status"
-											class="form-select form-select-sm">
-												<option value="true" ${v.status ? 'selected' : ''}>Đang
-													bán</option>
-												<option value="false" ${!v.status ? 'selected' : ''}>Ngừng
-													bán</option>
-										</select></td>
+												<td><select name="existingVariants.status"
+													class="form-select form-select-sm">
+														<option value="true" ${v.status ? 'selected' : ''}>Đang bán</option>
+														<option value="false" ${!v.status ? 'selected' : ''}>Ngừng bán</option>
+												</select></td>
 
-										<!-- Tùy chọn -->
-										<td><c:forEach var="opt" items="${v.options}">
-												<span class="badge bg-secondary">${opt}</span>
-												<br />
-											</c:forEach></td>
+												<td><c:forEach var="opt" items="${v.options}">
+														<span class="badge bg-secondary">${opt}</span>
+														<br />
+													</c:forEach> 
+													<c:forEach var="optVId" items="${v.optionValueIds}">
+														<input type="hidden"
+															name="existingVariants.optionValueIds[]"
+															value="${optVId}" />						
+													</c:forEach></td>
 
-										<!-- Thao tác -->
-										<td>
-											<button type="button"
-												class="btn btn-outline-danger btn-sm remove-variant">
-												<i class="bi bi-trash"></i> Xóa
-											</button>
-										</td>
-									</tr>
+												<td>
+													<button type="button"
+														class="btn btn-outline-danger btn-sm remove-variant">
+														<i class="bi bi-trash"></i> Xóa
+													</button>
+												</td>
+											</tr>
+										</c:when>
+										<c:otherwise>
+											<!-- New variant (from validation error) -->
+											<tr>
+												<td><input type="text"
+													name="newVariants.sku" value="${v.sku}"
+													class="form-control form-control-sm" /></td>
+
+												<td><input type="number" step="1"
+													name="newVariants.price" value="${v.price.intValue()}"
+													min="1000" class="form-control form-control-sm" /></td>
+
+												<td><select name="newVariants.status"
+													class="form-select form-select-sm">
+														<option value="true" ${v.status ? 'selected' : ''}>Đang bán</option>
+														<option value="false" ${!v.status ? 'selected' : ''}>Ngừng bán</option>
+												</select></td>
+
+												<td><c:forEach var="opt" items="${v.options}">
+														<span class="badge bg-success">${opt}</span>
+														<br />
+													</c:forEach> 
+													<c:forEach var="optVId" items="${v.optionValueIds}">
+														<input type="hidden"
+															name="newVariants.optionValueIds[]"
+															value="${optVId}" />						
+													</c:forEach></td>
+
+												<td>
+													<span class="badge bg-info">Mới</span>
+												</td>
+											</tr>
+										</c:otherwise>
+									</c:choose>
 								</c:forEach>
 							</tbody>
 						</table>
@@ -679,10 +711,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Cartesian product (tổ hợp tất cả biến thể)
   function cartesian(arr) {
-    return arr.reduce((a, b) =>
-      a.flatMap(d => b.map(e => [d, e].flat()))
-    );
-  }
+	  if (arr.length === 0) return [];
+	  if (arr.length === 1) return arr[0].map(v => [v]); //xử lý trường hợp chỉ có 1 option type
+	  return arr.reduce((a, b) =>
+	    a.flatMap(d => b.map(e => [d, e].flat()))
+	  );
+	}
 });
 </script>
 

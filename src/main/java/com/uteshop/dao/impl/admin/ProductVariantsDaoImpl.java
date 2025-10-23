@@ -97,6 +97,35 @@ public class ProductVariantsDaoImpl extends AbstractDao<ProductVariants> impleme
 	}
 
 	@Override
+	public List<ProductVariantDetailsModel> getVariantDetailsById(int variantId) {
+		EntityManager enma = JPAConfigs.getEntityManager();
+		try {
+			String jpql = """
+						SELECT new ProductVariantDetailsModel(
+					        pv.Id,
+					        pv.product.Id,
+					        pv.SKU,
+					        pv.Price,
+					        pv.Status,
+					        pv.CreatedAt,
+					        pv.UpdatedAt,
+					        vo.optionType.Id,
+					        vo.optionType.Code,
+					        vo.optionValue.Id,
+					        vo.optionValue.Value
+						)
+						FROM ProductVariants pv
+						JOIN pv.options vo
+						WHERE pv.Id = :variantId
+					""";
+			return enma.createQuery(jpql, ProductVariantDetailsModel.class).setParameter("variantId", variantId)
+					.getResultList();
+		} finally {
+			enma.close();
+		}
+	}
+
+	@Override
 	public int countVariantsByProductId(int productId) {
 		EntityManager enma = JPAConfigs.getEntityManager();
 		try {

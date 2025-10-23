@@ -10,6 +10,7 @@ public interface IProductVariantsDao {
 	long getLowStockCount(int threshold);
 	List<Object[]> getLowStockProducts(int limit, int threshold);
 	List<ProductVariantDetailsModel> getVariantsByProductId(int productId);
+	List<ProductVariantDetailsModel> getVariantDetailsById(int variantId);
 	void deleteAllByProductId(Integer productId);
 	ProductVariants findById(int variantId);
 	ProductVariants findBySKU(String sku);

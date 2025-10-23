@@ -125,46 +125,50 @@
 										<!-- Hiển thị attributes với giá trị đã nhập khi có lỗi validation -->
 										<c:forEach var="attr" items="${categoryAttributes}">
 											<div class="mb-3">
-												<label class="form-label fw-bold">
-													${attr.name}
-													<c:if test="${not empty attr.unit}"> (${attr.unit})</c:if>
-												</label>
-												<input type="hidden" name="attributeIds" value="${attr.id}" />
-												
+												<label class="form-label fw-bold"> ${attr.name} <c:if
+														test="${not empty attr.unit}"> (${attr.unit})</c:if>
+												</label> <input type="hidden" name="attributeIds" value="${attr.id}" />
+
 												<c:set var="attrValue" value="" />
 												<c:forEach var="pAttr" items="${productAttributes}">
 													<c:if test="${pAttr.attributeId == attr.id}">
 														<c:set var="attrValue" value="${pAttr.valueText}" />
 													</c:if>
 												</c:forEach>
-												
+
 												<c:choose>
 													<c:when test="${attr.dataType == 2}">
-														<input type="number" name="attributeValues" class="form-control" 
-															placeholder="Nhập giá trị số" step="0.01" value="${attrValue}" />
+														<input type="number" name="attributeValues"
+															class="form-control" placeholder="Nhập giá trị số"
+															step="0.01" value="${attrValue}" />
 													</c:when>
 													<c:when test="${attr.dataType == 3}">
 														<select name="attributeValues" class="form-select">
 															<option value="">-- Chọn --</option>
-															<option value="true" ${attrValue == 'true' ? 'selected' : ''}>Có</option>
-															<option value="false" ${attrValue == 'false' ? 'selected' : ''}>Không</option>
+															<option value="true"
+																${attrValue == 'true' ? 'selected' : ''}>Có</option>
+															<option value="false"
+																${attrValue == 'false' ? 'selected' : ''}>Không</option>
 														</select>
 													</c:when>
 													<c:otherwise>
-														<input type="text" name="attributeValues" class="form-control" 
-															placeholder="Nhập giá trị" value="${attrValue}" />
+														<input type="text" name="attributeValues"
+															class="form-control" placeholder="Nhập giá trị"
+															value="${attrValue}" />
 													</c:otherwise>
 												</c:choose>
 											</div>
 										</c:forEach>
 									</c:when>
 									<c:otherwise>
-										<p class="text-muted mb-0">Vui lòng chọn danh mục để hiển thị thuộc tính.</p>
+										<p class="text-muted mb-0">Vui lòng chọn danh mục để hiển
+											thị thuộc tính.</p>
 									</c:otherwise>
 								</c:choose>
 							</div>
 						</div>
-						<small class="text-muted fst-italic">* Các thuộc tính sẽ được tải tự động khi chọn danh mục</small>
+						<small class="text-muted fst-italic">* Các thuộc tính sẽ
+							được tải tự động khi chọn danh mục</small>
 					</div>
 
 					<div class="mb-3">
@@ -195,6 +199,12 @@
 										<table class="table table-bordered align-middle">
 											<thead class="table-dark">
 												<tr>
+													<!-- Hiển thị cột options động -->
+													<c:if test="${not empty variantList[0].options}">
+														<c:forEach begin="1" end="${variantList[0].options.size()}" var="idx">
+															<th>TÙY CHỌN ${idx}</th>
+														</c:forEach>
+													</c:if>
 													<th>SKU</th>
 													<th>GIÁ</th>
 													<th>TRẠNG THÁI</th>
@@ -203,24 +213,27 @@
 											<tbody>
 												<c:forEach var="variant" items="${variantList}">
 													<tr>
-														<td>
-															<input type="text" name="newVariants.sku" 
-																class="form-control form-control-sm" 
-																value="${variant.sku}" required>
-														</td>
-														<td>
-															<input type="number" name="newVariants.price" 
-																class="form-control form-control-sm" 
-																value="${variant.price}" 
-																min="0" step="0.01" required>
+														<!-- Hiển thị giá trị options -->
+														<c:forEach var="optionValue" items="${variant.options}">
+															<td>${optionValue}</td>
+														</c:forEach>
+														
+														<td><input type="text" name="newVariants.sku"
+															class="form-control form-control-sm"
+															value="${variant.sku}" required></td>
+														<td><input type="number" name="newVariants.price"
+															class="form-control form-control-sm"
+															value="${variant.price}" min="0" step="0.01" required>
 														</td>
 														<td>
 															<select name="newVariants.status" class="form-select form-select-sm">
-																<option value="true" ${variant.status ? 'selected' : ''}>
-																	Hoạt động</option>
-																<option value="false" ${!variant.status ? 'selected' : ''}>
-																	Ngừng</option>
+																<option value="true" ${variant.status ? 'selected' : ''}>Hoạt động</option>
+																<option value="false" ${!variant.status ? 'selected' : ''}>Ngừng</option>
 															</select>
+															<!-- Hidden inputs để lưu optionValueIds -->
+															<c:forEach var="optionId" items="${variant.optionValueIds}">
+																<input type="hidden" name="newVariants.optionValueIds[]" value="${optionId}">
+															</c:forEach>
 														</td>
 													</tr>
 												</c:forEach>
@@ -228,7 +241,8 @@
 										</table>
 									</c:when>
 									<c:otherwise>
-										<p class="text-muted fst-italic">Chọn các tùy chọn để hiển thị biến thể...</p>
+										<p class="text-muted fst-italic">Chọn các tùy chọn để hiển
+											thị biến thể...</p>
 									</c:otherwise>
 								</c:choose>
 							</div>
@@ -242,8 +256,7 @@
 						</button>
 						<a
 							href="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated"
-							class="btn btn-secondary"><i class="bi bi-x-circle"></i>
-							Hủy</a>
+							class="btn btn-secondary"><i class="bi bi-x-circle"></i> Hủy</a>
 					</div>
 				</div>
 			</div>
@@ -613,9 +626,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Cartesian product (tổ hợp tất cả biến thể)
   function cartesian(arr) {
-    return arr.reduce((a, b) =>
-      a.flatMap(d => b.map(e => [d, e].flat()))
-    );
-  }
+	  if (arr.length === 0) return [];
+	  if (arr.length === 1) return arr[0].map(v => [v]); //xử lý trường hợp chỉ có 1 option type
+	  return arr.reduce((a, b) =>
+	    a.flatMap(d => b.map(e => [d, e].flat()))
+	  );
+	}
 });
 </script>

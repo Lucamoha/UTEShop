@@ -27,6 +27,11 @@ public class ProductVariantsServiceImpl implements IProductsVariantsService {
 	}
 
 	@Override
+	public List<ProductVariantDetailsModel> getVariantDetailsById(int variantId) {
+		return productVariantsDao.getVariantDetailsById(variantId);
+	}
+
+	@Override
 	public int countVariantsByProductId(int productId) {
 		return productVariantsDao.countVariantsByProductId(productId);
 	}

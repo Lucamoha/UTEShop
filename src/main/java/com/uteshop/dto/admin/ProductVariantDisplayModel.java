@@ -21,4 +21,6 @@ public class ProductVariantDisplayModel {
 	BigDecimal price;
 	Boolean status;
 	List<String> options = new ArrayList<>();
+	List<Integer> optionTypeIds = new ArrayList<>();
+	List<Integer> optionValueIds = new ArrayList<>();
 }
