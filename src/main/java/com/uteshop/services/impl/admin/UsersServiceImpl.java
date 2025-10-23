@@ -31,7 +31,13 @@ public class UsersServiceImpl implements IUsersService {
 	public long getTotalCustomers() {
 		return userDaoImpl.getTotalCustomers();
 	}
-	@Override
+
+    @Override
+    public void update(Users user) {
+        userDaoImpl.update(user);
+    }
+
+    @Override
 	public List<Users> getManagerNotManagedBranch() {
 		return userDaoImpl.getManagerNotManagedBranch();
 	}

@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -155,31 +156,100 @@ public class VoucherController extends HttpServlet {
                 throw new ServletException("Mã voucher đã tồn tại");
             }
 
-            // Tạo hoặc lấy voucher để cập nhật
-            voucher = isEdit ? voucherService.getById(safeParseInteger("id", req)) : new Vouchers();
-            if (isEdit && voucher == null) {
-                throw new ServletException("Không tìm thấy voucher để chỉnh sửa");
+            // Lấy dữ liệu từ form trước
+            String descText = req.getParameter("descText");
+            Integer type = safeParseInteger("type", req);
+            if (type == null) {
+                throw new ServletException("Loại voucher không được để trống");
+            }
+            BigDecimal value = safeParseBigDecimal("value", req);
+            if (value == null) {
+                throw new ServletException("Giá trị voucher không được để trống");
+            }
+            Integer maxUses = safeParseInteger("maxUses", req);
+            if (maxUses == null) {
+                throw new ServletException("Số lần sử dụng tối đa không được để trống");
+            }
+            LocalDateTime startsAt = safeParseDateTime("startsAt", req);
+            LocalDateTime endsAt = safeParseDateTime("endsAt", req);
+            if (startsAt.isAfter(endsAt)) {
+                throw new ServletException("Ngày bắt đầu phải trước ngày kết thúc");
+            }
+            boolean isActive = req.getParameter("isActive") != null && req.getParameter("isActive").equals("true");
+
+            if (isEdit) {
+                // Cho edit: Sử dụng service bình thường
+                Integer id = safeParseInteger("id", req);
+                voucher = voucherService.getById(id);
+                if (voucher == null) {
+                    throw new ServletException("Không tìm thấy voucher để chỉnh sửa");
+                }
+                voucher.setCode(code);
+                voucher.setDescText(descText);
+                voucher.setType(type);
+                voucher.setValue(value);
+                voucher.setMaxUses(maxUses);
+                voucher.setStartsAt(startsAt);
+                voucher.setEndsAt(endsAt);
+                voucher.setIsActive(isActive);
+                voucherService.save(voucher);
+            } else {
+                // Cho add mới: Sử dụng DriverManager JDBC INSERT với MaxUsed = 0
+                // THAY ĐỔI: Hardcode connection details - thay bằng thông tin thực tế của bạn!
+                String dbUrl = "jdbc:sqlserver://localhost:1433;databaseName=UTESHOP;encrypt=false;trustServerCertificate=true;loginTimeout=30;";
+                String dbUsername = "sa";  // Thay bằng username thực tế
+                String dbPassword = "kimdien2005";  // Thay bằng password thực tế
+                Connection conn = null;
+                PreparedStatement pstmt = null;
+                try {
+                    conn = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
+                    pstmt = conn.prepareStatement(
+                            "INSERT INTO Vouchers (Code, DescText, EndsAt, IsActive, MaxUses, StartsAt, TotalUsed, Type, Value, MaxUsed) " +
+                                    "VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?, 0)", Statement.RETURN_GENERATED_KEYS
+                    );
+
+                    pstmt.setString(1, code);
+                    pstmt.setString(2, descText);
+                    pstmt.setTimestamp(3, Timestamp.valueOf(endsAt));
+                    pstmt.setBoolean(4, isActive);
+                    pstmt.setInt(5, maxUses);
+                    pstmt.setTimestamp(6, Timestamp.valueOf(startsAt));
+                    pstmt.setInt(7, type);
+                    pstmt.setBigDecimal(8, value);
+
+                    int affectedRows = pstmt.executeUpdate();
+                    if (affectedRows == 0) {
+                        throw new ServletException("Thêm voucher thất bại");
+                    }
+                } catch (SQLException e) {
+                    throw new ServletException("Lỗi khi thêm voucher: " + e.getMessage(), e);
+                } finally {
+                    if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
+                    if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
+                }
             }
 
-            // Điền dữ liệu vào voucher
-            voucher.setCode(code);
-            voucher.setDescText(req.getParameter("descText"));
-            voucher.setType(safeParseInteger("type", req));
-            voucher.setValue(safeParseBigDecimal("value", req));
-            voucher.setMaxUses(safeParseInteger("maxUses", req));
-            voucher.setTotalUsed(isEdit ? voucher.getTotalUsed() : 0);
-            voucher.setStartsAt(safeParseDateTime("startsAt", req));
-            voucher.setEndsAt(safeParseDateTime("endsAt", req));
-            voucher.setIsActive(req.getParameter("isActive") != null && req.getParameter("isActive").equals("true"));
-
-            // Lưu voucher
-            voucherService.save(voucher);
             resp.sendRedirect(req.getContextPath() + "/admin/Voucher/Vouchers/list?success=true");
 
         } catch (ServletException e) {
             error = e.getMessage();
-            req.setAttribute("voucher", voucher != null ? voucher : new Vouchers());
             req.setAttribute("error", error);
+            if (isEdit) {
+                req.setAttribute("voucher", voucher);
+            } else {
+                voucher = new Vouchers();
+                voucher.setCode(req.getParameter("code"));
+                voucher.setDescText(req.getParameter("descText"));
+                try {
+                    voucher.setType(safeParseInteger("type", req));
+                    voucher.setValue(safeParseBigDecimal("value", req));
+                    voucher.setMaxUses(safeParseInteger("maxUses", req));
+                    voucher.setStartsAt(safeParseDateTime("startsAt", req));
+                    voucher.setEndsAt(safeParseDateTime("endsAt", req));
+                    voucher.setIsActive(req.getParameter("isActive") != null && req.getParameter("isActive").equals("true"));
+                } catch (Exception ignored) {}  // Ignore parse errors in error case
+                req.setAttribute("voucher", voucher);
+            }
             String forwardPage = isEdit ? "/views/admin/Voucher/Vouchers/edit.jsp" : "/views/admin/Voucher/Vouchers/add.jsp";
             req.getRequestDispatcher(forwardPage).forward(req, resp);
         }

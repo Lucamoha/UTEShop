@@ -27,7 +27,8 @@ public class JWTAuthenticationFilter implements Filter {
         "/image",
         "/test-login",
         "/payment/momo",
-        "/payment/vnpay"
+        "/payment/vnpay",
+        "/guide"
     );
 
     // Danh sách các URL cần authentication (protected)

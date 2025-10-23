@@ -13,20 +13,20 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductAttributeDisplayModel {
-	Integer ProductId;
-	Integer AttributeId;
-	String Name;
-	Integer DataType;
-	String Unit;
-	String ValueText;
-	BigDecimal ValueNumber;
+	Integer productId;
+	Integer attributeId;
+	String name;
+	Integer dataType;
+	String unit;
+	String valueText;
+	BigDecimal valueNumber;
 
 	public String getDisplayValue() {
-		if (ValueText != null && !ValueText.isBlank()) {
-			return ValueText + (Unit != null ? " " + Unit : "");
+		if (valueText != null && !valueText.isBlank()) {
+			return valueText + (unit != null ? " " + unit : "");
 		}
-		if (ValueNumber != null) {
-			return ValueNumber.stripTrailingZeros().toPlainString() + (Unit != null ? " " + Unit : "");
+		if (valueNumber != null) {
+			return valueNumber.stripTrailingZeros().toPlainString() + (unit != null ? " " + unit : "");
 		}
 		return "";
 	}

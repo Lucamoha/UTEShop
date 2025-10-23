@@ -4,13 +4,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import org.hibernate.exception.ConstraintViolationException;
 
 import com.google.gson.Gson;
 import com.uteshop.dto.admin.OptionValueDTO;
@@ -22,44 +19,34 @@ import com.uteshop.entity.catalog.Attributes;
 import com.uteshop.entity.catalog.Categories;
 import com.uteshop.entity.catalog.OptionTypes;
 import com.uteshop.entity.catalog.OptionValues;
-import com.uteshop.entity.catalog.ProductAttributeValues;
 import com.uteshop.entity.catalog.ProductImages;
 import com.uteshop.entity.catalog.ProductVariants;
 import com.uteshop.entity.catalog.Products;
-import com.uteshop.entity.catalog.VariantOptions;
 import com.uteshop.services.admin.IAttributesService;
 import com.uteshop.services.admin.ICategoriesService;
 import com.uteshop.services.admin.IOptionTypesService;
 import com.uteshop.services.admin.IOptionValueService;
 import com.uteshop.services.admin.IProductAttributesService;
-import com.uteshop.services.admin.IProductAttributeValuesService;
 import com.uteshop.services.admin.IProductImagesService;
 import com.uteshop.services.admin.IProductsService;
 import com.uteshop.services.admin.IProductsVariantsService;
-import com.uteshop.services.admin.IVariantOptionsService;
 import com.uteshop.services.impl.admin.AttributesServiceImpl;
 import com.uteshop.services.impl.admin.CategoriesServiceImpl;
 import com.uteshop.services.impl.admin.OptionTypesServiceImpl;
 import com.uteshop.services.impl.admin.OptionValueServiceImpl;
 import com.uteshop.services.impl.admin.ProductAttributesServiceImpl;
-import com.uteshop.services.impl.admin.ProductAttributeValuesServiceImpl;
 import com.uteshop.services.impl.admin.ProductImagesServiceImpl;
 import com.uteshop.services.impl.admin.ProductVariantsServiceImpl;
 import com.uteshop.services.impl.admin.ProductsServiceImpl;
-import com.uteshop.services.impl.admin.VariantOptionsServiceImpl;
+import com.uteshop.services.admin.ProductTransactionService;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 
 @WebServlet(urlPatterns = { "/admin/Catalog/Products/searchpaginated", "/admin/Catalog/Products/saveOrUpdate",
 		"/admin/Catalog/Products/delete", "/admin/Catalog/Products/view", "/admin/Catalog/Products/image/saveOrUpdate",
@@ -76,10 +63,11 @@ public class ProductController extends HttpServlet {
 	private ICategoriesService categoriesService = new CategoriesServiceImpl();
 	private IOptionTypesService optionTypeService = new OptionTypesServiceImpl();
 	private IOptionValueService optionValueService = new OptionValueServiceImpl();
-	private IVariantOptionsService variantOptionsService = new VariantOptionsServiceImpl();
 	private IAttributesService attributesService = new AttributesServiceImpl();
-	private IProductAttributeValuesService productAttributeValuesService = new ProductAttributeValuesServiceImpl();
 	private IProductAttributesService productAttributesService = new ProductAttributesServiceImpl();
+	
+	// Service để xử lý transaction với rollback tự động
+	private ProductTransactionService productTransactionService = new ProductTransactionService();
 
 	private void loadProductDetails(HttpServletRequest req, int id) {
 
@@ -97,7 +85,7 @@ public class ProductController extends HttpServlet {
 			if (view == null) {
 				view = new ProductVariantDisplayModel();
 				view.setId(d.getId());
-				view.setSKU(d.getSKU());
+				view.setSku(d.getSKU());
 				view.setPrice(d.getPrice());
 				view.setStatus(d.getStatus());
 				grouped.put(d.getId(), view);
@@ -305,323 +293,44 @@ public class ProductController extends HttpServlet {
 			Products existing = productsService.findByName(name);
 			if (existing != null && !Objects.equals(existing.getId(), id)) {
 				req.setAttribute("error", "Tên sản phẩm đã tồn tại! Vui lòng nhập tên khác!");
-
-				List<Categories> categoryList = categoriesService.findAll();
-				req.setAttribute("categoryList", categoryList);
-				req.setAttribute("product", product);
-				List<Attributes> availableAttributes = attributesService.findAll();
-				req.setAttribute("availableAttributes", availableAttributes);
-				List<OptionTypes> optionTypes = optionTypeService.findAll();
-				req.setAttribute("availableOptionTypes", optionTypes);
-				List<ProductVariants> tempVariants = new ArrayList<>();
-				if (req.getParameterValues("newVariants.sku") != null) {
-					String[] skusTmp = req.getParameterValues("newVariants.sku");
-					String[] pricesTmp = req.getParameterValues("newVariants.price");
-					String[] statusesTmp = req.getParameterValues("newVariants.status");
-
-					for (int i = 0; i < skusTmp.length; i++) {
-						ProductVariants pv = new ProductVariants();
-						pv.setSKU(skusTmp[i]);
-						pv.setPrice(BigDecimal.valueOf(Integer.parseInt(pricesTmp[i])));
-						pv.setStatus(Boolean.parseBoolean(statusesTmp[i]));
-						tempVariants.add(pv);
-					}
-				}
-				req.setAttribute("variantList", tempVariants);
-
-				List<ProductAttributeDisplayModel> tempAttrs = new ArrayList<>();
-				String[] attributeIdsTmp = req.getParameterValues("attributeIds");
-				String[] attributeValuesTmp = req.getParameterValues("attributeValues");
-				if (attributeIdsTmp != null) {
-					for (int i = 0; i < attributeIdsTmp.length; i++) {
-						ProductAttributeDisplayModel a = new ProductAttributeDisplayModel();
-						a.setAttributeId(Integer.parseInt(attributeIdsTmp[i]));
-						a.setValueText(attributeValuesTmp[i]);
-						tempAttrs.add(a);
-					}
-				}
-				req.setAttribute("productAttributes", tempAttrs);
-
-				String[] tempImages = req.getParameterValues("tempImages");
-				if (tempImages != null) {
-					req.setAttribute("tempImages", Arrays.asList(tempImages));
-				}
-
-				// Forward lại form kèm dữ liệu
-				req.getRequestDispatcher("/views/admin/Catalog/Products/add.jsp").forward(req, resp);
+				prepareFormDataForError(req, product, category, isUpdate);
+				
+				String forwardPage = isUpdate ? "/views/admin/Catalog/Products/update.jsp" 
+						: "/views/admin/Catalog/Products/add.jsp";
+				req.getRequestDispatcher(forwardPage).forward(req, resp);
+				return;
+			}
+			
+			// Kiểm tra trùng SKU trong các variants
+			String duplicateSKU = checkDuplicateSKU(req, id);
+			if (duplicateSKU != null) {
+				req.setAttribute("error", "SKU '" + duplicateSKU + "' đã tồn tại! Vui lòng nhập SKU khác!");
+				prepareFormDataForError(req, product, category, isUpdate);
+				
+				String forwardPage = isUpdate ? "/views/admin/Catalog/Products/update.jsp" 
+						: "/views/admin/Catalog/Products/add.jsp";
+				req.getRequestDispatcher(forwardPage).forward(req, resp);
 				return;
 			}
 
-			// Lưu sản phẩm vào db nếu không lỗi
-			String message;
-			if (isUpdate) {
-				productsService.update(product);
-				message = "Sản phẩm đã được sửa!";
-			} else {
-				productsService.insert(product);
-				message = "Sản phẩm đã được thêm!";
-
-				product = productsService.findById(product.getId());// lấy lại product để dùng về sau -> không có -> lỗi
-																	// transient instance
-			}
-
-			if (isUpdate) {
-			//XỬ LÝ CÁC BIẾN THỂ BỊ XÓA KHI SỬA - PHẢI XÓA TRƯỚC
-			String deletedIdsParam = req.getParameter("deletedVariantIds");
-			List<Integer> deletedIds = new ArrayList<>();
-			if (deletedIdsParam != null && !deletedIdsParam.isEmpty()) {
-			    String[] ids = deletedIdsParam.split(",");
-			    System.out.println(ids);
-			    for (String idSt : ids) {
-			        try {
-			            int idi = Integer.parseInt(idSt.trim());
-			            deletedIds.add(idi);
-			            productsVariantsService.delete(idi);
-			            System.out.println("Đã xóa variant ID = " + idi);
-			        } catch (Exception ex) {
-			            System.err.println("Lỗi khi xóa variant ID = " + idSt);
-			            ex.printStackTrace();
-			        }
-			    }
-			}
-			
-			// Chỉ xóa khi có dữ liệu mới được gửi từ form
-			String[] skus = req.getParameterValues("newVariants.sku");
-			String[] attributeIdsCheck = req.getParameterValues("attributeIds");
-
-			if (skus != null && skus.length > 0) {
-				productsVariantsService.deleteAllByProductId(product.getId());
-			}
-
-			if (attributeIdsCheck != null && attributeIdsCheck.length > 0) {
-				productAttributeValuesService.deleteByProductId(product.getId());
-			}
-
-			String uploadPath = req.getServletContext().getRealPath("/uploads");
-
-			// Danh sách ảnh người dùng giữ lại
-			String[] remainingImgs = req.getParameterValues("existingImages");
-			List<String> remaining = (remainingImgs != null) ? Arrays.asList(remainingImgs) : new ArrayList<>();
-
-			productImagesService.deleteRemovedImages(product.getId(), remaining, uploadPath);
-
-			String[] existingVariantIds = req.getParameterValues("existingVariants.id");
-			String[] existingVariantSkus = req.getParameterValues("existingVariants.sku");
-			String[] existingVariantPrices = req.getParameterValues("existingVariants.price");
-			String[] existingVariantStatuses = req.getParameterValues("existingVariants.status");
-
-			if (existingVariantIds != null) {
-				for (int i = 0; i < existingVariantIds.length; i++) {
-					int variantId = Integer.parseInt(existingVariantIds[i]);
-					
-					// Bỏ qua nếu variant này đã bị xóa
-					if (deletedIds.contains(variantId)) {
-						System.out.println("Bỏ qua update variant ID = " + variantId + " (đã xóa)");
-						continue;
-					}
-					
-					ProductVariants variant = productsVariantsService.findById(variantId);
-
-					if (variant != null) {
-						variant.setSKU(existingVariantSkus[i]);
-						variant.setPrice(new BigDecimal(existingVariantPrices[i]));
-						variant.setStatus(Boolean.parseBoolean(existingVariantStatuses[i]));
-						productsVariantsService.update(variant);
-					}
-				}
-			}
-
-			String[] existingAttrIds = req.getParameterValues("existingAttributes.attributeId");
-			String[] existingAttrValues = req.getParameterValues("existingAttributes.value");
-
-			if (existingAttrIds != null) {
-				for (int i = 0; i < existingAttrIds.length; i++) {
-					int attrId = Integer.parseInt(existingAttrIds[i]);
-					String value = existingAttrValues[i];
-
-					ProductAttributeValues pav = productAttributeValuesService
-							.findByProductIdAndAttributeId(product.getId(), attrId);
-					if (pav != null) {
-						pav.setValueText(value);
-						productAttributeValuesService.update(pav);
-					}
-				}
-			}
-
-		}
-
-			// XỬ LÝ LƯU CÁC BIẾN THỂ
-			String[] skus = req.getParameterValues("newVariants.sku");
-			String[] prices = req.getParameterValues("newVariants.price");
-			String[] statuses = req.getParameterValues("newVariants.status");
-			String[] optionValueIds = req.getParameterValues("newVariants.optionValueIds[]");
-
-			System.out.println("===> Số lượng SKUs: " + (skus != null ? skus.length : 0));
-			System.out.println("===> Số lượng Prices: " + (prices != null ? prices.length : 0));
-			System.out.println("===> Số lượng OptionValueIds: " + (optionValueIds != null ? optionValueIds.length : 0));
-
-			if (skus != null && skus.length > 0) {
-				// Kiểm tra tính hợp lệ của dữ liệu
-				if (prices == null || prices.length != skus.length) {
-					System.err.println("CẢNH BÁO: Số lượng price không khớp với số lượng SKU!");
-				}
-				if (statuses == null || statuses.length != skus.length) {
-					System.err.println("CẢNH BÁO: Số lượng status không khớp với số lượng SKU!");
-				}
-				if (optionValueIds == null || optionValueIds.length == 0) {
-					System.err.println("CẢNH BÁO: Không có optionValueIds nào được gửi!");
-				}
-
-				int optionsPerVariant = (optionValueIds != null && optionValueIds.length > 0)
-						? optionValueIds.length / skus.length
-						: 0;
-				int optionIndex = 0;
-
-				for (int i = 0; i < skus.length; i++) {
-					try {
-						// Tạo mới biến thể
-						ProductVariants variant = new ProductVariants();
-						variant.setProduct(product);
-						variant.setSKU(skus[i].trim());
-						variant.setStatus(Boolean.parseBoolean(statuses[i]));
-
-						// Xử lý giá
-						if (prices[i] != null && !prices[i].trim().isEmpty()) {
-							variant.setPrice(new BigDecimal(prices[i].trim()));
-						} else {
-							variant.setPrice(product.getBasePrice()); // Dùng giá gốc nếu không có giá riêng
-						}
-
-						// Lưu biến thể vào DB để sinh Id
-						productsVariantsService.insert(variant);
-
-						// Lưu các option của biến thể
-						if (optionValueIds != null && optionsPerVariant > 0) {
-							for (int j = 0; j < optionsPerVariant; j++) {
-								if (optionIndex < optionValueIds.length) {
-									int optionValueId = Integer.parseInt(optionValueIds[optionIndex++]);
-
-									OptionValues ov = optionValueService.findById(optionValueId);
-									if (ov != null) {
-										OptionTypes ot = optionTypeService.findById(ov.getOptionType().getId());
-
-										VariantOptions vo = new VariantOptions();
-										vo.setVariant(variant);
-										vo.setOptionValue(ov);
-										vo.setOptionType(ot);
-
-										variantOptionsService.insert(vo);
-									}
-								}
-							}
-						}
-					} catch (Exception ex) {
-						System.err.println("Lỗi khi lưu biến thể thứ " + (i + 1) + ": " + ex.getMessage());
-						ex.printStackTrace();
-					}
-				}
-			} else {
-				System.out.println("===> Không có biến thể nào được gửi từ form.");
-			}
-
-			// XỬ LÝ LƯU CÁC THÔNG SỐ KỸ THUẬT
-			String[] attributeIds = req.getParameterValues("attributeIds");
-			String[] attributeValues = req.getParameterValues("attributeValues");
-
-			System.out.println("===> Số lượng AttributeIds: " + (attributeIds != null ? attributeIds.length : 0));
-			System.out.println("===> Số lượng AttributeValues: " + (attributeValues != null ? attributeValues.length : 0));
-
-			if (attributeIds != null) {
-				for (int i = 0; i < attributeIds.length; i++) {
-					System.out.println("    [" + i + "] attributeId=" + attributeIds[i] + ", value="
-							+ (attributeValues != null && i < attributeValues.length ? attributeValues[i] : "NULL"));
-				}
-			}
-
-			if (attributeIds != null && attributeIds.length > 0) {
-				if (attributeValues == null || attributeValues.length != attributeIds.length) {
-					System.err.println("CẢNH BÁO: Số lượng attributeValues không khớp với attributeIds!");
-				}
-
-				for (int i = 0; i < attributeIds.length; i++) {
-					try {
-						int attrId = Integer.parseInt(attributeIds[i]);
-						String attrValue = (attributeValues != null && i < attributeValues.length) ? attributeValues[i]
-								: "";
-
-						// Bỏ qua nếu giá trị rỗng (thuộc tính không bắt buộc)
-						if (attrValue == null || attrValue.trim().isEmpty()) {
-							continue;
-						}
-
-						ProductAttributeValues pav = new ProductAttributeValues();
-						pav.setProduct(product);
-						pav.setAttribute(attributesService.findById(attrId));
-						pav.setValueText(attrValue.trim());
-
-						productAttributeValuesService.insert(pav);
-						System.out.println(
-								">>> Đã lưu thông số kỹ thuật: attributeId=" + attrId + ", value=" + attrValue);
-					} catch (Exception ex) {
-						System.err.println("Lỗi khi lưu thuộc tính thứ " + (i + 1) + ": " + ex.getMessage());
-						ex.printStackTrace();
-					}
-				}
-			} else {
-				System.out.println("===> Không có thông số kỹ thuật nào được nhập.");
-			}
-
-			// Lưu hình ảnh
-			// ================= XỬ LÝ ẢNH TẠM ==================
+			// Sử dụng ProductTransactionService để xử lý transaction với rollback tự động
 			try {
-				System.out.println("--- BẮT ĐẦU XỬ LÝ ẢNH TẠM ---");
-				String[] tempImages = req.getParameterValues("tempImages");
-				System.out.println("Danh sách ảnh tạm: " + Arrays.toString(tempImages));
-
-				if (tempImages != null && tempImages.length > 0) {
-					Path tmpDir = Paths.get(req.getServletContext().getRealPath("/uploads/tmp"));
-					Path uploadDir = Paths.get(req.getServletContext().getRealPath("/uploads"));
-					if (!Files.exists(uploadDir))
-						Files.createDirectories(uploadDir);
-
-					for (String imgName : tempImages) {
-						if (imgName == null || imgName.isBlank())
-							continue; // bỏ qua nếu rỗng
-
-						Path src = tmpDir.resolve(imgName);
-						Path dest = uploadDir.resolve(imgName);
-
-						// Đảm bảo không phải thư mục
-						if (Files.isDirectory(src)) {
-							System.out.println("Bỏ qua vì không phải file: " + src);
-							continue;
-						}
-
-						if (Files.exists(src)) {
-							Files.move(src, dest, StandardCopyOption.REPLACE_EXISTING);
-							System.out.println("===> ĐÃ CHUYỂN FILE: " + imgName);
-
-							// Lưu DB
-							ProductImages img = new ProductImages();
-							img.setImageUrl(imgName);
-							img.setProduct(product);
-							productImagesService.insert(img);
-						} else {
-							System.out.println("Ảnh tạm không tồn tại: " + imgName);
-						}
-					}
-
-				} else {
-					System.out.println("Không có ảnh tạm nào để lưu.");
-				}
-
+				String uploadPath = req.getServletContext().getRealPath("/uploads");
+				
+				// Gọi service để lưu sản phẩm với tất cả dữ liệu liên quan trong 1 transaction
+				productTransactionService.saveOrUpdateProductWithTransaction(product, isUpdate, req, uploadPath);
+				
+				String message = isUpdate ? "Sản phẩm đã được sửa!" : "Sản phẩm đã được thêm!";
+				req.getSession().setAttribute("message", message);
+				resp.sendRedirect(req.getContextPath() + "/admin/Catalog/Products/searchpaginated");
+				
 			} catch (Exception e) {
+				// Lỗi đã được rollback tự động trong service
 				e.printStackTrace();
-				req.setAttribute("error", "Lỗi khi xử lý ảnh tạm.");
+				req.getSession().setAttribute("errorMessage", 
+					"Đã xảy ra lỗi khi lưu sản phẩm: " + e.getMessage());
+				resp.sendRedirect(req.getContextPath() + "/admin/Catalog/Products/searchpaginated");
 			}
-
-			req.getSession().setAttribute("message", message);
-			resp.sendRedirect(req.getContextPath() + "/admin/Catalog/Products/searchpaginated");
 		}
 	}
 
@@ -669,6 +378,185 @@ public class ProductController extends HttpServlet {
 			e.printStackTrace();
 			resp.getWriter().print("<p class='text-danger'>Lỗi khi tải thuộc tính: " + e.getMessage() + "</p>");
 		}
+	}
+
+	/**
+	 * Chuẩn bị dữ liệu để hiển thị lại form khi có lỗi validation
+	 */
+	private void prepareFormDataForError(HttpServletRequest req, Products product, Categories category, boolean isUpdate) {
+		List<Categories> categoryList = categoriesService.findAll();
+		req.setAttribute("categoryList", categoryList);
+		req.setAttribute("product", product);
+		
+		// Load lại attributes của category đã chọn và giữ lại giá trị đã nhập
+		if (category != null) {
+			List<Attributes> categoryAttributes = productsService.findAttributesByCategoryId(category.getId());
+			List<ProductAttributeDisplayModel> tempAttrs = buildTempAttributeList(req);
+			
+			req.setAttribute("categoryAttributes", categoryAttributes);
+			req.setAttribute("productAttributes", tempAttrs);
+		}
+		
+		List<Attributes> availableAttributes = attributesService.findAll();
+		req.setAttribute("availableAttributes", availableAttributes);
+		List<OptionTypes> optionTypes = optionTypeService.findAll();
+		req.setAttribute("availableOptionTypes", optionTypes);
+		
+		// Giữ lại variants đã nhập
+		List<ProductVariantDisplayModel> tempVariants = buildTempVariantList(req);
+		req.setAttribute("variantList", tempVariants);
+
+		// Giữ lại ảnh tạm
+		String[] tempImages = req.getParameterValues("tempImages");
+		if (tempImages != null && tempImages.length > 0) {
+			List<String> imageList = new ArrayList<>();
+			for (String img : tempImages) {
+				if (img != null && !img.trim().isEmpty()) {
+					imageList.add(img);
+				}
+			}
+			req.setAttribute("tempImages", imageList);
+			System.out.println("Giữ lại " + imageList.size() + " ảnh tạm: " + imageList);
+		}
+	}
+	
+	/**
+	 * Kiểm tra trùng SKU trong các variants mới và hiện có
+	 * @return SKU trùng nếu có, null nếu không trùng
+	 */
+	private String checkDuplicateSKU(HttpServletRequest req, Integer currentProductId) {
+		// Kiểm tra SKU của các variants mới
+		String[] newSkus = req.getParameterValues("newVariants.sku");
+		if (newSkus != null) {
+			for (String sku : newSkus) {
+				if (sku != null && !sku.trim().isEmpty()) {
+					ProductVariants existing = productsVariantsService.findBySKU(sku.trim());
+					if (existing != null) {
+						// Nếu đang update, chỉ báo lỗi nếu SKU thuộc sản phẩm khác
+						if (currentProductId == null || 
+							!Objects.equals(existing.getProduct().getId(), currentProductId)) {
+							return sku.trim();
+						}
+					}
+				}
+			}
+		}
+		
+		// Kiểm tra SKU của các variants hiện có (khi update)
+		String[] existingSkus = req.getParameterValues("existingVariants.sku");
+		String[] existingIds = req.getParameterValues("existingVariants.id");
+		if (existingSkus != null && existingIds != null) {
+			for (int i = 0; i < existingSkus.length; i++) {
+				String sku = existingSkus[i];
+				int variantId = Integer.parseInt(existingIds[i]);
+				
+				if (sku != null && !sku.trim().isEmpty()) {
+					ProductVariants existing = productsVariantsService.findBySKU(sku.trim());
+					if (existing != null && existing.getId() != variantId) {
+						// SKU trùng với một variant khác
+						return sku.trim();
+					}
+				}
+			}
+		}
+		
+		return null; // Không có SKU trùng
+	}
+	
+	/**
+	 * Xây dựng danh sách variants tạm thời từ request để giữ lại form
+	 */
+	private List<ProductVariantDisplayModel> buildTempVariantList(HttpServletRequest req) {
+		List<ProductVariantDisplayModel> tempVariants = new ArrayList<>();
+		
+		// Lấy variants mới
+		String[] newSkus = req.getParameterValues("newVariants.sku");
+		String[] newPrices = req.getParameterValues("newVariants.price");
+		String[] newStatuses = req.getParameterValues("newVariants.status");
+		
+		if (newSkus != null) {
+			for (int i = 0; i < newSkus.length; i++) {
+				ProductVariantDisplayModel pv = new ProductVariantDisplayModel();
+				pv.setSku(newSkus[i]);
+				if (newPrices != null && i < newPrices.length) {
+					try {
+						pv.setPrice(new BigDecimal(newPrices[i]));
+					} catch (Exception e) {
+						pv.setPrice(BigDecimal.ZERO);
+					}
+				}
+				if (newStatuses != null && i < newStatuses.length) {
+					pv.setStatus(Boolean.parseBoolean(newStatuses[i]));
+				}
+				tempVariants.add(pv);
+			}
+		}
+		
+		// Lấy variants hiện có (nếu có)
+		String[] existingIds = req.getParameterValues("existingVariants.id");
+		String[] existingSkus = req.getParameterValues("existingVariants.sku");
+		String[] existingPrices = req.getParameterValues("existingVariants.price");
+		String[] existingStatuses = req.getParameterValues("existingVariants.status");
+		
+		if (existingIds != null) {
+			for (int i = 0; i < existingIds.length; i++) {
+				ProductVariantDisplayModel pv = new ProductVariantDisplayModel();
+				pv.setId(Integer.parseInt(existingIds[i]));
+				if (existingSkus != null && i < existingSkus.length) {
+					pv.setSku(existingSkus[i]);
+				}
+				if (existingPrices != null && i < existingPrices.length) {
+					try {
+						pv.setPrice(new BigDecimal(existingPrices[i]));
+					} catch (Exception e) {
+						pv.setPrice(BigDecimal.ZERO);
+					}
+				}
+				if (existingStatuses != null && i < existingStatuses.length) {
+					pv.setStatus(Boolean.parseBoolean(existingStatuses[i]));
+				}
+				tempVariants.add(pv);
+			}
+		}
+		
+		return tempVariants;
+	}
+	
+	/**
+	 * Xây dựng danh sách attributes tạm thời từ request để giữ lại form
+	 */
+	private List<ProductAttributeDisplayModel> buildTempAttributeList(HttpServletRequest req) {
+		List<ProductAttributeDisplayModel> tempAttrs = new ArrayList<>();
+		
+		// Lấy attributes mới
+		String[] attributeIds = req.getParameterValues("attributeIds");
+		String[] attributeValues = req.getParameterValues("attributeValues");
+		if (attributeIds != null) {
+			for (int i = 0; i < attributeIds.length; i++) {
+				ProductAttributeDisplayModel a = new ProductAttributeDisplayModel();
+				a.setAttributeId(Integer.parseInt(attributeIds[i]));
+				if (attributeValues != null && i < attributeValues.length) {
+					a.setValueText(attributeValues[i]);
+				}
+				tempAttrs.add(a);
+			}
+		}
+		
+		// Lấy attributes hiện có (nếu có)
+		String[] existingAttrIds = req.getParameterValues("existingAttributes.attributeId");
+		String[] existingAttrValues = req.getParameterValues("existingAttributes.value");
+		if (existingAttrIds != null) {
+			for (int i = 0; i < existingAttrIds.length; i++) {
+				ProductAttributeDisplayModel a = new ProductAttributeDisplayModel();
+				a.setAttributeId(Integer.parseInt(existingAttrIds[i]));
+				if (existingAttrValues != null && i < existingAttrValues.length) {
+					a.setValueText(existingAttrValues[i]);
+				}
+				tempAttrs.add(a);
+			}
+		}
+		
+		return tempAttrs;
 	}
 
 	private void handleLoadOptionValues(HttpServletRequest req, HttpServletResponse resp) throws IOException {

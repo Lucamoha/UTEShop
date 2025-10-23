@@ -21,46 +21,46 @@
 
                     <div class="mb-3">
                         <label for="code" class="form-label">Mã Voucher *</label>
-                        <input type="text" class="form-control" id="code" name="code" value="${voucher.Code}" required>
+                        <input type="text" class="form-control" id="code" name="code" value="${voucher.code}" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="descText" class="form-label">Mô Tả</label>
-                        <input type="text" class="form-control" id="descText" name="descText" value="${voucher.DescText}">
+                        <input type="text" class="form-control" id="descText" name="descText" value="${voucher.descText}">
                     </div>
 
                     <div class="mb-3">
                         <label for="type" class="form-label">Loại *</label>
                         <select class="form-select" id="type" name="type" required>
-                            <option value="1" ${voucher.Type == 1 ? 'selected' : ''}>Giảm Giá Phần Trăm</option>
-                            <option value="2" ${voucher.Type == 2 ? 'selected' : ''}>Giảm Giá Cố Định</option>
+                            <option value="1" ${voucher.type == 1 ? 'selected' : ''}>Giảm Giá Phần Trăm</option>
+                            <option value="2" ${voucher.type == 2 ? 'selected' : ''}>Giảm Giá Cố Định</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
                         <label for="value" class="form-label">Giá Trị *</label>
-                        <input type="number" step="0.01" class="form-control" id="value" name="value" value="${voucher.Value}" required>
+                        <input type="number" step="0.01" class="form-control" id="value" name="value" value="${voucher.value}" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="maxUses" class="form-label">Số Lần Sử Dụng Tối Đa *</label>
-                        <input type="number" class="form-control" id="maxUses" name="maxUses" value="${voucher.MaxUses}" required min="1">
+                        <input type="number" class="form-control" id="maxUses" name="maxUses" value="${voucher.maxUses}" required min="1">
                     </div>
 
                     <div class="mb-3">
                         <label for="startsAt" class="form-label">Ngày Bắt Đầu *</label>
                         <input type="datetime-local" class="form-control" id="startsAt" name="startsAt"
-                               value="<fmt:formatDate value='${voucher.StartsAt}' pattern='yyyy-MM-dd\'T\'HH:mm'/>" required>
+                               value="${voucher.startsAt}" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="endsAt" class="form-label">Ngày Kết Thúc *</label>
                         <input type="datetime-local" class="form-control" id="endsAt" name="endsAt"
-                               value="<fmt:formatDate value='${voucher.EndsAt}' pattern='yyyy-MM-dd\'T\'HH:mm'/>" required>
+                               value="${voucher.endsAt}" required>
                     </div>
 
                     <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="isActive" name="isActive" value="true" ${voucher.IsActive ? 'checked' : ''}>
+                        <input type="checkbox" class="form-check-input" id="isActive" name="isActive" value="true" ${voucher.isActive ? 'checked' : ''}>
                         <label class="form-check-label" for="isActive">Hoạt Động</label>
                     </div>
 

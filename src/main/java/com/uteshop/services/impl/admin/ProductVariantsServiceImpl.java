@@ -56,6 +56,11 @@ public class ProductVariantsServiceImpl implements IProductsVariantsService {
 	public ProductVariants findById(int variantId) {
 		return productVariantsDao.findById(variantId);
 	}
+	
+	@Override
+	public ProductVariants findBySKU(String sku) {
+		return productVariantsDao.findBySKU(sku);
+	}
 
 	@Override
 	public void update(ProductVariants variant) {

@@ -13,4 +13,6 @@ public interface IUsersService {
 	void delete(int id);
 	long getNewCustomersThisMonth();
 	long getTotalCustomers();
+
+    void update(Users user);
 }

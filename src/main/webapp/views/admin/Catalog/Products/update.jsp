@@ -199,7 +199,7 @@
 									
 										<td><input type="hidden" name="existingVariants.id"
 											value="${v.id}" /> <input type="text"
-											name="existingVariants.sku" value="${v.SKU}"
+											name="existingVariants.sku" value="${v.sku}"
 											class="form-control form-control-sm" /></td>
 											
 										<td><input type="number" step="1" name="existingVariants.price"

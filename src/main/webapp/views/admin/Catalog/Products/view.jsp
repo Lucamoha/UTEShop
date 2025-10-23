@@ -129,7 +129,7 @@
 						<tbody>
 							<c:forEach var="v" items="${variantList}">
 								<tr>
-									<td>${v.SKU}</td>
+									<td>${v.sku}</td>
 									<td><fmt:formatNumber value="${v.price}" type="number"
 											maxFractionDigits="0" groupingUsed="true" />VND</td>
 									<td><c:choose>

@@ -13,6 +13,7 @@ public interface IProductsVariantsService {
 	int countVariantsByProductId(int productId);
 	List<ProductVariants> findAll(boolean all, int firstResult, int maxResult, String searchKeyword, String searchKeywordColumnName);
 	ProductVariants findById(int variantId);
+	ProductVariants findBySKU(String sku);
 	void insert(ProductVariants productVariant);
 	void deleteAllByProductId(Integer productId);
 	void delete(int id);

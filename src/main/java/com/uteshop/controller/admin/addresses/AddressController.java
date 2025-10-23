@@ -31,6 +31,8 @@ public class AddressController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String url = req.getRequestURI();
         IAddressesService addressService = new AddressesServiceImpl();
+        IUsersService usersService = new UsersServiceImpl();
+        List<Users> listUser = usersService.findAll();
 
         if(url.contains("admin/Address/Addresses/list")) {
             List<Addresses> listAddress = addressService.getAll();
@@ -40,12 +42,14 @@ public class AddressController extends HttpServlet {
         }
         else if(url.contains("/admin/Address/Addresses/add"))
         {
+            req.setAttribute("listUser", listUser);
             req.getRequestDispatcher("/views/admin/Address/Addresses/add.jsp").forward(req, resp);
         }
         else if (url.contains("edit")) {
             int id = Integer.parseInt(req.getParameter("id"));
             Addresses a = addressService.getById(id);
             req.setAttribute("address", a);
+            req.setAttribute("listUser", listUser);
             req.getRequestDispatcher("/views/admin/Address/Addresses/edit.jsp").forward(req, resp);
 
         } else if (url.contains("view")) {
@@ -109,6 +113,13 @@ public class AddressController extends HttpServlet {
                 address.setCity(req.getParameter("city"));
                 String isDefaultStr = req.getParameter("isDefault");
                 address.setIsDefault(Boolean.parseBoolean(isDefaultStr));
+
+                String userIdStr = req.getParameter("userId");
+                if (userIdStr != null && !userIdStr.trim().isEmpty()) {
+                    IUsersService usersService = new UsersServiceImpl();
+                    Users user = usersService.findById(Integer.parseInt(userIdStr));
+                    address.setUser(user);
+                }
 
                 addressService.save(address);
             }

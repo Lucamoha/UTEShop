@@ -1,0 +1,14 @@
+# user_guide.txt
+HƯỚNG DẪN SỬ DỤNG HỆ THỐNG
+
+1. Đăng nhập vào hệ thống
+   - Nhập tài khoản, mật khẩu.
+   - Bấm nút “Đăng nhập”.
+
+2. Quản lý sản phẩm
+   - Chọn menu Sản phẩm.
+   - Thêm mới, chỉnh sửa, hoặc xóa.
+
+3. Quản lý đơn hàng
+   - Vào menu Đơn hàng.
+   - Xem và xử lý đơn hàng.

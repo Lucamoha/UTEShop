@@ -207,122 +207,233 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-	const revenueLabels = ${
-		revenueLabels != null ? revenueLabels : '[]'
-	};
-	const revenueValues = ${
-		revenueValues != null ? revenueValues : '[]'
-	};
-	const dailyLabels = ${
-		dailyLabels != null ? dailyLabels : '[]'
-	};
-	const dailyValues = ${
-		dailyValues != null ? dailyValues : '[]'
-	};
-
+	const revenueLabels = JSON.parse('${revenueLabels != null ? revenueLabels : "[]"}');
+	const revenueValues = JSON.parse('${revenueValues != null ? revenueValues : "[]"}').map(Number);
+	const dailyLabels = JSON.parse('${dailyLabels != null ? dailyLabels : "[]"}');
+	const dailyValues = JSON.parse('${dailyValues != null ? dailyValues : "[]"}').map(Number);
+	
+	console.log(revenueValues);
+	
 	document.addEventListener("DOMContentLoaded", function() {
 		// BIỂU ĐỒ DOANH THU THEO THÁNG
 		const ctxRevenue = document.getElementById('revenueChart');
 		new Chart(ctxRevenue, {
-			type : 'line',
-			data : {
-				labels : revenueLabels,
-				datasets : [ {
-					label : 'Doanh thu (VND)',
-					data : revenueValues,
-					borderWidth : 2,
-					borderColor : '#007bff',
-					fill : false,
-					tension : 0.3
-				} ]
+			type: 'line',
+			data: {
+				labels: revenueLabels,
+				datasets: [{
+					label: 'Doanh thu (VND)',
+					data: revenueValues,
+					borderWidth: 2,
+					borderColor: '#007bff',
+					backgroundColor: 'rgba(0, 123, 255, 0.1)',
+					fill: true,
+					tension: 0.3
+				}]
 			},
-			/* options : {
-				responsive : true,
-				scales : {
-					y : {
-						beginAtZero : true
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				scales: {
+					y: {
+						beginAtZero: true,
+						ticks: {
+							callback: function(value, index, values) {
+								if (typeof value !== 'number') return value;
+								return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' ₫';
+							}
+						}
+					}
+				},
+				plugins: {
+					tooltip: {
+						callbacks: {
+							label: function(context) {
+								let label = context.dataset.label || '';
+								if (label) {
+									label += ': ';
+								}
+								const value = context.parsed.y;
+								label += value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' ₫';
+								return label;
+							}
+						}
+					},
+					legend: {
+						display: true,
+						position: 'top'
 					}
 				}
-			} */
-			
-			options: {
-			    responsive: true,
-			    scales: {
-			        y: {
-			            beginAtZero: true,
-			            ticks: {
-			                callback: function(value) {
-			                    const num = Number(value);
-			                    if (isNaN(num)) return value;
-			                    return new Intl.NumberFormat('vi-VN').format(num) + ' ₫';
-			                }
-			            }
-			        }
-			    },
-			    plugins: {
-			        tooltip: {
-			            callbacks: {
-			                label: function(context) {
-			                    const value = Number(context.parsed.y);
-			                    if (isNaN(value)) return '';
-			                    return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN').format(value) + ' ₫';
-			                }
-			            }
-			        }
-			    }
 			}
-
 		});
 
 		// BIỂU ĐỒ DOANH THU THEO NGÀY
 		const ctxDaily = document.getElementById('dayRevenueChart');
 		new Chart(ctxDaily, {
-			type : 'line',
-			data : {
-				labels : dailyLabels,
-				datasets : [ {
-					label : 'Doanh thu (VND)',
-					data : dailyValues,
-					borderWidth : 2,
-					borderColor : '#28a745',
-					fill : false,
-					tension : 0.3
-				} ]
+			type: 'line',
+			data: {
+				labels: dailyLabels,
+				datasets: [{
+					label: 'Doanh thu (VND)',
+					data: dailyValues,
+					borderWidth: 2,
+					borderColor: '#28a745',
+					backgroundColor: 'rgba(40, 167, 69, 0.1)',
+					fill: true,
+					tension: 0.3
+				}]
 			},
-			/* options : {
-				responsive : true,
-				scales : {
-					y : {
-						beginAtZero : true
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				scales: {
+					y: {
+						beginAtZero: true,
+						ticks: {
+							callback: function(value, index, values) {
+								if (typeof value !== 'number') return value;
+								return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' ₫';
+							}
+						}
+					}
+				},
+				plugins: {
+					tooltip: {
+						callbacks: {
+							label: function(context) {
+								let label = context.dataset.label || '';
+								if (label) {
+									label += ': ';
+								}
+								const value = context.parsed.y;
+								label += value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' ₫';
+								return label;
+							}
+						}
+					},
+					legend: {
+						display: true,
+						position: 'top'
 					}
 				}
-			} */
-			options: {
-			    responsive: true,
-			    scales: {
-			        y: {
-			            beginAtZero: true,
-			            ticks: {
-			                callback: function(value) {
-			                    const num = Number(value);
-			                    if (isNaN(num)) return value;
-			                    return new Intl.NumberFormat('vi-VN').format(num) + ' ₫';
-			                }
-			            }
-			        }
-			    },
-			    plugins: {
-			        tooltip: {
-			            callbacks: {
-			                label: function(context) {
-			                    const value = Number(context.parsed.y);
-			                    if (isNaN(value)) return '';
-			                    return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN').format(value) + ' ₫';
-			                }
-			            }
-			        }
-			    }
 			}
 		});
 	});
 </script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+	const revenueLabels = JSON.parse('${revenueLabels != null ? revenueLabels : "[]"}');
+	const revenueValues = JSON.parse('${revenueValues != null ? revenueValues : "[]"}').map(Number);
+	const dailyLabels = JSON.parse('${dailyLabels != null ? dailyLabels : "[]"}');
+	const dailyValues = JSON.parse('${dailyValues != null ? dailyValues : "[]"}').map(Number);
+	
+	console.log(revenueValues);
+	
+	document.addEventListener("DOMContentLoaded", function() {
+		// BIỂU ĐỒ DOANH THU THEO THÁNG
+		const ctxRevenue = document.getElementById('revenueChart');
+		new Chart(ctxRevenue, {
+			type: 'line',
+			data: {
+				labels: revenueLabels,
+				datasets: [{
+					label: 'Doanh thu (VND)',
+					data: revenueValues,
+					borderWidth: 2,
+					borderColor: '#007bff',
+					backgroundColor: 'rgba(0, 123, 255, 0.1)',
+					fill: true,
+					tension: 0.3
+				}]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				scales: {
+					y: {
+						beginAtZero: true,
+						ticks: {
+							callback: function(value, index, values) {
+								// Format với dấu phân cách hàng nghìn
+								if (typeof value !== 'number') return value;
+								return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' ₫';
+							}
+						}
+					}
+				},
+				plugins: {
+					tooltip: {
+						callbacks: {
+							label: function(context) {
+								let label = context.dataset.label || '';
+								if (label) {
+									label += ': ';
+								}
+								// Format số với dấu phân cách sử dụng regex
+								const value = context.parsed.y;
+								label += value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' ₫';
+								return label;
+							}
+						}
+					},
+					legend: {
+						display: true,
+						position: 'top'
+					}
+				}
+			}
+		});
+
+		// BIỂU ĐỒ DOANH THU THEO NGÀY
+		const ctxDaily = document.getElementById('dayRevenueChart');
+		new Chart(ctxDaily, {
+			type: 'line',
+			data: {
+				labels: dailyLabels,
+				datasets: [{
+					label: 'Doanh thu (VND)',
+					data: dailyValues,
+					borderWidth: 2,
+					borderColor: '#28a745',
+					backgroundColor: 'rgba(40, 167, 69, 0.1)',
+					fill: true,
+					tension: 0.3
+				}]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				scales: {
+					y: {
+						beginAtZero: true,
+						ticks: {
+							callback: function(value, index, values) {
+								// Format với dấu phân cách hàng nghìn
+								return value.toLocaleString('vi-VN') + ' ₫';
+							}
+						}
+					}
+				},
+				plugins: {
+					tooltip: {
+						callbacks: {
+							label: function(context) {
+								let label = context.dataset.label || '';
+								if (label) {
+									label += ': ';
+								}
+								// Format số với dấu phân cách
+								label += context.parsed.y.toLocaleString('vi-VN') + ' ₫';
+								return label;
+							}
+						}
+					},
+					legend: {
+						display: true,
+						position: 'top'
+					}
+				}
+			}
+		});
+	});
+</script> -->

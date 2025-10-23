@@ -79,11 +79,6 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-between mt-4 pt-3 border-top">
-                    <a href="${pageContext.request.contextPath}/admin/Review/Reviews/edit?id=${review.id}"
-                       class="btn btn-primary btn-lg px-4 py-2 rounded-pill shadow-sm"
-                       style="background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%); border: none;">
-                        <i class="fa fa-edit me-2"></i>Sửa Đánh Giá
-                    </a>
                     <a href="${pageContext.request.contextPath}/admin/Review/Reviews/list"
                        class="btn btn-success btn-lg px-4 py-2 rounded-pill shadow-sm"
                        style="background: linear-gradient(135deg, #1b5e20 0%, #388e3c 100%); border: none;">

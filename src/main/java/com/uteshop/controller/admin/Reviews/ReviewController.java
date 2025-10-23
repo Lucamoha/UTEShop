@@ -30,8 +30,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  * URLs mapped to /admin/Review/Reviews/* for consistency.
  */
 @WebServlet(urlPatterns = {"/admin/Review/Reviews/list",
-        "/admin/Review/Reviews/add",
-        "/admin/Review/Reviews/edit",
         "/admin/Review/Reviews/view",
         "/admin/Review/Reviews/delete",
         "/admin/Review/Reviews/export",
@@ -54,19 +52,7 @@ public class ReviewController extends HttpServlet {
             List<Reviews> listReviews = reviewService.getAll();
             exportToExcel(listReviews, resp);
             return;
-        } else if (url.contains("/admin/Review/Reviews/edit")) {
-            Integer id = Integer.valueOf(req.getParameter("id"));
-            Reviews review = reviewService.getById(id);
-            if (review != null) {
-                req.setAttribute("review", review);
-                IUsersService usersService = new UsersServiceImpl();
-                IProductsService productsService = new ProductsServiceImpl();
-                List<Users> users = usersService.findAll();
-                List<Products> products = productsService.findAll();
-                req.setAttribute("users", users);
-                req.setAttribute("products", products);
-            }
-            req.getRequestDispatcher("/views/admin/Review/Reviews/edit.jsp").forward(req, resp);
+
         } else if (url.contains("/admin/Review/Reviews/view")) {
             Integer id = Integer.valueOf(req.getParameter("id"));
             Reviews review = reviewService.getById(id);
@@ -92,36 +78,6 @@ public class ReviewController extends HttpServlet {
         String url = req.getRequestURI();
         IReviewService reviewService = new ReviewServiceImpl();
         req.setCharacterEncoding("UTF-8");
-
-        if (url.contains("/admin/Review/Reviews/edit")) {
-            Integer id = Integer.valueOf(req.getParameter("id"));
-            Reviews review = reviewService.getById(id);
-
-            if (review != null) {
-                Integer userId = Integer.valueOf(req.getParameter("userId"));
-                Integer productId = Integer.valueOf(req.getParameter("productId"));
-                Integer rating = Integer.valueOf(req.getParameter("rating"));
-                String content = req.getParameter("content");
-                Boolean hasMedia = Boolean.parseBoolean(req.getParameter("hasMedia"));
-                Boolean purchaseVerified = Boolean.parseBoolean(req.getParameter("purchaseVerified"));
-                Boolean status = Boolean.parseBoolean(req.getParameter("status"));
-
-                IUsersService usersService = new UsersServiceImpl();
-                IProductsService productsService = new ProductsServiceImpl();
-                Users user = usersService.findById(userId);
-                Products product = productsService.findById(productId);
-
-                review.setProduct(product);
-                review.setUser(user);
-                review.setRating(rating);
-                review.setContent(content);
-                review.setHasMedia(hasMedia);
-                review.setPurchaseVerified(purchaseVerified);
-                review.setStatus(status);
-                reviewService.save(review);
-            }
-            resp.sendRedirect(req.getContextPath() + "/admin/Review/Reviews/list");
-        }
     }
 
     private void exportToExcel(List<Reviews> reviews, HttpServletResponse response) throws IOException {

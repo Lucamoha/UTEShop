@@ -42,6 +42,16 @@ public abstract class AbstractDao<T> {
 			enma.close();
 		}
 	}
+	
+	// Overloaded method sử dụng EntityManager được truyền vào (để quản lý transaction từ bên ngoài)
+	public void insert(T entity, EntityManager em) {
+		try {
+			em.persist(entity);
+			em.flush(); // ép Hibernate sinh ID
+		} catch (Exception e) {
+			throw e;
+		}
+	}
 
 	// Dành cho entity có liên kết (VariantOptions, ProductVariants,...)
 	public void insertByMerge(T entity) {
@@ -62,6 +72,16 @@ public abstract class AbstractDao<T> {
 			enma.close();
 		}
 	}
+	
+	// Overloaded method với EntityManager được truyền vào
+	public void insertByMerge(T entity, EntityManager em) {
+		try {
+			T managedEntity = em.merge(entity);
+			em.flush();
+		} catch (Exception e) {
+			throw e;
+		}
+	}
 
 	public void update(T entity) {
 		EntityManager enma = JPAConfigs.getEntityManager();
@@ -76,6 +96,16 @@ public abstract class AbstractDao<T> {
 			throw e;
 		} finally {
 			enma.close();
+		}
+	}
+	
+	// Overloaded method với EntityManager được truyền vào
+	public void update(T entity, EntityManager em) {
+		try {
+			em.merge(entity);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
 		}
 	}
 
@@ -101,6 +131,23 @@ public abstract class AbstractDao<T> {
 			enma.close();
 		}
 	}
+	
+	// Overloaded method với EntityManager được truyền vào
+	public void delete(Object id, EntityManager em) {
+		try {
+			T entity = em.find(entityClass, id);
+			if (entity != null) {
+				em.remove(entity);
+			}
+		} catch (Exception e) {
+			Throwable cause = e.getCause();
+	        if (cause instanceof org.hibernate.exception.ConstraintViolationException
+	            || (cause != null && cause.getMessage() != null && cause.getMessage().contains("constraint"))) {
+	            throw new RuntimeException("FOREIGN_KEY_CONSTRAINT");
+	        }
+	        throw new RuntimeException(e);
+		}
+	}
 
 	public T findById(Object id) {
 		EntityManager enma = JPAConfigs.getEntityManager();
@@ -109,6 +156,11 @@ public abstract class AbstractDao<T> {
 		} finally {
 			enma.close();
 		}
+	}
+	
+	// Overloaded method với EntityManager được truyền vào
+	public T findById(Object id, EntityManager em) {
+		return em.find(entityClass, id);
 	}
 
 	public T findByIdFetchColumn(Object id, String column) {

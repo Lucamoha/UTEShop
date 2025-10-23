@@ -16,10 +16,6 @@
                 </c:if>
 
                 <div class="table-responsive">
-                    <a href="${pageContext.request.contextPath}/admin/User/Users/add"
-                       class="btn btn-dark mb-2">Thêm Người Dùng</a>
-                    <a href="${pageContext.request.contextPath}/admin/User/Employees/list"
-                       class="btn btn-secondary mb-2 ml-3">Nhân Viên</a>
                     <table class="table table-striped">
                         <thead>
                         <tr>

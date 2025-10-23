@@ -74,7 +74,6 @@
                 <td>${review.createdAt}</td>
                 <td>
                     <a href="${pageContext.request.contextPath}/admin/Review/Reviews/view?id=${review.id}" class="btn btn-info btn-sm">Xem</a>
-                    <a href="${pageContext.request.contextPath}/admin/Review/Reviews/edit?id=${review.id}" class="btn btn-warning btn-sm">Sửa</a>
                     <a href="${pageContext.request.contextPath}/admin/Review/Reviews/delete?id=${review.id}" class="btn btn-danger btn-sm" onclick="return confirm('Xóa?')">Xóa</a>
                 </td>
             </tr>

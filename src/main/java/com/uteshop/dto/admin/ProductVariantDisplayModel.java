@@ -16,9 +16,9 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductVariantDisplayModel {
-	Integer Id;
-	String SKU;
-	BigDecimal Price;
-	Boolean Status;
+	Integer id;
+	String sku;
+	BigDecimal price;
+	Boolean status;
 	List<String> options = new ArrayList<>();
 }

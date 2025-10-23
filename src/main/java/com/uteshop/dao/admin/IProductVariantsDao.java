@@ -12,6 +12,7 @@ public interface IProductVariantsDao {
 	List<ProductVariantDetailsModel> getVariantsByProductId(int productId);
 	void deleteAllByProductId(Integer productId);
 	ProductVariants findById(int variantId);
+	ProductVariants findBySKU(String sku);
 	List<ProductVariants> findAll();
 	void update(ProductVariants variant);
 }

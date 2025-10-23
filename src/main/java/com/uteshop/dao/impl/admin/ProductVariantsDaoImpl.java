@@ -149,6 +149,22 @@ public class ProductVariantsDaoImpl extends AbstractDao<ProductVariants> impleme
 	}
 	
 	@Override
+	public ProductVariants findBySKU(String sku) {
+		EntityManager enma = JPAConfigs.getEntityManager();
+		try {
+			String jpql = "SELECT pv FROM ProductVariants pv WHERE pv.SKU = :sku";
+			List<ProductVariants> results = enma.createQuery(jpql, ProductVariants.class)
+					.setParameter("sku", sku)
+					.getResultList();
+			return results.isEmpty() ? null : results.get(0);
+		} catch (Exception e) {
+			return null;
+		} finally {
+			enma.close();
+		}
+	}
+	
+	@Override
 	public List<ProductVariants> findAll() {
 		return super.findAll();
 	}
