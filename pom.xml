@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.example</groupId>
@@ -12,28 +12,40 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- dependencies version -->
 		<junit.version>5.11.0</junit.version>
 		<jakarta.servlet-api.version>6.1.0</jakarta.servlet-api.version>
 		<jakarta.servlet.jsp.jstl.version>3.0.1</jakarta.servlet.jsp.jstl.version>
 		<jakarta.servlet.jsp.jstl-api.version>3.0.2</jakarta.servlet.jsp.jstl-api.version>
 		<jakarta.el-api.version>6.0.1</jakarta.el-api.version>
 		<mssql-jdbc.version>12.8.1.jre11</mssql-jdbc.version>
-		<lombok.version>1.18.30</lombok.version>
+		<lombok.version>1.18.32</lombok.version>
 		<sitemesh.version>3.2.1</sitemesh.version>
+		<hibernate-core.version>6.6.1.Final</hibernate-core.version>
+		<hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
+		<jakarta.validation-api.version>3.1.0</jakarta.validation-api.version>
+		<jakarta.servlet.jsp-api.version>3.1.1</jakarta.servlet.jsp-api.version>
+		<fileupload.version>1.6.0</fileupload.version>
+		<commons-io.version>2.11.0</commons-io.version>
+		<jjwt.version>0.12.6</jjwt.version>
+		<jbcrypt.version>0.4</jbcrypt.version>
+		<gson.version>2.10.1</gson.version>
+		<jakarta.mail.version>2.0.1</jakarta.mail.version>
+		<jakarta.activation.version>2.1.3</jakarta.activation.version>
+		<jackson-databind.version>2.20.0</jackson-databind.version>
+		<jackson-datatype-jsr310.version>2.20.0</jackson-datatype-jsr310.version>
+		<poi.version>5.2.2</poi.version>
+		<poi-ooxml.version>5.2.2</poi-ooxml.version>
+		<openpdf.version>3.0.0</openpdf.version>
+		<scribejava-apis.version>8.3.3</scribejava-apis.version>
+		<scribejava-core.version>8.3.3</scribejava-core.version>
 
+		<!-- plugins -->
 		<maven.compiler.target>21</maven.compiler.target>
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven-war-plugin.version>3.4.0</maven-war-plugin.version>
 		<maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-
-		<fileupload.version>1.6.0</fileupload.version>
-
-        <jjwt.version>0.12.6</jjwt.version>
-        <jbcrypt.version>0.4</jbcrypt.version>
-
-		<jakarta.mail.version>2.0.1</jakarta.mail.version>
-		<jakarta.activation.version>2.1.3</jakarta.activation.version>
-
 	</properties>
 
 	<dependencies>
@@ -55,28 +67,25 @@
 			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<!--
-		https://mvnrepository.com/artifact/org.glassfish.web/jakarta.servlet.jsp.jstl  -->
+		<!-- https://mvnrepository.com/artifact/org.glassfish.web/jakarta.servlet.jsp.jstl  -->
 		<dependency>
 			<groupId>org.glassfish.web</groupId>
 			<artifactId>jakarta.servlet.jsp.jstl</artifactId>
 			<version>${jakarta.servlet.jsp.jstl.version}</version>
 		</dependency>
-		<!--
-		https://mvnrepository.com/artifact/jakarta.servlet.jsp.jstl/jakarta.servlet.jsp.jstl-api  -->
+		<!-- https://mvnrepository.com/artifact/jakarta.servlet.jsp.jstl/jakarta.servlet.jsp.jstl-api  -->
 		<dependency>
 			<groupId>jakarta.servlet.jsp.jstl</groupId>
 			<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
 			<version>${jakarta.servlet.jsp.jstl-api.version}</version>
 		</dependency>
-		<!--  https://mvnrepository.com/artifact/jakarta.el/jakarta.el-api  -->
+		<!-- https://mvnrepository.com/artifact/jakarta.el/jakarta.el-api  -->
 		<dependency>
 			<groupId>jakarta.el</groupId>
 			<artifactId>jakarta.el-api</artifactId>
 			<version>${jakarta.el-api.version}</version>
 		</dependency>
-		<!--
-		https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc  -->
+		<!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc  -->
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
 			<artifactId>mssql-jdbc</artifactId>
@@ -86,36 +95,34 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.32</version> <!-- version mới nhất -->
+			<version>${lombok.version}</version>
 			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.sitemesh</groupId>
 			<artifactId>sitemesh</artifactId>
 			<version>${sitemesh.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>6.6.1.Final</version>
+			<version>${hibernate-core.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>8.0.1.Final</version>
+			<version>${hibernate-validator.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.validation</groupId>
 			<artifactId>jakarta.validation-api</artifactId>
-			<version>3.1.0</version>
+			<version>${jakarta.validation-api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.servlet.jsp</groupId>
 			<artifactId>jakarta.servlet.jsp-api</artifactId>
-			<version>3.1.1</version>
+			<version>${jakarta.servlet.jsp-api.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<!--Upload file-->
@@ -128,39 +135,37 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.11.0</version>
+			<version>${commons-io.version}</version>
 		</dependency>
-        <!--JWT-->
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>${jjwt.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-impl</artifactId>
-            <version>${jjwt.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId>
-            <version>${jjwt.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <!-- Password Hashing (BCrypt) -->
-        <dependency>
-            <groupId>org.mindrot</groupId>
-            <artifactId>jbcrypt</artifactId>
-            <version>${jbcrypt.version}</version>
-        </dependency>
-
+		<!--JWT-->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>${jjwt.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>${jjwt.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>${jjwt.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- Password Hashing (BCrypt) -->
+		<dependency>
+			<groupId>org.mindrot</groupId>
+			<artifactId>jbcrypt</artifactId>
+			<version>${jbcrypt.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-			<version>2.10.1</version>
+			<version>${gson.version}</version>
 		</dependency>
-
 		<!-- JavaMail API for sending emails -->
 		<dependency>
 			<groupId>com.sun.mail</groupId>
@@ -172,68 +177,47 @@
 			<artifactId>jakarta.activation-api</artifactId>
 			<version>${jakarta.activation.version}</version>
 		</dependency>
-
 		<!--  https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind  -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.20.0</version>
+			<version>${jackson-databind.version}</version>
 		</dependency>
 		<!--  https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310  -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
-			<version>2.20.0</version>
+			<version>${jackson-datatype-jsr310.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>5.2.2</version>
+			<version>${poi.version}</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
-			<version>5.2.2</version>
+			<version>${poi-ooxml.version}</version>
 		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/com.github.librepdf/openpdf -->
 		<dependency>
 			<groupId>com.github.librepdf</groupId>
 			<artifactId>openpdf</artifactId>
-			<version>3.0.0</version>
+			<version>${openpdf.version}</version>
 		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/com.github.scribejava/scribejava-apis -->
 		<dependency>
 			<groupId>com.github.scribejava</groupId>
 			<artifactId>scribejava-apis</artifactId>
-			<version>8.3.3</version>
+			<version>${scribejava-apis.version}</version>
 		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/com.github.scribejava/scribejava-core -->
 		<dependency>
 			<groupId>com.github.scribejava</groupId>
 			<artifactId>scribejava-core</artifactId>
-			<version>8.3.3</version>
+			<version>${scribejava-core.version}</version>
 		</dependency>
-		
-		<dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.15.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>5.2.5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>5.2.5</version>
-        </dependency>
-
 	</dependencies>
 
 	<build>

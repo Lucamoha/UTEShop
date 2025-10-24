@@ -88,7 +88,7 @@ public class InvoiceController extends HttpServlet {
         String encoded = URLEncoder.encode(fileName, StandardCharsets.UTF_8).replace("+", "%20");
 
         resp.setContentType("application/pdf");
-        resp.setHeader("Content-Disposition", "inline; filename*=UTF-8''" + encoded);
+        resp.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encoded);
 
         try {
             Document doc = new Document(PageSize.A4, 36, 36, 48, 36);
@@ -117,14 +117,14 @@ public class InvoiceController extends HttpServlet {
             head.setWidthPercentage(100);
 
             String left =   "UTEShop\n" +
-                            "Chi nhánh: " + branches.getName() + "\n" +
-                            "Địa chỉ: " + branches.getAddress() + "\n" +
-                            "Hotline: " + branches.getPhone();
+                    "Chi nhánh: " + branches.getName() + "\n" +
+                    "Địa chỉ: " + branches.getAddress() + "\n" +
+                    "Hotline: " + branches.getPhone();
 
             String right =  "Mã đơn: #" + o.getId() + "\n" +
-                            "Ngày tạo: " + created + "\n" +
-                            "PT thanh toán: " + (o.getPayment()!=null ? PaymentEnums.Method.label(o.getPayment().getMethod()) : "-") + "\n" +
-                            "Trạng thái TT: " + OrderEnums.PaymentStatus.label(o.getPaymentStatus());
+                    "Ngày tạo: " + created + "\n" +
+                    "PT thanh toán: " + (o.getPayment()!=null ? PaymentEnums.Method.label(o.getPayment().getMethod()) : "-") + "\n" +
+                    "Trạng thái TT: " + OrderEnums.PaymentStatus.label(o.getPaymentStatus());
 
             PdfPCell l = cell(left, P, Element.ALIGN_LEFT, Element.ALIGN_TOP, null, 6);
             PdfPCell r = cell(right, P, Element.ALIGN_LEFT, Element.ALIGN_TOP, null, 6);
@@ -148,9 +148,9 @@ public class InvoiceController extends HttpServlet {
 
             Paragraph recipient = new Paragraph(
                     "Họ tên: " + nullSafe(o.getReceiverName()) + "\n" +
-                           "SĐT: "    + nullSafe(o.getPhone()) + "\n" +
-                           "Địa chỉ: " + addr + (o.getNote()!=null && !o.getNote().isBlank()? ("\nGhi chú: " + o.getNote()) : ""),
-                           P
+                            "SĐT: "    + nullSafe(o.getPhone()) + "\n" +
+                            "Địa chỉ: " + addr + (o.getNote()!=null && !o.getNote().isBlank()? ("\nGhi chú: " + o.getNote()) : ""),
+                    P
             );
             recipient.setSpacingAfter(8);
             doc.add(recipient);
