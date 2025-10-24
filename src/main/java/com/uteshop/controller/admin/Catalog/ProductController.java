@@ -329,6 +329,15 @@ public class ProductController extends HttpServlet {
 				String forwardPage = isUpdate ? "/views/admin/Catalog/Products/update.jsp"
 						: "/views/admin/Catalog/Products/add.jsp";
 				req.getRequestDispatcher(forwardPage).forward(req, resp);
+			} catch (com.uteshop.exception.DuplicateOptionCombinationException e) {
+				// Lỗi trùng tổ hợp options - rollback tự động
+				e.printStackTrace();
+				req.setAttribute("error", e.getMessage());
+				prepareFormDataForError(req, product, category, isUpdate);
+
+				String forwardPage = isUpdate ? "/views/admin/Catalog/Products/update.jsp"
+						: "/views/admin/Catalog/Products/add.jsp";
+				req.getRequestDispatcher(forwardPage).forward(req, resp);
 			}
 			catch (Exception e) {
 				// Lỗi đã được rollback tự động trong service
@@ -436,6 +445,19 @@ public class ProductController extends HttpServlet {
 			req.setAttribute("tempImages", imageList);
 			System.out.println("Giữ lại " + imageList.size() + " ảnh tạm: " + imageList);
 		}
+		
+		// Preserve deleted IDs để không mất khi reload form
+		String deletedVariantIds = req.getParameter("deletedVariantIds");
+		if (deletedVariantIds != null && !deletedVariantIds.isEmpty()) {
+			req.setAttribute("deletedVariantIds", deletedVariantIds);
+			System.out.println("Preserve deletedVariantIds: " + deletedVariantIds);
+		}
+		
+		String deletedAttributeIds = req.getParameter("deletedAttributeIds");
+		if (deletedAttributeIds != null && !deletedAttributeIds.isEmpty()) {
+			req.setAttribute("deletedAttributeIds", deletedAttributeIds);
+			System.out.println("Preserve deletedAttributeIds: " + deletedAttributeIds);
+		}
 	}
 
 	/**
@@ -528,11 +550,28 @@ public class ProductController extends HttpServlet {
 		String[] existingSkus = req.getParameterValues("existingVariants.sku");
 		String[] existingPrices = req.getParameterValues("existingVariants.price");
 		String[] existingStatuses = req.getParameterValues("existingVariants.status");
+		
+		// Lấy danh sách variants đã xóa để loại bỏ
+		String deletedIdsParam = req.getParameter("deletedVariantIds");
+		List<Integer> deletedIds = new ArrayList<>();
+		if (deletedIdsParam != null && !deletedIdsParam.isEmpty()) {
+			for (String id : deletedIdsParam.split(",")) {
+				if (!id.trim().isEmpty()) {
+					deletedIds.add(Integer.parseInt(id.trim()));
+				}
+			}
+		}
 
 		if (existingIds != null) {
 			// Thay vì parse options từ request (có thể sai), load từ DB để đảm bảo đúng
 			for (int i = 0; i < existingIds.length; i++) {
 				int variantId = Integer.parseInt(existingIds[i]);
+				
+				// Bỏ qua variants đã được đánh dấu xóa
+				if (deletedIds.contains(variantId)) {
+					System.out.println("Skip variant ID " + variantId + " (đã xóa)");
+					continue;
+				}
 				
 				// Load variant details từ DB để lấy options chính xác
 				List<ProductVariantDetailsModel> variantDetails = productsVariantsService.getVariantDetailsById(variantId);

@@ -271,7 +271,10 @@
 													</c:forEach></td>
 
 												<td>
-													<span class="badge bg-info">Mới</span>
+													<button type="button"
+														class="btn btn-outline-danger btn-sm remove-new-variant">
+														<i class="bi bi-trash"></i> Xóa
+													</button>
 												</td>
 											</tr>
 										</c:otherwise>
@@ -567,14 +570,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <!-- Khởi tạo biến toàn cục để lưu các variant đã xóa -->
 <script>
+// Restore từ server nếu có (khi form reload sau lỗi)
 let deletedVariantIds = [];
 let deletedAttributeIds = [];
+
+<c:if test="${not empty deletedVariantIds}">
+    deletedVariantIds = "${deletedVariantIds}".split(",").map(id => id.trim());
+    console.log("Restored deletedVariantIds:", deletedVariantIds);
+</c:if>
+
+<c:if test="${not empty deletedAttributeIds}">
+    deletedAttributeIds = "${deletedAttributeIds}".split(",").map(id => id.trim());
+    console.log("Restored deletedAttributeIds:", deletedAttributeIds);
+</c:if>
 </script>
 
 <!-- xóa biến thể cũ khỏi giao diện -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelector("#variants-tbody").addEventListener("click", (e) => {
+        // Xóa biến thể đã lưu trong DB
         const btn = e.target.closest(".remove-variant");
         if (btn) {
             const tr = btn.closest("tr");
@@ -587,6 +602,14 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             
             tr.remove();
+        }
+        
+        // Xóa biến thể mới (chưa lưu DB) - chỉ remove khỏi DOM
+        const newVariantBtn = e.target.closest(".remove-new-variant");
+        if (newVariantBtn) {
+            const tr = newVariantBtn.closest("tr");
+            tr.remove();
+            console.log("Đã xóa biến thể mới khỏi danh sách");
         }
     });
 });
@@ -747,12 +770,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
 <script>
 document.getElementById("productForm").addEventListener("submit", function (e) {
+    console.log("=== FORM SUBMIT ===");
+    console.log("deletedVariantIds array:", deletedVariantIds);
+    console.log("deletedAttributeIds array:", deletedAttributeIds);
+    
+    // Xóa các input cũ nếu có (tránh duplicate khi submit lại)
+    const oldVariantInput = this.querySelector('input[name="deletedVariantIds"]');
+    if (oldVariantInput) {
+        console.log("Xóa old deletedVariantIds input:", oldVariantInput.value);
+        oldVariantInput.remove();
+    }
+    
+    const oldAttrInput = this.querySelector('input[name="deletedAttributeIds"]');
+    if (oldAttrInput) {
+        console.log("Xóa old deletedAttributeIds input:", oldAttrInput.value);
+        oldAttrInput.remove();
+    }
+    
+    // Tạo input mới
     if (deletedVariantIds.length > 0) {
         const input = document.createElement("input");
         input.type = "hidden";
         input.name = "deletedVariantIds";
         input.value = deletedVariantIds.join(","); // ví dụ: "3,5,7"
         this.appendChild(input);
+        console.log("✓ Đã thêm hidden input deletedVariantIds:", input.value);
+    } else {
+        console.log("⚠ deletedVariantIds rỗng - không tạo hidden input");
     }
     
     if (deletedAttributeIds.length > 0) {
@@ -761,6 +805,9 @@ document.getElementById("productForm").addEventListener("submit", function (e) {
         input.name = "deletedAttributeIds";
         input.value = deletedAttributeIds.join(","); // ví dụ: "10,12,15"
         this.appendChild(input);
+        console.log("✓ Đã thêm hidden input deletedAttributeIds:", input.value);
     }
+    
+    console.log("=== END FORM SUBMIT ===");
 });
 </script>

@@ -9,6 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -28,6 +29,7 @@ import com.uteshop.entity.catalog.ProductImages;
 import com.uteshop.entity.catalog.ProductVariants;
 import com.uteshop.entity.catalog.Products;
 import com.uteshop.entity.catalog.VariantOptions;
+import com.uteshop.exception.DuplicateOptionCombinationException;
 import com.uteshop.exception.DuplicateSkuException;
 import com.uteshop.services.impl.admin.AttributesServiceImpl;
 import com.uteshop.services.impl.admin.ProductImagesServiceImpl;
@@ -129,15 +131,34 @@ public class ProductTransactionService {
 
 	private void handleDeletedVariants(HttpServletRequest req, EntityManager em) {
 		String deletedIdsParam = req.getParameter("deletedVariantIds");
+		System.out.println(">>> deletedVariantIds parameter: " + deletedIdsParam);
+		
 		if (deletedIdsParam != null && !deletedIdsParam.isEmpty()) {
 			String[] ids = deletedIdsParam.split(",");
+			System.out.println(">>> Số lượng variants cần xóa: " + ids.length);
 			for (String idStr : ids) {
 				try {
 					int id = Integer.parseInt(idStr.trim());
-					productVariantsDao.delete(id, em);
-					System.out.println("Đã xóa variant ID: " + id);
+					
+					// Xóa variant options trước (foreign key constraint)
+					String deleteOptionsJpql = "DELETE FROM VariantOptions vo WHERE vo.variant.id = :variantId";
+					int deletedOptions = em.createQuery(deleteOptionsJpql)
+						.setParameter("variantId", id)
+						.executeUpdate();
+					System.out.println("Đã xóa " + deletedOptions + " variant options cho variant ID: " + id);
+					
+					// Xóa variant
+					ProductVariants variant = em.find(ProductVariants.class, id);
+					if (variant != null) {
+						em.remove(variant);
+						em.flush(); // Force sync với DB ngay lập tức
+						System.out.println("Đã xóa variant ID: " + id + " (flushed)");
+					} else {
+						System.out.println("⚠ Variant ID " + id + " không tồn tại trong DB");
+					}
 				} catch (Exception ex) {
 					System.err.println("Lỗi khi xóa variant ID: " + idStr);
+					ex.printStackTrace();
 					throw ex;
 				}
 			}
@@ -269,6 +290,34 @@ public class ProductTransactionService {
 					}
 				}
 
+				// Thu thập option values của variant này
+				List<Integer> currentVariantOptions = new ArrayList<>();
+				if (optionValueIds != null && optionsPerVariant > 0) {
+					for (int j = 0; j < optionsPerVariant; j++) {
+						if (optionIndex < optionValueIds.length) {
+							int optionValueId = Integer.parseInt(optionValueIds[optionIndex]);
+							currentVariantOptions.add(optionValueId);
+							optionIndex++;
+						}
+					}
+				}
+				
+				// Kiểm tra trùng tổ hợp options
+				if (!currentVariantOptions.isEmpty()) {
+					if (isDuplicateOptionCombination(product.getId(), currentVariantOptions, deletedIds, em)) {
+						// Lấy tên các option values để hiển thị trong message lỗi
+						StringBuilder optionNames = new StringBuilder();
+						for (int ovId : currentVariantOptions) {
+							OptionValues ov = em.find(OptionValues.class, ovId);
+							if (ov != null) {
+								if (optionNames.length() > 0) optionNames.append(", ");
+								optionNames.append(ov.getOptionType().getCode()).append(": ").append(ov.getValue());
+							}
+						}
+						throw new DuplicateOptionCombinationException(optionNames.toString());
+					}
+				}
+
 				ProductVariants variant = new ProductVariants();
 				variant.setProduct(product);
 				variant.setSKU(sku);
@@ -284,25 +333,19 @@ public class ProductTransactionService {
 				System.out.println("Đã lưu variant mới SKU: " + variant.getSKU());
 
 				// Lưu các option của biến thể
-				if (optionValueIds != null && optionsPerVariant > 0) {
-					for (int j = 0; j < optionsPerVariant; j++) {
-						if (optionIndex < optionValueIds.length) {
-							int optionValueId = Integer.parseInt(optionValueIds[optionIndex++]);
+				if (!currentVariantOptions.isEmpty()) {
+					for (int ovId : currentVariantOptions) {
+						OptionValues ov = em.find(OptionValues.class, ovId);
+						if (ov != null) {
+							OptionTypes ot = ov.getOptionType();
 
-							// Load OptionValues và OptionTypes trong cùng EntityManager
-							OptionValues ov = em.find(OptionValues.class, optionValueId);
-							if (ov != null) {
-								// OptionType đã được load cùng OptionValue, không cần load riêng
-								OptionTypes ot = ov.getOptionType();
+							VariantOptions vo = new VariantOptions();
+							vo.setVariant(variant);
+							vo.setOptionValue(ov);
+							vo.setOptionType(ot);
 
-								VariantOptions vo = new VariantOptions();
-								vo.setVariant(variant);
-								vo.setOptionValue(ov);
-								vo.setOptionType(ot);
-
-								variantOptionsDao.insertByMerge(vo, em);
-								System.out.println("Đã lưu variant option: " + ot.getCode() + " = " + ov.getValue());
-							}
+							variantOptionsDao.insertByMerge(vo, em);
+							System.out.println("Đã lưu variant option: " + ot.getCode() + " = " + ov.getValue());
 						}
 					}
 				}
@@ -573,5 +616,57 @@ public class ProductTransactionService {
 				.replaceAll("^-+|-+$", ""); // Loại bỏ _ ở đầu và cuối
 		
 		return result.isEmpty() ? "unknown" : result;
+	}
+	
+	/**
+	 * Kiểm tra xem tổ hợp option values đã tồn tại cho product này chưa
+	 * @param productId ID sản phẩm
+	 * @param optionValueIds Danh sách option value IDs (đã sắp xếp)
+	 * @param excludedVariantIds Danh sách variant IDs cần loại trừ (variant đã xóa)
+	 * @param em EntityManager
+	 * @return true nếu tổ hợp đã tồn tại, false nếu chưa
+	 */
+	private boolean isDuplicateOptionCombination(Integer productId, List<Integer> optionValueIds, 
+			List<Integer> excludedVariantIds, EntityManager em) {
+		
+		// Query tìm các variants của product này (không bao gồm variants đã xóa)
+		String jpql = "SELECT v FROM ProductVariants v WHERE v.product.id = :productId";
+		if (excludedVariantIds != null && !excludedVariantIds.isEmpty()) {
+			jpql += " AND v.id NOT IN :excludedIds";
+		}
+		
+		var query = em.createQuery(jpql, ProductVariants.class)
+				.setParameter("productId", productId);
+		
+		if (excludedVariantIds != null && !excludedVariantIds.isEmpty()) {
+			query.setParameter("excludedIds", excludedVariantIds);
+		}
+		
+		List<ProductVariants> existingVariants = query.getResultList();
+		
+		// Sắp xếp optionValueIds để so sánh
+		List<Integer> sortedNewOptions = new ArrayList<>(optionValueIds);
+		Collections.sort(sortedNewOptions);
+		
+		// Kiểm tra từng variant hiện có
+		for (ProductVariants variant : existingVariants) {
+			// Lấy option values của variant này
+			String voJpql = "SELECT vo.optionValue.id FROM VariantOptions vo WHERE vo.variant.id = :variantId";
+			List<Integer> existingOptions = em.createQuery(voJpql, Integer.class)
+					.setParameter("variantId", variant.getId())
+					.getResultList();
+			
+			// Sắp xếp để so sánh
+			Collections.sort(existingOptions);
+			
+			// So sánh 2 danh sách
+			if (sortedNewOptions.equals(existingOptions)) {
+				System.err.println(">>> DUPLICATE OPTIONS: Variant ID " + variant.getId() 
+						+ " đã có tổ hợp options: " + existingOptions);
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }
