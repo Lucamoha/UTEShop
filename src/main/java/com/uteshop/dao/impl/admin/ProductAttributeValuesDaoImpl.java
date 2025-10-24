@@ -45,6 +45,11 @@ public class ProductAttributeValuesDaoImpl extends AbstractDao<ProductAttributeV
             em.close();
         }
 	}
+	
+	@Override
+	public void insertByMerge(ProductAttributeValues entity, EntityManager em) {
+		super.insertByMerge(entity, em);
+	}
 
 	@Override
 	public void deleteByProductId(Integer productId) {

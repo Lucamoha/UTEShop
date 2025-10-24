@@ -73,7 +73,6 @@ public abstract class AbstractDao<T> {
 		}
 	}
 	
-	// Overloaded method với EntityManager được truyền vào
 	public void insertByMerge(T entity, EntityManager em) {
 		try {
 			T managedEntity = em.merge(entity);

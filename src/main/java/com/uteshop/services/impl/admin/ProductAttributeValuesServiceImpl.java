@@ -11,6 +11,7 @@ public class ProductAttributeValuesServiceImpl implements IProductAttributeValue
 	@Override
 	public void insert(ProductAttributeValues productAttributeValue) {
 		productAttributeValuesDaoImpl.insert(productAttributeValue);
+		//productAttributeValuesDaoImpl.in(productAttributeValue);
 	}
 	@Override
 	public void deleteByProductId(Integer productId) {

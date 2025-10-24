@@ -27,8 +27,6 @@ import com.uteshop.entity.catalog.VariantOptions;
 import com.uteshop.exception.DuplicateSkuException;
 import com.uteshop.services.impl.admin.AttributesServiceImpl;
 import com.uteshop.services.impl.admin.ProductImagesServiceImpl;
-import com.uteshop.util.ValidInput;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.servlet.http.HttpServletRequest;
@@ -82,6 +80,16 @@ public class ProductTransactionService {
 			// Xử lý các biến thể mới
 			handleNewVariants(product, req, enma, releasedSkus);
 
+			// Xóa các thuộc tính cũ không thuộc category mới (khi đổi category)
+			if (isUpdate) {
+				deleteAttributesNotInCategory(product, enma);
+			}
+
+			// Xóa các thuộc tính đã được đánh dấu xóa bởi người dùng
+			if (isUpdate) {
+				handleDeletedAttributes(product, req, enma);
+			}
+
 			// Xử lý các thuộc tính hiện có
 			if (isUpdate) {
 				handleExistingAttributes(product, req, enma);
@@ -126,6 +134,28 @@ public class ProductTransactionService {
 					System.out.println("Đã xóa variant ID: " + id);
 				} catch (Exception ex) {
 					System.err.println("Lỗi khi xóa variant ID: " + idStr);
+					throw ex;
+				}
+			}
+		}
+	}
+
+	private void handleDeletedAttributes(Products product, HttpServletRequest req, EntityManager em) {
+		String deletedIdsParam = req.getParameter("deletedAttributeIds");
+		if (deletedIdsParam != null && !deletedIdsParam.isEmpty()) {
+			String[] ids = deletedIdsParam.split(",");
+			for (String idStr : ids) {
+				try {
+					int attributeId = Integer.parseInt(idStr.trim());
+					// Xóa ProductAttributeValue dựa trên productId và attributeId
+					String jpql = "DELETE FROM ProductAttributeValues pav WHERE pav.product.Id = :productId AND pav.attribute.Id = :attributeId";
+					int deleted = em.createQuery(jpql)
+							.setParameter("productId", product.getId())
+							.setParameter("attributeId", attributeId)
+							.executeUpdate();
+					System.out.println("Đã xóa attribute ID: " + attributeId + " (số bản ghi: " + deleted + ")");
+				} catch (Exception ex) {
+					System.err.println("Lỗi khi xóa attribute ID: " + idStr);
 					throw ex;
 				}
 			}
@@ -348,7 +378,8 @@ public class ProductTransactionService {
 					pav.setValueNumber(null);
 				}
 
-				productAttributeValuesDao.insert(pav, em);
+				//productAttributeValuesDao.insert(pav, em);
+				productAttributeValuesDao.insertByMerge(pav, em);
 				System.out.println("Đã lưu thuộc tính mới ID: " + attrId);
 			}
 		}
@@ -398,6 +429,40 @@ public class ProductTransactionService {
 					System.out.println("✓ Đã lưu ảnh: " + imgName);
 				}
 			}
+		}
+	}
+
+	// Xóa các thuộc tính không thuộc category hiện tại (khi đổi category)
+	private void deleteAttributesNotInCategory(Products product, EntityManager em) {
+		try {
+			// Lấy danh sách attribute IDs thuộc category hiện tại của product
+			String jpql = "SELECT ca.id.attributeId FROM CategoryAttributes ca WHERE ca.id.categoryId = :categoryId";
+			List<Integer> validAttributeIds = em.createQuery(jpql, Integer.class)
+					.setParameter("categoryId", product.getCategory().getId())
+					.getResultList();
+
+			if (validAttributeIds.isEmpty()) {
+				// Nếu category mới không có attributes, xóa tất cả attributes của product
+				String deleteJpql = "DELETE FROM ProductAttributeValues pav WHERE pav.product.Id = :productId";
+				int deleted = em.createQuery(deleteJpql)
+						.setParameter("productId", product.getId())
+						.executeUpdate();
+				System.out.println("Đã xóa " + deleted + " thuộc tính cũ (category mới không có attributes)");
+			} else {
+				// Xóa các attributes không thuộc category mới
+				String deleteJpql = "DELETE FROM ProductAttributeValues pav WHERE pav.product.Id = :productId AND pav.attribute.Id NOT IN :validIds";
+				int deleted = em.createQuery(deleteJpql)
+						.setParameter("productId", product.getId())
+						.setParameter("validIds", validAttributeIds)
+						.executeUpdate();
+				
+				if (deleted > 0) {
+					System.out.println("Đã xóa " + deleted + " thuộc tính không thuộc category mới");
+				}
+			}
+		} catch (Exception e) {
+			System.err.println("Lỗi khi xóa attributes cũ: " + e.getMessage());
+			// Không throw exception để không làm gián đoạn transaction
 		}
 	}
 

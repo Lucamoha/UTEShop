@@ -127,7 +127,7 @@
 							<tbody id="attributes-tbody">
 								<c:forEach var="attr" items="${productAttributes}"
 									varStatus="loop">
-									<tr>
+									<tr data-attribute-id="${attr.attributeId}">
 										<td><input type="hidden"
 											name="existingAttributes.attributeId"
 											value="${attr.attributeId}" /> <select
@@ -153,7 +153,7 @@
 												<c:when test="${attr.dataType == 2}">
 													<!-- Number -->
 													<input type="number" name="existingAttributes.value"
-														class="form-control" value="${attr.valueNumber}" step="0.01" />
+														class="form-control" value="${attr.valueNumber.intValue()}" step="1" />
 												</c:when>
 												<c:otherwise>
 													<!-- Text (default) -->
@@ -422,11 +422,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         const tdName = document.createElement('td');
                         const hiddenAttrInput = document.createElement('input');
                         hiddenAttrInput.type = 'hidden';
-                        hiddenAttrInput.name = 'existingAttributes.attributeId';
+                        hiddenAttrInput.name = 'attributeIds';
                         hiddenAttrInput.value = attrId;
                         
                         const selectAttr = document.createElement('select');
-                        selectAttr.name = 'existingAttributes.attributeId';
+                        selectAttr.name = 'attributeIds';
                         selectAttr.className = 'form-select';
                         selectAttr.disabled = true;
                         
@@ -442,7 +442,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Column 2: Attribute value
                         const tdValue = document.createElement('td');
                         const clonedInput = valueInput.cloneNode(true);
-                        clonedInput.name = 'existingAttributes.value';
+                        clonedInput.name = 'attributeValues';
                         
                         // Nếu có giá trị cũ, restore nó
                         if (currentValues[attrId]) {
@@ -553,6 +553,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <!-- Khởi tạo biến toàn cục để lưu các variant đã xóa -->
 <script>
 let deletedVariantIds = [];
+let deletedAttributeIds = [];
 </script>
 
 <!-- xóa biến thể cũ khỏi giao diện -->
@@ -582,7 +583,16 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector("#attributes-tbody").addEventListener("click", (e) => {
         const btn = e.target.closest(".remove-attribute");
         if (btn) {
-            btn.closest("tr").remove();
+            const tr = btn.closest("tr");
+            const attributeId = tr.getAttribute("data-attribute-id");
+            
+            // Nếu là thuộc tính đã có trong DB, lưu lại để xóa sau
+            if (attributeId) {
+                deletedAttributeIds.push(attributeId);
+                console.log("Đã đánh dấu xóa attribute ID:", attributeId);
+            }
+            
+            tr.remove();
         }
     });
 });
@@ -727,6 +737,14 @@ document.getElementById("productForm").addEventListener("submit", function (e) {
         input.type = "hidden";
         input.name = "deletedVariantIds";
         input.value = deletedVariantIds.join(","); // ví dụ: "3,5,7"
+        this.appendChild(input);
+    }
+    
+    if (deletedAttributeIds.length > 0) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "deletedAttributeIds";
+        input.value = deletedAttributeIds.join(","); // ví dụ: "10,12,15"
         this.appendChild(input);
     }
 });
