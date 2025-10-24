@@ -13,6 +13,7 @@ import com.uteshop.services.impl.web.payment.MomoServiceImpl;
 import com.uteshop.services.impl.web.payment.VnpayServiceImpl;
 import com.uteshop.services.manager.IOrdersManagerService;
 import com.uteshop.services.web.payment.IPaymentService;
+import com.uteshop.util.EmailService;
 import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
@@ -253,8 +254,8 @@ public class OrdersManagerServiceImpl implements IOrdersManagerService {
                     order.setPaymentStatus(UNPAID);
                 }
             }
-        } else {
-            // NEW / CONFIRMED: không có ràng buộc thanh toán bổ sung
+        } else if (toStatus == CONFIRMED){
+            EmailService.sendOrderConfirmation(order.getId(), order.getBranch().getId());
         }
 
         // ====== CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG ======

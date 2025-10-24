@@ -187,6 +187,7 @@ public class OrdersManagerDaoImpl extends AbstractDao<Orders> implements IOrders
             left join fetch o.items i
             left join fetch i.product p
             left join fetch i.variant v
+            left join fetch o.user u
             where o.Id = :id and o.branch.Id = :b
         """;
         var list = enma.createQuery(jpql, Orders.class)
