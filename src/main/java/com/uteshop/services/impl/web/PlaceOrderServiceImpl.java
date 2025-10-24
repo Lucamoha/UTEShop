@@ -1,6 +1,8 @@
 package com.uteshop.services.impl.web;
 
+import com.uteshop.dao.impl.manager.CartsManagerDaoImpl;
 import com.uteshop.dao.impl.manager.EntityDaoImpl;
+import com.uteshop.dao.manager.ICartsManagerDao;
 import com.uteshop.entity.auth.Addresses;
 import com.uteshop.entity.auth.Users;
 import com.uteshop.entity.branch.BranchInventory;
@@ -30,7 +32,7 @@ public class PlaceOrderServiceImpl implements IPlaceOrderService {
     EntityDaoImpl<BranchInventory> branchInventoryEntityDao = new EntityDaoImpl<>(BranchInventory.class);
     EntityDaoImpl<ProductVariants> productVariantsEntityDao = new EntityDaoImpl<>(ProductVariants.class);
     EntityDaoImpl<Orders> ordersEntityDao = new EntityDaoImpl<>(Orders.class);
-
+    ICartsManagerDao cartDao = new CartsManagerDaoImpl();
 
     private static int nz(Integer i) { return i == null ? 0 : i; }
 
@@ -60,7 +62,7 @@ public class PlaceOrderServiceImpl implements IPlaceOrderService {
             paymentMethod != PaymentEnums.Method.MOMO)
             throw new IllegalArgumentException("Phương thức thanh toán không hợp lệ");
 
-        Carts cart = user.getCart();
+        Carts cart = cartDao.findCartWithItems(user.getCart().getId());
 
         Map<Integer, CartItems> cartIdx = (cart == null ? List.<CartItems>of() : cart.getItems())
                 .stream().filter(ci -> ci.getVariant() != null)

@@ -27,13 +27,16 @@ public class Addresses {
     @Column(nullable = false, length = 20)
     String Phone;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String AddressLine;
 
+    @Column(columnDefinition = "NVARCHAR(120)")
     String Ward;
 
+    @Column(columnDefinition = "NVARCHAR(120)")
     String District;
 
+    @Column(columnDefinition = "NVARCHAR(120)")
     String City;
 
     @Column(nullable = false)

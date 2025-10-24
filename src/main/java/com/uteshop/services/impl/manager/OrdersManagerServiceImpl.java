@@ -130,9 +130,7 @@ public class OrdersManagerServiceImpl implements IOrdersManagerService {
                 if (payment.getStatus() != PM_SUCCESS) {
                     payment.setStatus(PM_SUCCESS);
                     payment.setPaidAt(java.time.LocalDateTime.now());
-                    if (payment.getPaidAmount() == null) {
-                        payment.setPaidAmount(order.getTotalAmount());
-                    }
+                    payment.setPaidAmount(order.getTotalAmount());
                 }
                 order.setPaymentStatus(PAID);
             } else {
