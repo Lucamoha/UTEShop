@@ -10,8 +10,6 @@
 	href="${pageContext.request.contextPath}/templates/admin/img/kaiadmin/favicon.ico"
 	type="image/x-icon" />
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
 <!-- Fonts and icons -->
@@ -132,5 +130,36 @@
 			src="${pageContext.request.contextPath}/templates/admin/js/setting-demo.js"></script>
 		<%-- <script
 			src="${pageContext.request.contextPath}/templates/admin/js/demo.js"></script> --%>
+		
+		<!-- Script để tự động expand menu và highlight active item -->
+		<script>
+			$(document).ready(function() {
+				// Lấy đường dẫn hiện tại
+				var currentPath = window.location.pathname;
+				
+				// Tìm và active menu item phù hợp
+				$('.sidebar .nav-collapse a').each(function() {
+					var linkPath = $(this).attr('href');
+					if (linkPath && currentPath.indexOf(linkPath) !== -1) {
+						// Thêm class active cho sub-item
+						$(this).parent('li').addClass('active');
+						
+						// Tìm collapse parent và show nó
+						var collapseParent = $(this).closest('.collapse');
+						if (collapseParent.length) {
+							collapseParent.addClass('show');
+							// Thêm active cho parent nav-item
+							collapseParent.closest('.nav-item').addClass('active');
+						}
+					}
+				});
+				
+				// Đảm bảo dropdown hoạt động đúng - khởi tạo lại tất cả dropdowns
+				var dropdownElementList = [].slice.call(document.querySelectorAll('[data-bs-toggle="dropdown"]'));
+				dropdownElementList.map(function (dropdownToggleEl) {
+					return new bootstrap.Dropdown(dropdownToggleEl);
+				});
+			});
+		</script>
 </body>
 </html>
