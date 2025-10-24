@@ -41,6 +41,7 @@
                         <label class="form-label">Vai Trò Người Dùng</label>
                         <select name="userRole" class="form-select" required>
                             <option value="USER" ${user.userRole == 'USER' ? 'selected' : ''}>NGƯỜI DÙNG</option>
+                            <option value="MANAGER" ${user.userRole == 'MANAGER' ? 'selected' : ''}>NGƯỜI QUẢN LÝ</option>
                         </select>
                     </div>
 
