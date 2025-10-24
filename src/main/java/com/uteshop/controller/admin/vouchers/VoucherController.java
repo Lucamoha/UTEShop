@@ -194,18 +194,16 @@ public class VoucherController extends HttpServlet {
                 voucher.setIsActive(isActive);
                 voucherService.save(voucher);
             } else {
-                // Cho add mới: Sử dụng DriverManager JDBC INSERT với MaxUsed = 0
-                // THAY ĐỔI: Hardcode connection details - thay bằng thông tin thực tế của bạn!
-                String dbUrl = "jdbc:sqlserver://localhost:1433;databaseName=UTESHOP;encrypt=false;trustServerCertificate=true;loginTimeout=30;";
-                String dbUsername = "sa";  // Thay bằng username thực tế
-                String dbPassword = "kimdien2005";  // Thay bằng password thực tế
+                String dbUrl = AppConfig.get("db.url");
+                String dbUsername = AppConfig.get("db.username");
+                String dbPassword = AppConfig.get("db.password");
                 Connection conn = null;
                 PreparedStatement pstmt = null;
                 try {
                     conn = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
                     pstmt = conn.prepareStatement(
-                            "INSERT INTO Vouchers (Code, DescText, EndsAt, IsActive, MaxUses, StartsAt, TotalUsed, Type, Value, MaxUsed) " +
-                                    "VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?, 0)", Statement.RETURN_GENERATED_KEYS
+                            "INSERT INTO Vouchers (Code, DescText, EndsAt, IsActive, MaxUses, StartsAt, TotalUsed, Type, Value) " +
+                                    "VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)", Statement.RETURN_GENERATED_KEYS
                     );
 
                     pstmt.setString(1, code);

@@ -41,10 +41,6 @@
 								href="${pageContext.request.contextPath}/admin/User/Users/list">
 									<span class="sub-item">Quản Lý Người Dùng</span>
 							</a></li>
-							<li><a
-								href="${pageContext.request.contextPath}/admin/Address/Addresses/list">
-									<span class="sub-item">Quản Lý Địa Chỉ</span>
-							</a></li>
 						</ul>
 					</div></li>
 				<li class="nav-item"><a data-bs-toggle="collapse"

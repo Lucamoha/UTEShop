@@ -25,7 +25,9 @@ import com.uteshop.entity.catalog.ProductVariants;
 import com.uteshop.entity.catalog.Products;
 import com.uteshop.entity.catalog.VariantOptions;
 import com.uteshop.exception.DuplicateSkuException;
+import com.uteshop.services.impl.admin.AttributesServiceImpl;
 import com.uteshop.services.impl.admin.ProductImagesServiceImpl;
+import com.uteshop.util.ValidInput;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -40,12 +42,13 @@ public class ProductTransactionService {
 	private ProductAttributeValuesDaoImpl productAttributeValuesDao = new ProductAttributeValuesDaoImpl();
 	private ProductImagesDaoImpl productImagesDao = new ProductImagesDaoImpl();
 	private ProductImagesServiceImpl productImagesService = new ProductImagesServiceImpl();
+	private AttributesServiceImpl attributesServiceImpl = new AttributesServiceImpl();
 
 	/*
 	 * Lưu hoặc cập nhật sản phẩm với tất cả thông tin liên quan (variants,
 	 * attributes, images) trong một transaction duy nhất
 	 */
-	
+
 	public void saveOrUpdateProductWithTransaction(Products product, boolean isUpdate, HttpServletRequest req,
 			String uploadPath) throws Exception {
 
@@ -57,13 +60,13 @@ public class ProductTransactionService {
 
 			System.out.println("===BẮT ĐẦU TRANSACTION===");
 
-			//Lưu/cập nhật sản phẩm
+			// Lưu/cập nhật sản phẩm
 			if (isUpdate) {
 				productsDao.update(product, enma);
 			} else {
 				productsDao.insert(product, enma);
 			}
-			
+
 			if (isUpdate) {
 				handleDeletedVariants(req, enma);
 			}
@@ -71,23 +74,23 @@ public class ProductTransactionService {
 			// List để lưu các SKU cũ đã được thay đổi (để bỏ qua khi check duplicate)
 			List<String> releasedSkus = new ArrayList<>();
 
-			//Xử lý các biến thể hiện có (chỉ khi update)
+			// Xử lý các biến thể hiện có (chỉ khi update)
 			if (isUpdate) {
 				releasedSkus = handleExistingVariants(req, enma);
 			}
 
-			//Xử lý các biến thể mới
+			// Xử lý các biến thể mới
 			handleNewVariants(product, req, enma, releasedSkus);
 
-			//Xử lý các thuộc tính hiện có
+			// Xử lý các thuộc tính hiện có
 			if (isUpdate) {
 				handleExistingAttributes(product, req, enma);
 			}
 
-			//Xử lý các thuộc tính mới
+			// Xử lý các thuộc tính mới
 			handleNewAttributes(product, req, enma);
 
-			//Xử lý ảnh (xóa ảnh cũ và thêm ảnh mới)
+			// Xử lý ảnh (xóa ảnh cũ và thêm ảnh mới)
 			if (isUpdate) {
 				handleImages(product, req, uploadPath, enma);
 			} else {
@@ -131,7 +134,7 @@ public class ProductTransactionService {
 
 	private List<String> handleExistingVariants(HttpServletRequest req, EntityManager em) {
 		List<String> releasedSkus = new ArrayList<>(); // SKUs đã được giải phóng (thay đổi)
-		
+
 		String[] deletedIdsParam = req.getParameter("deletedVariantIds") != null
 				? req.getParameter("deletedVariantIds").split(",")
 				: new String[0];
@@ -160,19 +163,19 @@ public class ProductTransactionService {
 				if (variant != null) {
 					String oldSKU = variant.getSKU(); // Lưu SKU cũ
 					String newSKU = existingVariantSkus[i].trim();
-					
+
 					// Kiểm tra SKU trùng khi update (cho phép giữ nguyên SKU cũ)
 					if (!newSKU.equals(oldSKU)) {
 						// SKU đã thay đổi - thêm SKU cũ vào danh sách released
 						releasedSkus.add(oldSKU);
 						System.out.println(">>> SKU đã thay đổi: " + oldSKU + " → " + newSKU);
-						
+
 						ProductVariants existingVariant = findVariantBySKU(em, newSKU, deletedIds);
 						if (existingVariant != null) {
 							throw new DuplicateSkuException(newSKU);
 						}
 					}
-					
+
 					variant.setSKU(newSKU);
 					variant.setPrice(new BigDecimal(existingVariantPrices[i]));
 					variant.setStatus(Boolean.parseBoolean(existingVariantStatuses[i]));
@@ -181,11 +184,12 @@ public class ProductTransactionService {
 				}
 			}
 		}
-		
+
 		return releasedSkus;
 	}
 
-	private void handleNewVariants(Products product, HttpServletRequest req, EntityManager em, List<String> releasedSkus) {
+	private void handleNewVariants(Products product, HttpServletRequest req, EntityManager em,
+			List<String> releasedSkus) {
 		// Lấy danh sách variant đã xóa
 		String[] deletedIdsParam = req.getParameter("deletedVariantIds") != null
 				? req.getParameter("deletedVariantIds").split(",")
@@ -196,10 +200,10 @@ public class ProductTransactionService {
 				deletedIds.add(Integer.parseInt(id.trim()));
 			}
 		}
-		
+
 		System.out.println(">>> Deleted Variant IDs: " + deletedIds);
 		System.out.println(">>> Released SKUs (changed): " + releasedSkus);
-		
+
 		String[] skus = req.getParameterValues("newVariants.sku");
 		String[] prices = req.getParameterValues("newVariants.price");
 		String[] statuses = req.getParameterValues("newVariants.status");
@@ -213,21 +217,24 @@ public class ProductTransactionService {
 
 			for (int i = 0; i < skus.length; i++) {
 				String sku = skus[i].trim();
-				
-				System.out.println(">>> Checking new variant SKU: " + sku + " (excluding deleted IDs: " + deletedIds + ")");
-				
-				// Nếu SKU này là SKU cũ đã được giải phóng (variant đã đổi SKU), cho phép tái sử dụng
+
+				System.out.println(
+						">>> Checking new variant SKU: " + sku + " (excluding deleted IDs: " + deletedIds + ")");
+
+				// Nếu SKU này là SKU cũ đã được giải phóng (variant đã đổi SKU), cho phép tái
+				// sử dụng
 				if (releasedSkus.contains(sku)) {
 					System.out.println(">>> SKU '" + sku + "' đã được giải phóng, cho phép tái sử dụng");
 				} else {
 					// Kiểm tra SKU trùng trước khi insert, bỏ qua các variant đã xóa
 					ProductVariants existingVariant = findVariantBySKU(em, sku, deletedIds);
 					if (existingVariant != null) {
-						System.err.println(">>> DUPLICATE SKU FOUND: " + sku + " (Existing Variant ID: " + existingVariant.getId() + ")");
+						System.err.println(">>> DUPLICATE SKU FOUND: " + sku + " (Existing Variant ID: "
+								+ existingVariant.getId() + ")");
 						throw new DuplicateSkuException(sku);
 					}
 				}
-				
+
 				ProductVariants variant = new ProductVariants();
 				variant.setProduct(product);
 				variant.setSKU(sku);
@@ -276,12 +283,20 @@ public class ProductTransactionService {
 		if (existingAttrIds != null) {
 			for (int i = 0; i < existingAttrIds.length; i++) {
 				int attrId = Integer.parseInt(existingAttrIds[i]);
-				String value = existingAttrValues[i];
+				String value = existingAttrValues[i].trim();
 
 				// Tìm ProductAttributeValues hiện có
 				ProductAttributeValues pav = findProductAttributeValue(product.getId(), attrId, em);
+				Attributes attribute = attributesServiceImpl.findById(attrId);
 				if (pav != null) {
-					pav.setValueText(value);
+					if (attribute.getDataType() == 2) {//la number
+						pav.setValueNumber(new BigDecimal(value));
+						pav.setValueText(null);
+					} else {
+						pav.setValueText(value);
+						pav.setValueNumber(null);
+					}
+
 					productAttributeValuesDao.update(pav, em);
 					System.out.println("Đã cập nhật thuộc tính ID: " + attrId);
 				}
@@ -296,9 +311,10 @@ public class ProductTransactionService {
 		if (attributeIds != null && attributeIds.length > 0) {
 			for (int i = 0; i < attributeIds.length; i++) {
 				int attrId = Integer.parseInt(attributeIds[i]);
-				String attrValue = (attributeValues != null && i < attributeValues.length) ? attributeValues[i] : "";
+				String attrValue = (attributeValues != null && i < attributeValues.length) ? attributeValues[i].trim()
+						: "";
 
-				if (attrValue == null || attrValue.trim().isEmpty()) {
+				if (attrValue == null || attrValue.isEmpty()) {
 					continue;
 				}
 
@@ -308,17 +324,29 @@ public class ProductTransactionService {
 					System.err.println("Không tìm thấy attribute ID: " + attrId);
 					continue;
 				}
-				
+
 				// Tạo composite key trước
 				ProductAttributeValues.Id pavId = new ProductAttributeValues.Id();
 				pavId.setProductId(product.getId());
 				pavId.setAttributeId(attribute.getId());
-				
+
 				ProductAttributeValues pav = new ProductAttributeValues();
 				pav.setId(pavId);
 				pav.setProduct(product);
+
 				pav.setAttribute(attribute);
-				pav.setValueText(attrValue.trim());
+				/*
+				 * if (ValidInput.isNumeric(attrValue)) { pav.setValueNumber(new
+				 * BigDecimal(attrValue)); pav.setValueText(null); } else {
+				 * pav.setValueText(attrValue); pav.setValueNumber(null); }
+				 */
+				if (attribute.getDataType() == 2) {//la number
+					pav.setValueNumber(new BigDecimal(attrValue));
+					pav.setValueText(null);
+				} else {
+					pav.setValueText(attrValue);
+					pav.setValueNumber(null);
+				}
 
 				productAttributeValuesDao.insert(pav, em);
 				System.out.println("Đã lưu thuộc tính mới ID: " + attrId);
@@ -383,7 +411,7 @@ public class ProductTransactionService {
 			return null;
 		}
 	}
-	
+
 	// Helper method to find ProductVariants by SKU (excluding deleted variants)
 	private ProductVariants findVariantBySKU(EntityManager em, String sku, List<Integer> deletedIds) {
 		try {
@@ -391,13 +419,13 @@ public class ProductTransactionService {
 			if (deletedIds != null && !deletedIds.isEmpty()) {
 				jpql += " AND pv.Id NOT IN :deletedIds";
 			}
-			
+
 			var query = em.createQuery(jpql, ProductVariants.class).setParameter("sku", sku);
-			
+
 			if (deletedIds != null && !deletedIds.isEmpty()) {
 				query.setParameter("deletedIds", deletedIds);
 			}
-			
+
 			return query.getSingleResult();
 		} catch (Exception e) {
 			return null;

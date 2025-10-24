@@ -26,15 +26,21 @@
 					<input type="hidden" name="id" value="${category.id}" />
 
 					<div class="mb-3">
-						<label class="form-label">Tên Danh Mục:</label> <input type="text"
+						<label class="form-label">Tên Danh Mục:</label> <input type="text" id="name"
 							name="name" class="form-control" value="${category.name}"
 							placeholder="Nhập tên danh mục" />
 					</div>
 
+					<%-- <div class="mb-3">
+						<label class="form-label">Slug (tự động tạo):</label> <input
+							type="text" id="slug" name="slug" class="form-control"
+							value="${category.slug}" readonly />
+					</div> --%>
+					
 					<div class="mb-3">
 						<label class="form-label">Slug:</label> <input type="text"
-							name="slug" class="form-control" value="${category.slug}"
-							placeholder="Nhập slug duy nhất" required />
+							id="slug" name="slug" class="form-control"
+							value="${category.slug}" readonly />
 					</div>
 
 					<div class="mb-3">
@@ -50,7 +56,9 @@
 					</div>
 
 					<div class="mt-3">
-						<button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Lưu</button>
+						<button type="submit" class="btn btn-primary">
+							<i class="bi bi-save"></i> Lưu
+						</button>
 						<a
 							href="${pageContext.request.contextPath}/admin/Catalog/Categories/searchpaginated"
 							class="btn btn-secondary"><i class="bi bi-x-circle"></i> Hủy</a>
@@ -60,3 +68,15 @@
 		</form>
 	</div>
 </section>
+
+<script>
+    // ====== Tạo slug ======
+    function toSlug(str) {
+        str = str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        str = str.replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
+        return str.replace(/^-+|-+$/g, '');
+    }
+    document.getElementById('name').addEventListener('input', function () {
+        document.getElementById('slug').value = toSlug(this.value);
+    });
+</script>

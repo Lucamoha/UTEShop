@@ -153,7 +153,7 @@
 												<c:when test="${attr.dataType == 2}">
 													<!-- Number -->
 													<input type="number" name="existingAttributes.value"
-														class="form-control" value="${attr.valueText}" step="0.01" />
+														class="form-control" value="${attr.valueNumber}" step="0.01" />
 												</c:when>
 												<c:otherwise>
 													<!-- Text (default) -->
