@@ -6,73 +6,97 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-sm-6 col-lg-3 p-b-50">
-				<h4 class="stext-301 cl0 p-b-30">Danh mục</h4>
+				<h4 class="stext-301 cl0 p-b-30">Sản phẩm Apple</h4>
+
+				<ul>
+                    <!-- Danh mục cha -->
+                    <c:forEach var="cate" items="${parentCategories}">
+                        <li
+                                class="${not empty selectedParent and selectedParent.id == cate.id ? 'active-menu' : ''}"
+                        >
+                            <a
+                                    href="${pageContext.request.contextPath}/category/${cate.slug}"
+                            >
+                                    ${cate.name}
+                            </a>
+                        </li>
+                    </c:forEach>
+                </ul>
+			</div>
+
+			<div class="col-sm-6 col-lg-3 p-b-50">
+				<h4 class="stext-301 cl0 p-b-30">Hỗ trợ khách hàng</h4>
 
 				<ul>
 					<li class="p-b-10"><a href="#"
-						class="stext-107 cl7 hov-cl1 trans-04"> Women </a></li>
+						class="stext-107 cl7 hov-cl1 trans-04"> Tra cứu đơn hàng </a></li>
 
 					<li class="p-b-10"><a href="#"
-						class="stext-107 cl7 hov-cl1 trans-04"> Men </a></li>
+						class="stext-107 cl7 hov-cl1 trans-04"> Chính sách bảo hành </a></li>
 
 					<li class="p-b-10"><a href="#"
-						class="stext-107 cl7 hov-cl1 trans-04"> Shoes </a></li>
+						class="stext-107 cl7 hov-cl1 trans-04"> Giao hàng & Thanh toán </a></li>
 
 					<li class="p-b-10"><a href="#"
-						class="stext-107 cl7 hov-cl1 trans-04"> Watches </a></li>
+						class="stext-107 cl7 hov-cl1 trans-04"> Đổi trả sản phẩm </a></li>
+
+					<li class="p-b-10"><a href="#"
+						class="stext-107 cl7 hov-cl1 trans-04"> Câu hỏi thường gặp </a></li>
 				</ul>
 			</div>
 
 			<div class="col-sm-6 col-lg-3 p-b-50">
-				<h4 class="stext-301 cl0 p-b-30">Help</h4>
+				<h4 class="stext-301 cl0 p-b-30">Liên hệ</h4>
 
-				<ul>
-					<li class="p-b-10"><a href="#"
-						class="stext-107 cl7 hov-cl1 trans-04"> Track Order </a></li>
+				<p class="stext-107 cl7 size-201">
+					<i class="fa fa-map-marker m-r-10"></i>
+					Số 1 Võ Văn Ngân, Thủ Đức, TP. Hồ Chí Minh
+				</p>
 
-					<li class="p-b-10"><a href="#"
-						class="stext-107 cl7 hov-cl1 trans-04"> Returns </a></li>
+				<p class="stext-107 cl7 size-201 p-t-10">
+					<i class="fa fa-phone m-r-10"></i>
+					Hotline: 028 3896 8641
+				</p>
 
-					<li class="p-b-10"><a href="#"
-						class="stext-107 cl7 hov-cl1 trans-04"> Shipping </a></li>
-
-					<li class="p-b-10"><a href="#"
-						class="stext-107 cl7 hov-cl1 trans-04"> FAQs </a></li>
-				</ul>
-			</div>
-
-			<div class="col-sm-6 col-lg-3 p-b-50">
-				<h4 class="stext-301 cl0 p-b-30">GET IN TOUCH</h4>
-
-				<p class="stext-107 cl7 size-201">Any questions? Let us know in
-					store at 8th floor, 379 Hudson St, New York, NY 10018 or call us on
-					(+1) 96 716 6879</p>
+				<p class="stext-107 cl7 size-201 p-t-10">
+					<i class="fa fa-envelope m-r-10"></i>
+					Email: uteshop@gmail.com
+				</p>
 
 				<div class="p-t-27">
-					<a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16"> <i
-						class="fa fa-facebook"></i>
-					</a> <a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16"> <i
-						class="fa fa-instagram"></i>
-					</a> <a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16"> <i
-						class="fa fa-pinterest-p"></i>
+					<a href="https://facebook.com" target="_blank" class="fs-18 cl7 hov-cl1 trans-04 m-r-16"> 
+						<i class="fa fa-facebook"></i>
+					</a> 
+					<a href="https://instagram.com" target="_blank" class="fs-18 cl7 hov-cl1 trans-04 m-r-16"> 
+						<i class="fa fa-instagram"></i>
+					</a> 
+					<a href="https://youtube.com" target="_blank" class="fs-18 cl7 hov-cl1 trans-04 m-r-16"> 
+						<i class="fa fa-youtube"></i>
+					</a>
+					<a href="https://tiktok.com" target="_blank" class="fs-18 cl7 hov-cl1 trans-04 m-r-16"> 
+						<i class="fa fa-music"></i>
 					</a>
 				</div>
 			</div>
 
 			<div class="col-sm-6 col-lg-3 p-b-50">
-				<h4 class="stext-301 cl0 p-b-30">Newsletter</h4>
+				<h4 class="stext-301 cl0 p-b-30">Đăng ký nhận tin</h4>
+
+				<p class="stext-107 cl7 p-b-10">
+					Nhận thông tin về sản phẩm mới, khuyến mãi đặc biệt và ưu đãi độc quyền
+				</p>
 
 				<form>
 					<div class="wrap-input1 w-full p-b-4">
-						<input class="input1 bg-none plh1 stext-107 cl7" type="text"
-							name="email" placeholder="email@example.com">
+						<input class="input1 bg-none plh1 stext-107 cl7" type="email"
+							name="email" placeholder="email@example.com" required>
 						<div class="focus-input1 trans-04"></div>
 					</div>
 
 					<div class="p-t-18">
 						<button
 							class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04">
-							Subscribe</button>
+							Đăng ký</button>
 					</div>
 				</form>
 			</div>
@@ -94,16 +118,13 @@
 			</div>
 
 			<p class="stext-107 cl6 txt-center">
-				<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
 				Copyright &copy;
 				<script>
 					document.write(new Date().getFullYear());
 				</script>
-				All rights reserved | Made with <i class="fa fa-heart-o"
-					aria-hidden="true"></i> by <a href="https://colorlib.com"
-					target="_blank">Colorlib</a> &amp; distributed by <a
-					href="https://themewagon.com" target="_blank">ThemeWagon</a>
-				<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+				UTEShop - Hệ thống bán lẻ ủy quyền Apple chính hãng tại Việt Nam | 
+				<a href="#" class="cl7 hov-cl1">Điều khoản sử dụng</a> | 
+				<a href="#" class="cl7 hov-cl1">Chính sách bảo mật</a>
 			</p>
 		</div>
 	</div>

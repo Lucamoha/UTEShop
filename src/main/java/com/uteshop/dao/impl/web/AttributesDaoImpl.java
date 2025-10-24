@@ -158,7 +158,17 @@ public class AttributesDaoImpl implements IAttributesDao {
                         displayValue = "N/A";
                     }
                 } else if (dataType == 3) { // Boolean
-                    displayValue = valueText != null ? valueText : "N/A";
+                    if (valueText != null) {
+                        if ("1".equals(valueText)) {
+                            displayValue = "Có";
+                        } else if ("0".equals(valueText)) {
+                            displayValue = "Không";
+                        } else {
+                            displayValue = valueText;
+                        }
+                    } else {
+                        displayValue = "N/A";
+                    }
                 } else {
                     displayValue = "N/A";
                 }
