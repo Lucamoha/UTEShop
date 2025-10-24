@@ -113,10 +113,6 @@ public class ProductController extends HttpServlet {
 		List<ProductAttributeDisplayModel> attributes = productAttributesService
 				.getAttributesByProductId(product.getId());
 
-		List<String> imageNames = productsDetailModel.getProductImages().stream().map(ProductImages::getImageUrl)
-				.toList();
-		req.setAttribute("tempImages", imageNames);
-
 		// Gửi sang JSP
 		req.setAttribute("variantList", displayList);
 		req.setAttribute("productsDetailModel", productsDetailModel);
@@ -312,21 +308,10 @@ public class ProductController extends HttpServlet {
 				return;
 			}
 
-			// Kiểm tra trùng SKU trong các variants
-			/*
-			 * String duplicateSKU = checkDuplicateSKU(req, id); if (duplicateSKU != null) {
-			 * req.setAttribute("error", "SKU '" + duplicateSKU +
-			 * "' đã tồn tại! Vui lòng nhập SKU khác!"); prepareFormDataForError(req,
-			 * product, category, isUpdate);
-			 * 
-			 * String forwardPage = isUpdate ? "/views/admin/Catalog/Products/update.jsp" :
-			 * "/views/admin/Catalog/Products/add.jsp";
-			 * req.getRequestDispatcher(forwardPage).forward(req, resp); return; }
-			 */
-
 			// Sử dụng ProductTransactionService để xử lý transaction với rollback tự động
 			try {
-				String uploadPath = req.getServletContext().getRealPath("/uploads");
+				// Lấy đường dẫn tuyệt đối đến thư mục src/main/webapp/uploads trong project
+				String uploadPath = getSourceUploadPath(req);
 
 				// Gọi service để lưu sản phẩm với tất cả dữ liệu liên quan trong 1 transaction
 				productTransactionService.saveOrUpdateProductWithTransaction(product, isUpdate, req, uploadPath);
@@ -430,7 +415,16 @@ public class ProductController extends HttpServlet {
 		List<ProductVariantDisplayModel> tempVariants = buildTempVariantList(req);
 		req.setAttribute("variantList", tempVariants);
 
-		// Giữ lại ảnh tạm
+		// Xử lý ảnh
+		if (isUpdate && product.getId() != null) {
+			// Khi update: load lại ảnh từ DB
+			ProductsDetailModel productsDetailModel = new ProductsDetailModel();
+			productsDetailModel.setProductImages(productImagesService.getImageById(product.getId()));
+			req.setAttribute("productsDetailModel", productsDetailModel);
+			System.out.println("Load lại " + productsDetailModel.getProductImages().size() + " ảnh từ DB");
+		}
+		
+		// Giữ lại ảnh tạm (cho cả add và update)
 		String[] tempImages = req.getParameterValues("tempImages");
 		if (tempImages != null && tempImages.length > 0) {
 			List<String> imageList = new ArrayList<>();
@@ -617,6 +611,54 @@ public class ProductController extends HttpServlet {
 		return tempAttrs;
 	}
 
+	/**
+	 * Lấy đường dẫn tuyệt đối đến thư mục src/main/webapp/uploads trong project
+	 */
+	private String getSourceUploadPath(HttpServletRequest req) {
+		// Lấy context path thực tế (deployed)
+		String realPath = req.getServletContext().getRealPath("/uploads");
+		System.out.println("[ProductController] Real path: " + realPath);
+		
+		if (realPath == null) {
+			return null;
+		}
+		
+		String sourcePath = null;
+		
+		// Xử lý đường dẫn Eclipse server: .metadata\.plugins\org.eclipse.wst.server.core\tmp1\wtpwebapps\UTEShop\\uploads
+		if (realPath.contains(".metadata")) {
+			// Tìm workspace root (trước .metadata)
+			int metadataIndex = realPath.indexOf(".metadata");
+			String workspaceRoot = realPath.substring(0, metadataIndex);
+			
+			// Tìm tên project (sau wtpwebapps/)
+			String projectName = "UTEShop"; // Hoặc extract từ path
+			if (realPath.contains("wtpwebapps")) {
+				int wtpIndex = realPath.indexOf("wtpwebapps") + "wtpwebapps".length() + 1;
+				int uploadIndex = realPath.indexOf(java.io.File.separator + "uploads", wtpIndex);
+				if (uploadIndex > wtpIndex) {
+					projectName = realPath.substring(wtpIndex, uploadIndex);
+				}
+			}
+			
+			sourcePath = workspaceRoot + projectName + java.io.File.separator + "src" + java.io.File.separator + 
+				   "main" + java.io.File.separator + "webapp" + java.io.File.separator + "uploads";
+		}
+		// Xử lý đường dẫn Maven: target/UTEShop-1.0/uploads
+		else if (realPath.contains("target")) {
+			String projectRoot = realPath.substring(0, realPath.indexOf("target"));
+			sourcePath = projectRoot + "src" + java.io.File.separator + "main" + java.io.File.separator + 
+				   "webapp" + java.io.File.separator + "uploads";
+		}
+		// Fallback: trả về realPath nếu không nhận diện được
+		else {
+			sourcePath = realPath;
+		}
+		
+		System.out.println("[ProductController] Source path: " + sourcePath);
+		return sourcePath;
+	}
+	
 	private void handleLoadOptionValues(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		resp.setContentType("application/json; charset=UTF-8");
 

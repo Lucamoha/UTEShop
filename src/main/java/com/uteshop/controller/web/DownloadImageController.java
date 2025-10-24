@@ -47,12 +47,57 @@ public class DownloadImageController extends HttpServlet {
             return;
         }
 
-        File baseDir = new File(req.getServletContext().getRealPath("/uploads"));
-        File file = (dir.isEmpty()) ? new File(baseDir, fname) : new File(baseDir, dir + File.separator + fname);
-
-        if (!file.exists() || file.isDirectory()) {
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "File không tồn tại.");
-            return;
+        // Lấy đường dẫn uploads source (giống TempUploadServlet)
+        String realPath = req.getServletContext().getRealPath("/uploads");
+        String uploadRoot;
+        
+        if (realPath != null && realPath.contains(".metadata")) {
+            // Xử lý đường dẫn Eclipse server
+            int metadataIndex = realPath.indexOf(".metadata");
+            String workspaceRoot = realPath.substring(0, metadataIndex);
+            
+            String projectName = "UTEShop";
+            if (realPath.contains("wtpwebapps")) {
+                int wtpIndex = realPath.indexOf("wtpwebapps") + "wtpwebapps".length() + 1;
+                int uploadIndex = realPath.indexOf(File.separator + "uploads", wtpIndex);
+                if (uploadIndex > wtpIndex) {
+                    projectName = realPath.substring(wtpIndex, uploadIndex);
+                }
+            }
+            
+            uploadRoot = workspaceRoot + projectName + File.separator + "src" + File.separator + 
+                       "main" + File.separator + "webapp" + File.separator + "uploads";
+        } else if (realPath != null && realPath.contains("target")) {
+            // Xử lý đường dẫn Maven target
+            String projectRoot = realPath.substring(0, realPath.indexOf("target"));
+            uploadRoot = projectRoot + "src" + File.separator + "main" + File.separator + 
+                       "webapp" + File.separator + "uploads";
+        } else {
+            uploadRoot = realPath;
+        }
+        
+        System.out.println("[DownloadImageController] Upload root: " + uploadRoot);
+        File baseDir = new File(uploadRoot);
+        File file;
+        
+        // Nếu fname bắt đầu với "products/", tìm file trong toàn bộ cây thư mục
+        if (fname.startsWith("products" + File.separator) || fname.startsWith("products/")) {
+            String fileName = fname.substring(fname.indexOf("/") + 1); // Lấy tên file sau "products/"
+            file = findFileRecursively(baseDir, fileName);
+            
+            if (file == null) {
+                System.out.println("[DownloadImageController] Không tìm thấy file: " + fileName);
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "File không tồn tại.");
+                return;
+            }
+        } else {
+            // Xử lý bình thường cho các file khác
+            file = (dir.isEmpty()) ? new File(baseDir, fname) : new File(baseDir, dir + File.separator + fname);
+            
+            if (!file.exists() || file.isDirectory()) {
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "File không tồn tại.");
+                return;
+            }
         }
 
         String mimeType = req.getServletContext().getMimeType(file.getAbsolutePath());
@@ -72,6 +117,42 @@ public class DownloadImageController extends HttpServlet {
             }
             out.flush();
         }
+    }
+    
+    /**
+     * Tìm file đệ quy trong thư mục và các thư mục con
+     * @param directory Thư mục gốc để tìm
+     * @param fileName Tên file cần tìm
+     * @return File nếu tìm thấy, null nếu không tìm thấy
+     */
+    private File findFileRecursively(File directory, String fileName) {
+        if (!directory.exists() || !directory.isDirectory()) {
+            return null;
+        }
+        
+        File[] files = directory.listFiles();
+        if (files == null) {
+            return null;
+        }
+        
+        // Tìm trong thư mục hiện tại
+        for (File file : files) {
+            if (file.isFile() && file.getName().equals(fileName)) {
+                return file;
+            }
+        }
+        
+        // Tìm đệ quy trong các thư mục con
+        for (File file : files) {
+            if (file.isDirectory()) {
+                File found = findFileRecursively(file, fileName);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        
+        return null;
     }
 }
 

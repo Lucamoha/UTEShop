@@ -6,9 +6,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
+import java.util.regex.Pattern;
 
 import com.uteshop.configs.JPAConfigs;
 import com.uteshop.dao.impl.admin.ProductAttributeValuesDaoImpl;
@@ -17,6 +20,7 @@ import com.uteshop.dao.impl.admin.ProductVariantsDaoImpl;
 import com.uteshop.dao.impl.admin.ProductsDaoImpl;
 import com.uteshop.dao.impl.admin.VariantOptionsDaoImpl;
 import com.uteshop.entity.catalog.Attributes;
+import com.uteshop.entity.catalog.Categories;
 import com.uteshop.entity.catalog.OptionTypes;
 import com.uteshop.entity.catalog.OptionValues;
 import com.uteshop.entity.catalog.ProductAttributeValues;
@@ -402,7 +406,11 @@ public class ProductTransactionService {
 
 		if (tempImages != null && tempImages.length > 0) {
 			Path tmpDir = Paths.get(uploadPath, "tmp");
-			Path uploadDir = Paths.get(uploadPath);
+			
+			// Xây dựng đường dẫn vật lý: uploads/danh_mục_cha/danh_mục/
+			String productFolderPath = buildProductFolderPath(product);
+			Path uploadDir = Paths.get(uploadPath, productFolderPath);
+			
 			if (!Files.exists(uploadDir)) {
 				Files.createDirectories(uploadDir);
 			}
@@ -413,7 +421,10 @@ public class ProductTransactionService {
 				}
 
 				Path src = tmpDir.resolve(imgName);
-				Path dest = uploadDir.resolve(imgName);
+				
+				// Tạo tên file mới: tên_sản_phẩm_uuid.extension
+				String newFileName = generateProductImageFileName(product, imgName);
+				Path dest = uploadDir.resolve(newFileName);
 
 				if (Files.isDirectory(src)) {
 					continue;
@@ -422,11 +433,16 @@ public class ProductTransactionService {
 				if (Files.exists(src)) {
 					Files.move(src, dest, StandardCopyOption.REPLACE_EXISTING);
 
+					// Lưu trong DB: chỉ products/tên_file (không theo category)
+					String relativeImagePath = "products/" + newFileName;
+					
 					ProductImages img = new ProductImages();
-					img.setImageUrl(imgName);
+					img.setImageUrl(relativeImagePath);
 					img.setProduct(product);
 					productImagesDao.insert(img, em);
-					System.out.println("✓ Đã lưu ảnh: " + imgName);
+					
+					System.out.println("✓ File vật lý: " + productFolderPath + "/" + newFileName);
+					System.out.println("✓ DB lưu: " + relativeImagePath);
 				}
 			}
 		}
@@ -495,5 +511,67 @@ public class ProductTransactionService {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+	
+	/**
+	 * Xây dựng đường dẫn thư mục cho sản phẩm theo cấu trúc: danh_mục_cha/danh_mục
+	 * Nếu không có danh mục cha, trả về: danh_mục
+	 */
+	private String buildProductFolderPath(Products product) {
+		Categories category = product.getCategory();
+		Categories parentCategory = category.getParent();
+		
+		String categorySlug = sanitizeForPath(category.getName());
+		
+		if (parentCategory != null) {
+			String parentSlug = sanitizeForPath(parentCategory.getName());
+			return parentSlug + "/" + categorySlug;
+		} else {
+			return categorySlug;
+		}
+	}
+	
+	/**
+	 * Tạo tên file ảnh mới theo định dạng: tên_sản_phẩm_uuid.extension
+	 */
+	private String generateProductImageFileName(Products product, String originalFileName) {
+		// Lấy extension từ file gốc
+		String extension = "";
+		if (originalFileName.contains(".")) {
+			extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+		}
+		
+		// Chuẩn hóa tên sản phẩm thành slug
+		String productSlug = sanitizeForPath(product.getName());
+		
+		// Tạo UUID ngắn (8 ký tự đầu) để tránh trùng
+		String uniqueSuffix = UUID.randomUUID().toString().substring(0, 8);
+		
+		return productSlug + "-" + uniqueSuffix + extension;
+	}
+	
+	/**
+	 * Chuẩn hóa chuỗi để sử dụng làm đường dẫn file/folder
+	 * - Loại bỏ dấu tiếng Việt
+	 * - Chuyển thành chữ thường
+	 * - Thay khoảng trắng và ký tự đặc biệt bằng dấu gạch dưới
+	 */
+	private String sanitizeForPath(String text) {
+		if (text == null || text.isEmpty()) {
+			return "unknown";
+		}
+		
+		// Loại bỏ dấu tiếng Việt
+		String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
+		Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+		String withoutAccents = pattern.matcher(normalized).replaceAll("");
+		
+		// Chuyển thành chữ thường và thay thế ký tự đặc biệt
+		String result = withoutAccents.toLowerCase()
+				.replaceAll("đ", "d")
+				.replaceAll("[^a-z0-9]+", "-")
+				.replaceAll("^-+|-+$", ""); // Loại bỏ _ ở đầu và cuối
+		
+		return result.isEmpty() ? "unknown" : result;
 	}
 }

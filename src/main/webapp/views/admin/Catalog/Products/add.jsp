@@ -422,9 +422,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     <td>
                 		<img src="\${contextPath}/image?dir=tmp&fname=\${fileName}" 
                     width="200" height="150" class="img-thumbnail">
-                        <input type="hidden" name="tempImages" value="\${fileName}"
                     </td>
                     <td>
+                        <input type="hidden" name="tempImages" value="\${fileName}">
                         <button type="button" class="btn btn-outline-danger btn-sm remove-temp-img">
                             <i class="bi bi-trash"></i> Xóa
                         </button>

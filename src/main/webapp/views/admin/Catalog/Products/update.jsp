@@ -87,6 +87,7 @@
 									</tr>
 								</thead>
 								<tbody id="image-preview-body">
+									<!-- Ảnh từ database -->
 									<c:forEach var="img"
 										items="${productsDetailModel.productImages}">
 										<tr>
@@ -99,6 +100,20 @@
 												<button type="button"
 													class="btn btn-outline-danger btn-sm remove-old-img">
 													Xóa</button>
+											</td>
+										</tr>
+									</c:forEach>
+									
+									<!-- Ảnh tạm (mới upload) -->
+									<c:forEach items="${tempImages}" var="img">
+										<tr>
+											<td><img
+												src="${pageContext.request.contextPath}/image?dir=tmp&fname=${img}"
+												width="200" height="150" class="img-thumbnail"></td>
+											<td><input type="hidden" name="tempImages"
+												value="${img}">
+												<button type="button"
+													class="btn btn-outline-danger btn-sm remove-temp-img">Xóa</button>
 											</td>
 										</tr>
 									</c:forEach>
@@ -511,9 +526,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     <td>
                 		<img src="\${contextPath}/image?dir=tmp&fname=\${fileName}" 
                     width="200" height="150" class="img-thumbnail">
-                        <input type="hidden" name="tempImages" value="\${fileName}"
                     </td>
                     <td>
+                        <input type="hidden" name="tempImages" value="\${fileName}">
                         <button type="button" class="btn btn-outline-danger btn-sm remove-temp-img">
                             <i class="bi bi-trash"></i> Xóa
                         </button>

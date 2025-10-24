@@ -32,7 +32,7 @@
 					</div>
 
 					<div class="mb-3">
-						<label class="form-label">Chọn Kiểu Dữ Liệu:</label> <select
+						<label class="form-label">Chọn Kiểu Dữ Liệu:</label> <select id="dataTypeSelect"
 							name="dataType" class="form-control" required>
 							<option value="1" ${attribute.dataType == 1 ? 'selected' : ''}>Văn
 								bản</option>
@@ -42,9 +42,9 @@
 						</select>
 					</div>
 
-					<div class="mb-3">
+					<div class="mb-3" id="unitGroup">
 						<label class="form-label">Đơn Vị:</label> <input type="text"
-							name="unit" class="form-control" value="${attribute.unit}"
+							id="unitInput" name="unit" class="form-control" value="${attribute.unit}"
 							placeholder="Nhập đơn vị" />
 					</div>
 
@@ -61,3 +61,27 @@
 		</form>
 	</div>
 </section>
+
+<script>
+	//Lấy phần tử select và ô nhập unit
+	const dataTypeSelect = document.getElementById("dataTypeSelect");
+	const unitGroup = document.getElementById("unitGroup");
+	const unitInput = document.getElementById("unitInput");
+
+	function toggleUnitField() {
+		if (dataTypeSelect.value === "2") {
+			unitGroup.style.display = "block";
+			unitInput.removeAttribute("disabled");
+		} else {
+			unitGroup.style.display = "none";
+			unitInput.setAttribute("disabled", "disabled");
+			unitInput.value = "";
+		}
+	}
+
+	//Gọi khi load trang (đảm bảo trạng thái ban đầu đúng)
+	document.addEventListener("DOMContentLoaded", toggleUnitField);
+
+	//Gọi khi thay đổi lựa chọn
+	dataTypeSelect.addEventListener("change", toggleUnitField);
+</script>

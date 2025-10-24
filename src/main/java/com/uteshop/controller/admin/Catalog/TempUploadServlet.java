@@ -39,8 +39,39 @@ public class TempUploadServlet extends HttpServlet {
                 return;
             }
 
-            String webAppRoot = request.getServletContext().getRealPath("/");
-            Path uploadPath = Paths.get(webAppRoot, TEMP_DIR_NAME);
+            // Lấy đường dẫn tới src/main/webapp/uploads/tmp
+            String realPath = request.getServletContext().getRealPath("/uploads");
+            System.out.println("[TempUploadServlet] Real path: " + realPath);
+            String uploadRoot;
+            
+            if (realPath != null && realPath.contains(".metadata")) {
+                // Xử lý đường dẫn Eclipse server: .metadata\.plugins\...\wtpwebapps\UTEShop\\uploads
+                int metadataIndex = realPath.indexOf(".metadata");
+                String workspaceRoot = realPath.substring(0, metadataIndex);
+                
+                // Tìm tên project
+                String projectName = "UTEShop";
+                if (realPath.contains("wtpwebapps")) {
+                    int wtpIndex = realPath.indexOf("wtpwebapps") + "wtpwebapps".length() + 1;
+                    int uploadIndex = realPath.indexOf(File.separator + "uploads", wtpIndex);
+                    if (uploadIndex > wtpIndex) {
+                        projectName = realPath.substring(wtpIndex, uploadIndex);
+                    }
+                }
+                
+                uploadRoot = workspaceRoot + projectName + File.separator + "src" + File.separator + 
+                           "main" + File.separator + "webapp" + File.separator + "uploads";
+            } else if (realPath != null && realPath.contains("target")) {
+                // Xử lý đường dẫn Maven target
+                String projectRoot = realPath.substring(0, realPath.indexOf("target"));
+                uploadRoot = projectRoot + "src" + File.separator + "main" + File.separator + 
+                           "webapp" + File.separator + "uploads";
+            } else {
+                uploadRoot = realPath;
+            }
+            
+            System.out.println("[TempUploadServlet] Upload root: " + uploadRoot);
+            Path uploadPath = Paths.get(uploadRoot, "tmp");
 
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
