@@ -320,7 +320,7 @@
                             </a>
                         </div>
                         <div class="product-price">
-                            <fmt:formatNumber value="${comparison.product1Price}" pattern="#,###" />VND
+                            <fmt:formatNumber value="${comparison.product1Price}" pattern="#,###" /> VND
                         </div>
                     </div>
 
@@ -332,15 +332,38 @@
                                 </div>
                                 <div class="spec-value">
                                     <c:choose>
-                                        <c:when test="${not empty attr.unit and attr.product1Value != 'N/A'}">
-                                            <fmt:formatNumber value="${attr.product1Value}" type="number" maxFractionDigits="2" />
-                                            (${attr.unit})
+                                        <c:when test="${empty attr.product1Value or attr.product1Value == null}">
+                                            N/A
+                                        </c:when>
+                                        <c:when test="${attr.dataType == 1}">
+                                            ${attr.product1Value}
+                                        </c:when>
+                                        <c:when test="${attr.dataType == 2}">
+                                            <c:choose>
+                                                <c:when test="${not empty attr.unit and attr.product1Value != 'N/A'}">
+                                                    <fmt:formatNumber value="${attr.product1Value}" type="number" maxFractionDigits="2" />
+                                                    (${attr.unit})
+                                                </c:when>
+                                                <c:otherwise>
+                                                    ${attr.product1Value}
+                                                    <c:if test="${not empty attr.unit and attr.product1Value == 'N/A'}">
+                                                        (${attr.unit})
+                                                    </c:if>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:when>
+                                        <c:when test="${attr.dataType == 3}">
+                                            <c:choose>
+                                                <c:when test="${attr.product1Value == '1'}">
+                                                    Có
+                                                </c:when>
+                                                <c:otherwise>
+                                                    Không
+                                                </c:otherwise>
+                                            </c:choose>
                                         </c:when>
                                         <c:otherwise>
                                             ${attr.product1Value}
-                                            <c:if test="${not empty attr.unit and attr.product1Value == 'N/A'}">
-                                                (${attr.unit})
-                                            </c:if>
                                         </c:otherwise>
                                     </c:choose>
                                 </div>
@@ -385,15 +408,38 @@
                                 </div>
                                 <div class="spec-value">
                                     <c:choose>
-                                        <c:when test="${not empty attr.unit and attr.product2Value != 'N/A'}">
-                                            <fmt:formatNumber value="${attr.product2Value}" type="number" maxFractionDigits="2" />
-                                            (${attr.unit})
+                                        <c:when test="${empty attr.product2Value or attr.product2Value == null}">
+                                            N/A
+                                        </c:when>
+                                        <c:when test="${attr.dataType == 1}">
+                                            ${attr.product2Value}
+                                        </c:when>
+                                        <c:when test="${attr.dataType == 2}">
+                                            <c:choose>
+                                                <c:when test="${not empty attr.unit and attr.product2Value != 'N/A'}">
+                                                    <fmt:formatNumber value="${attr.product2Value}" type="number" maxFractionDigits="2" />
+                                                    (${attr.unit})
+                                                </c:when>
+                                                <c:otherwise>
+                                                    ${attr.product2Value}
+                                                    <c:if test="${not empty attr.unit and attr.product2Value == 'N/A'}">
+                                                        (${attr.unit})
+                                                    </c:if>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:when>
+                                        <c:when test="${attr.dataType == 3}">
+                                            <c:choose>
+                                                <c:when test="${attr.product2Value == '1'}">
+                                                    Có
+                                                </c:when>
+                                                <c:otherwise>
+                                                    Không
+                                                </c:otherwise>
+                                            </c:choose>
                                         </c:when>
                                         <c:otherwise>
                                             ${attr.product2Value}
-                                            <c:if test="${not empty attr.unit and attr.product2Value == 'N/A'}">
-                                                (${attr.unit})
-                                            </c:if>
                                         </c:otherwise>
                                     </c:choose>
                                 </div>
