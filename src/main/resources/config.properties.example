@@ -89,6 +89,11 @@ product.status.inactive=0
 product.status.active=1
 
 # ========================
+# Upload Directory
+# ========================
+upload.dir=uploads
+
+# ========================
 # Order Status Mapping
 # ========================
 orders.status.new=0

@@ -381,18 +381,24 @@
                                                                     <c:choose>
                                                                         <c:when test="${media.mediaType == 1}">
                                                                             <%-- Image --%>
-                                                                            <a href="${pageContext.request.contextPath}/${media.mediaUrl}"
+                                                                            <c:url value="/image" var="imgUrl">
+                                                                                <c:param name="fname" value="${media.mediaUrl}"/>
+                                                                            </c:url>
+                                                                            <a href="${imgUrl}"
                                                                                class="m-r-10 m-b-10"
                                                                                data-lightbox="review-${review.id}">
-                                                                                <img src="${pageContext.request.contextPath}/${media.mediaUrl}"
+                                                                                <img src="${imgUrl}"
                                                                                      alt="Review"
                                                                                      style="width:100px; height:100px; object-fit:cover; border-radius:8px;"/>
                                                                             </a>
                                                                         </c:when>
                                                                         <c:when test="${media.mediaType == 2}">
                                                                             <%-- Video --%>
+                                                                            <c:url value="/image" var="videoUrl">
+                                                                                <c:param name="fname" value="${media.mediaUrl}"/>
+                                                                            </c:url>
                                                                             <video width="200" height="150" controls class="m-r-10 m-b-10" style="border-radius:8px;">
-                                                                                <source src="${pageContext.request.contextPath}/${media.mediaUrl}" type="video/mp4">
+                                                                                <source src="${videoUrl}" type="video/mp4">
                                                                                 Trình duyệt không hỗ trợ video.
                                                                             </video>
                                                                         </c:when>

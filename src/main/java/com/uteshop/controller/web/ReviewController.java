@@ -1,5 +1,6 @@
 package com.uteshop.controller.web;
 
+import com.uteshop.configs.AppConfig;
 import com.uteshop.entity.auth.Users;
 import com.uteshop.entity.catalog.Products;
 import com.uteshop.entity.engagement.ReviewMedia;
@@ -40,8 +41,8 @@ public class ReviewController extends HttpServlet {
     private final IProductsService productsService = new ProductsServiceImpl();
 
     // Thư mục lưu media reviews
-    private static final String UPLOAD_DIR_IMAGES = "uploads/reviews/images";
-    private static final String UPLOAD_DIR_VIDEOS = "uploads/reviews/videos";
+    private static final String UPLOAD_DIR_IMAGES = AppConfig.get("upload.dir") + "/reviews/images";
+    private static final String UPLOAD_DIR_VIDEOS = AppConfig.get("upload.dir") + "/reviews/videos";
 
     // file types
     private static final String[] ALLOWED_IMAGE_TYPES = { "image/jpeg", "image/jpg", "image/png", "image/gif",
@@ -202,12 +203,8 @@ public class ReviewController extends HttpServlet {
     }
 
     private String saveFile(Part filePart, String uploadDir, HttpServletRequest req) throws IOException {
-        // Lấy đường dẫn thực tế của webapp
-        String applicationPath = req.getServletContext().getRealPath("");
-        String uploadPath = applicationPath + File.separator + uploadDir;
-
         // Tạo thư mục nếu chưa tồn tại
-        File uploadDirFile = new File(uploadPath);
+        File uploadDirFile = new File(uploadDir);
         if (!uploadDirFile.exists()) {
             uploadDirFile.mkdirs();
         }
@@ -218,11 +215,12 @@ public class ReviewController extends HttpServlet {
         String uniqueFilename = UUID.randomUUID().toString() + fileExtension;
 
         // Lưu file
-        Path filePath = Paths.get(uploadPath, uniqueFilename);
+        Path filePath = Paths.get(uploadDir, uniqueFilename);
         Files.copy(filePart.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-        // Trả về URL
-        return uploadDir + "/" + uniqueFilename;
+        // Trả về URL chỉ từ phần reviews/ trở đi
+        String relativePath = uploadDir.substring(uploadDir.indexOf("reviews/"));
+        return relativePath + "/" + uniqueFilename;
     }
 
     private boolean isValidImageType(String contentType) {
