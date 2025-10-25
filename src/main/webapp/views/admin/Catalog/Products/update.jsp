@@ -103,7 +103,7 @@
 											</td>
 										</tr>
 									</c:forEach>
-									
+
 									<!-- Ảnh tạm (mới upload) -->
 									<c:forEach items="${tempImages}" var="img">
 										<tr>
@@ -168,7 +168,8 @@
 												<c:when test="${attr.dataType == 2}">
 													<!-- Number -->
 													<input type="number" name="existingAttributes.value"
-														class="form-control" value="${attr.valueNumber.intValue()}" step="1" />
+														class="form-control"
+														value="${attr.valueNumber.intValue()}" step="1" />
 												</c:when>
 												<c:otherwise>
 													<!-- Text (default) -->
@@ -221,18 +222,19 @@
 
 												<td><select name="existingVariants.status"
 													class="form-select form-select-sm">
-														<option value="true" ${v.status ? 'selected' : ''}>Đang bán</option>
-														<option value="false" ${!v.status ? 'selected' : ''}>Ngừng bán</option>
+														<option value="true" ${v.status ? 'selected' : ''}>Đang
+															bán</option>
+														<option value="false" ${!v.status ? 'selected' : ''}>Ngừng
+															bán</option>
 												</select></td>
 
 												<td><c:forEach var="opt" items="${v.options}">
 														<span class="badge bg-secondary">${opt}</span>
 														<br />
-													</c:forEach> 
-													<c:forEach var="optVId" items="${v.optionValueIds}">
+													</c:forEach> <c:forEach var="optVId" items="${v.optionValueIds}">
 														<input type="hidden"
 															name="existingVariants.optionValueIds[]"
-															value="${optVId}" />						
+															value="${optVId}" />
 													</c:forEach></td>
 
 												<td>
@@ -246,9 +248,8 @@
 										<c:otherwise>
 											<!-- New variant (from validation error) -->
 											<tr>
-												<td><input type="text"
-													name="newVariants.sku" value="${v.sku}"
-													class="form-control form-control-sm" /></td>
+												<td><input type="text" name="newVariants.sku"
+													value="${v.sku}" class="form-control form-control-sm" /></td>
 
 												<td><input type="number" step="1"
 													name="newVariants.price" value="${v.price.intValue()}"
@@ -256,18 +257,18 @@
 
 												<td><select name="newVariants.status"
 													class="form-select form-select-sm">
-														<option value="true" ${v.status ? 'selected' : ''}>Đang bán</option>
-														<option value="false" ${!v.status ? 'selected' : ''}>Ngừng bán</option>
+														<option value="true" ${v.status ? 'selected' : ''}>Đang
+															bán</option>
+														<option value="false" ${!v.status ? 'selected' : ''}>Ngừng
+															bán</option>
 												</select></td>
 
 												<td><c:forEach var="opt" items="${v.options}">
 														<span class="badge bg-success">${opt}</span>
 														<br />
-													</c:forEach> 
-													<c:forEach var="optVId" items="${v.optionValueIds}">
-														<input type="hidden"
-															name="newVariants.optionValueIds[]"
-															value="${optVId}" />						
+													</c:forEach> <c:forEach var="optVId" items="${v.optionValueIds}">
+														<input type="hidden" name="newVariants.optionValueIds[]"
+															value="${optVId}" />
 													</c:forEach></td>
 
 												<td>
@@ -679,27 +680,48 @@ document.addEventListener("DOMContentLoaded", function () {
       generateVariantTable();
     }
   });
+  
+//Khi đổi tên sản phẩm -> Cập nhật lại phần SKU
+  document.getElementById("name").addEventListener("input", updateSKUProductName);
+
+  // Hàm cập nhật phần tên sản phẩm trong SKU
+  function updateSKUProductName() {
+	const productName = document.getElementById("name").value || "sanPham";
+	const slugName = toSlug(productName);
+	
+	document.querySelectorAll("input[name='newVariants.sku']").forEach(input => {
+	const sku = input.value;
+	// Xóa phần tên cũ (đầu SKU) để giữ phần sau
+	const parts = sku.split("-");
+	if (parts.length > 1) {
+	  // Bỏ phần tên cũ ở đầu và giữ phần biến thể
+	  const variantPart = parts.slice(1).join("-");
+	  input.value = slugName + "-" + variantPart;
+	    }
+    });
+  }
 
   // Hàm sinh bảng các biến thể
   function generateVariantTable() {
     const typeMap = {};
-    const typeIdMap = {}; // Map để lưu typeId
-    const valueIdMap = {}; // Map để lưu valueId của mỗi option
+    const typeIdMap = {};//Map để lưu typeId
+    const valueIdMap = {};//Map để lưu valueId của mỗi option
+    const productName = document.getElementById("name").value || "sanPham";//Lấy tên sản phẩm để sinh SKU
 
     // Gom dữ liệu từ checkbox
     document.querySelectorAll(".option-type-checkbox:checked").forEach(type => {
-      const typeId = type.value;
-      const typeName = type.dataset.name;
-      
-      const valueCheckboxes = document.querySelectorAll('.option-value-checkbox[data-type-id="' + typeId + '"]:checked');
-      const values = Array.from(valueCheckboxes).map(v => v.dataset.value);
-      const valueIds = Array.from(valueCheckboxes).map(v => v.value);
+    const typeId = type.value;
+    const typeName = type.dataset.name;
+    
+    const valueCheckboxes = document.querySelectorAll('.option-value-checkbox[data-type-id="' + typeId + '"]:checked');
+    const values = Array.from(valueCheckboxes).map(v => v.dataset.value);
+    const valueIds = Array.from(valueCheckboxes).map(v => v.value);
 
-      if (values.length > 0) {
-        typeMap[typeName] = values;
-        typeIdMap[typeName] = typeId;
-        valueIdMap[typeName] = valueIds;
-      }
+    if (values.length > 0) {
+      typeMap[typeName] = values;
+      typeIdMap[typeName] = typeId;
+      valueIdMap[typeName] = valueIds;
+    }
     });
 
     const variantContainer = document.getElementById("variantTableContainer");
@@ -725,20 +747,23 @@ document.addEventListener("DOMContentLoaded", function () {
     html += '<th>SKU</th><th>GIÁ</th><th>TRẠNG THÁI</th></tr></thead><tbody>';
 
     combinations.forEach((combo, index) => {
-      html += "<tr>";
-      combo.forEach(val => html += '<td>' + val + '</td>');
-      
-      // Thêm các option value IDs dưới dạng hidden inputs
-      let optionValueIdsHtml = '';
-      if (valueCombinations[index]) {
-        const valueIds = Array.isArray(valueCombinations[index]) ? valueCombinations[index] : [valueCombinations[index]];
-        valueIds.forEach(vid => {
-          optionValueIdsHtml += '<input type="hidden" name="newVariants.optionValueIds[]" value="' + vid + '">';
-        });
+		const variantNamePart = combo.map(v => toSlug(v)).join("-");
+		const baseSKU = toSlug(productName) + "-" + variantNamePart;
+    	
+		html += "<tr>";
+		combo.forEach(val => html += '<td>' + val + '</td>');
+		
+		// Thêm các option value IDs dưới dạng hidden inputs
+		let optionValueIdsHtml = '';
+		if (valueCombinations[index]) {
+		  const valueIds = Array.isArray(valueCombinations[index]) ? valueCombinations[index] : [valueCombinations[index]];
+		  valueIds.forEach(vid => {
+		    optionValueIdsHtml += '<input type="hidden" name="newVariants.optionValueIds[]" value="' + vid + '">';
+		  });
       }
       
       html += '<td>';
-      html += '<input type="text" name="newVariants.sku" class="form-control form-control-sm" required>';
+      html += '<input type="text" name="newVariants.sku" class="form-control form-control-sm" value="' + baseSKU + '" readonly>';
       html += '</td>';
       html += '<td>';
       html += '<input type="number" name="newVariants.price" class="form-control form-control-sm" min="0" step="1" required>';

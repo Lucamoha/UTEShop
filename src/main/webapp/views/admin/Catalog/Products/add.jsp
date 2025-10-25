@@ -29,7 +29,7 @@
 					<div class="mb-3">
 						<label class="form-label fw-bold">Tên Sản Phẩm:</label> <input
 							type="text" id="name" name="name" class="form-control"
-							value="${product.name}" placeholder="Nhập tên sản phẩm" />
+							value="${product.name}" placeholder="Nhập tên sản phẩm" required/>
 					</div>
 
 					<!-- Slug -->
@@ -279,7 +279,7 @@
 
     // ====== Validation form ======
     document.getElementById('productForm').addEventListener('submit', function(e) {
-        const name = document.getElementById('name').value.trim();
+        /* const name = document.getElementById('name').value.trim();
         const categoryId = document.getElementById('categorySelect').value;
         const basePrice = document.querySelector('input[name="basePrice"]').value;
 
@@ -299,9 +299,9 @@
             alert('Giá gốc phải từ 1,000 VNĐ trở lên!');
             e.preventDefault();
             return false;
-        }
+        } */
 
-        // Kiểm tra biến thể nếu có
+        //Kiểm tra biến thể nếu có
         const variantSkus = document.querySelectorAll('input[name="newVariants.sku"]');
         if (variantSkus.length > 0) {
             for (let i = 0; i < variantSkus.length; i++) {
@@ -376,12 +376,12 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Thêm biến thể mới
-  document.getElementById("addVariantBtn").addEventListener("click", function () {
+  /* document.getElementById("addVariantBtn").addEventListener("click", function () {
     const container = document.getElementById("variantContainer");
     const clone = container.firstElementChild.cloneNode(true);
     clone.querySelectorAll("input, select").forEach(el => el.value = "");
     container.appendChild(clone);
-  });
+  }); */
 });
 </script>
 
