@@ -421,14 +421,18 @@ public class ProductTransactionService {
 				pav.setProduct(product);
 
 				pav.setAttribute(attribute);
-				/*
-				 * if (ValidInput.isNumeric(attrValue)) { pav.setValueNumber(new
-				 * BigDecimal(attrValue)); pav.setValueText(null); } else {
-				 * pav.setValueText(attrValue); pav.setValueNumber(null); }
-				 */
+
 				if (attribute.getDataType() == 2) {//la number
 					pav.setValueNumber(new BigDecimal(attrValue));
 					pav.setValueText(null);
+				}  else if(attribute.getDataType() == 3){//Là boolean
+					if(attrValue.equals("1")) {
+						pav.setValueNumber(new BigDecimal(1));
+						pav.setValueText(null);
+					} else {
+						pav.setValueNumber(new BigDecimal(0));
+						pav.setValueText(null);;
+					}
 				} else {
 					pav.setValueText(attrValue);
 					pav.setValueNumber(null);
