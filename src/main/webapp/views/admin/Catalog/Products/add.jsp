@@ -145,10 +145,10 @@
 													<c:when test="${attr.dataType == 3}">
 														<select name="attributeValues" class="form-select">
 															<option value="">-- Chọn --</option>
-															<option value="true"
-																${attrValue == 'true' ? 'selected' : ''}>Có</option>
-															<option value="false"
-																${attrValue == 'false' ? 'selected' : ''}>Không</option>
+															<option value="1"
+																${attrValue == '1' ? 'selected' : ''}>Có</option>
+															<option value="0"
+																${attrValue == '0' ? 'selected' : ''}>Không</option>
 														</select>
 													</c:when>
 													<c:otherwise>

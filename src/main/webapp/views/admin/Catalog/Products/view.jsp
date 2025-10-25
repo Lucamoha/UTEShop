@@ -100,7 +100,16 @@
 							<c:forEach var="attr" items="${productAttributes}">
 								<tr>
 									<td>${attr.name}</td>
-									<td>${attr.displayValue}</td>
+									<%-- <td>${attr.displayValue}</td> --%>
+
+									<td><c:choose>
+											<c:when test="${attr.dataType == 3}">
+												${attr.displayValue ==  '1'? 'Có': 'Không'}
+											</c:when>
+											<c:otherwise>
+												${attr.displayValue}
+											</c:otherwise>
+										</c:choose></td>
 								</tr>
 							</c:forEach>
 						</tbody>

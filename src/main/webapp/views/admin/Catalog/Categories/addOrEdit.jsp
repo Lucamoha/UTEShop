@@ -30,12 +30,6 @@
 							name="name" class="form-control" value="${category.name}"
 							placeholder="Nhập tên danh mục" />
 					</div>
-
-					<%-- <div class="mb-3">
-						<label class="form-label">Slug (tự động tạo):</label> <input
-							type="text" id="slug" name="slug" class="form-control"
-							value="${category.slug}" readonly />
-					</div> --%>
 					
 					<div class="mb-3">
 						<label class="form-label">Slug:</label> <input type="text"

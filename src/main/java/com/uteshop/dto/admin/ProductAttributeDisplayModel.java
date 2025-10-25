@@ -27,6 +27,10 @@ public class ProductAttributeDisplayModel {
 		}
 		if (valueNumber != null) {
 			return valueNumber.stripTrailingZeros().toPlainString() + (unit != null ? " " + unit : "");
+			//stripTrailingZeros(): Hàm xóa các số 0 vô nghĩa ở cuối phần thập phân của một BigDecimal
+			// 123.45000 -> 123.45
+			
+			//toPlainString(): Hàm chuyển BigDecimal thành chuỗi bình thường, không dùng dạng khoa học (E+3, E-2, …)
 		}
 		return "";
 	}

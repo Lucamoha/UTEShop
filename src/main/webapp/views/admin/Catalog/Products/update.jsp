@@ -159,10 +159,10 @@
 													<!-- Boolean: Combobox -->
 													<select name="existingAttributes.value" class="form-select">
 														<option value="">-- Chọn --</option>
-														<option value="true"
-															<c:if test="${attr.valueText == 'true' || attr.valueText == 'Có'}">selected</c:if>>Có</option>
-														<option value="false"
-															<c:if test="${attr.valueText == 'false' || attr.valueText == 'Không'}">selected</c:if>>Không</option>
+														<option value="1"
+															<c:if test="${attr.valueNumber.intValue() == 1}">selected</c:if>>Có</option>
+														<option value="0"
+															<c:if test="${attr.valueNumber.intValue() == 0}">selected</c:if>>Không</option>
 													</select>
 												</c:when>
 												<c:when test="${attr.dataType == 2}">

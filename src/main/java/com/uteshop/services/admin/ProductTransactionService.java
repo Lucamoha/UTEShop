@@ -154,7 +154,7 @@ public class ProductTransactionService {
 						em.flush(); // Force sync với DB ngay lập tức
 						System.out.println("Đã xóa variant ID: " + id + " (flushed)");
 					} else {
-						System.out.println("⚠ Variant ID " + id + " không tồn tại trong DB");
+						System.out.println("Variant ID " + id + " không tồn tại trong DB");
 					}
 				} catch (Exception ex) {
 					System.err.println("Lỗi khi xóa variant ID: " + idStr);
@@ -366,10 +366,19 @@ public class ProductTransactionService {
 				ProductAttributeValues pav = findProductAttributeValue(product.getId(), attrId, em);
 				Attributes attribute = attributesServiceImpl.findById(attrId);
 				if (pav != null) {
-					if (attribute.getDataType() == 2) {//la number
+					if (attribute.getDataType() == 2) {//Là number
 						pav.setValueNumber(new BigDecimal(value));
 						pav.setValueText(null);
-					} else {
+					} else if(attribute.getDataType() == 3){//Là boolean
+						if(value.equals("1")) {
+							pav.setValueNumber(new BigDecimal(1));
+							pav.setValueText(null);
+						} else {
+							pav.setValueNumber(new BigDecimal(0));
+							pav.setValueText(null);;
+						}
+					}
+					else {
 						pav.setValueText(value);
 						pav.setValueNumber(null);
 					}

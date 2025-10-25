@@ -19,7 +19,6 @@ import com.uteshop.entity.catalog.Attributes;
 import com.uteshop.entity.catalog.Categories;
 import com.uteshop.entity.catalog.OptionTypes;
 import com.uteshop.entity.catalog.OptionValues;
-import com.uteshop.entity.catalog.ProductImages;
 import com.uteshop.entity.catalog.Products;
 import com.uteshop.exception.DuplicateSkuException;
 import com.uteshop.services.admin.IAttributesService;
