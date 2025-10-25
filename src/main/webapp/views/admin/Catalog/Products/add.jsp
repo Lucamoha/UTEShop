@@ -540,17 +540,40 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    // Khi chọn giá trị tùy chọn
+    //Khi chọn giá trị tùy chọn
     if (e.target.classList.contains("option-value-checkbox")) {
       generateVariantTable();
     }
   });
+  
+//Khi đổi tên sản phẩm -> Cập nhật lại phần SKU
+  document.getElementById("name").addEventListener("input", updateSKUProductName);
 
-  // Hàm sinh bảng các biến thể
+  // Hàm cập nhật phần tên sản phẩm trong SKU
+  function updateSKUProductName() {
+    const productName = document.getElementById("name").value || "sanPham";
+    const slugName = toSlug(productName);
+
+    document.querySelectorAll("input[name='newVariants.sku']").forEach(input => {
+      const sku = input.value;
+      // Xóa phần tên cũ (đầu SKU) để giữ phần sau
+      const parts = sku.split("-");
+      if (parts.length > 1) {
+        // Bỏ phần tên cũ ở đầu và giữ phần biến thể
+        const variantPart = parts.slice(1).join("-");
+        input.value = slugName + "-" + variantPart;
+      }
+    });
+  }
+
+  //Hàm sinh bảng các biến thể
   function generateVariantTable() {
     const typeMap = {};
     const typeIdMap = {}; // Thêm map để lưu typeId
     const valueIdMap = {}; // Thêm map để lưu valueId của mỗi option
+    
+ 	//Lấy tên sản phẩm để sinh SKU
+    const productName = document.getElementById("name").value || "sanPham";
 
     // Gom dữ liệu từ checkbox
     document.querySelectorAll(".option-type-checkbox:checked").forEach(type => {
@@ -591,6 +614,10 @@ document.addEventListener("DOMContentLoaded", function () {
     html += '<th>SKU</th><th>GIÁ</th><th>TRẠNG THÁI</th></tr></thead><tbody>'
 
     combinations.forEach((combo, index) => {
+    	
+    	const variantNamePart = combo.map(v => toSlug(v)).join("-");
+        const baseSKU = toSlug(productName) + "-" + variantNamePart;
+    	
       html += "<tr>";
       combo.forEach(val => html += `<td>\${val}</td>`);
       
@@ -605,7 +632,7 @@ document.addEventListener("DOMContentLoaded", function () {
       
       html += `
         <td>
-          <input type="text" name="newVariants.sku" class="form-control form-control-sm" required>
+          <input type="text" name="newVariants.sku" class="form-control form-control-sm" value="\${baseSKU}" readonly>
         </td>
         <td>
           <input type="number" name="newVariants.price" class="form-control form-control-sm" min="0" step="0.01" required>
