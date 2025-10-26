@@ -195,13 +195,15 @@ UTEShop/
 
 ### Yêu cầu hệ thống
 
-| Công cụ | Phiên bản |
-|---------|-----------|
-| **JDK** | 21 trở lên |
-| **Apache Maven** | 3.6+ |
-| **Microsoft SQL Server** | 2012+ |
-| **Apache Tomcat** | 10+ |
-| **IDE** | IntelliJ IDEA / Eclipse / Spring Tool Suite |
+Trước khi cài đặt, cần chuẩn bị các công cụ sau:
+
+| Thành phần | Phiên bản khuyến nghị | Ghi chú |
+|------------|----------------------|---------|
+| **JDK** | 17+ | Thiết lập biến môi trường |
+| **Apache Tomcat** | 10.1.x | Servlet API 5.0 (phù hợp với jakarta.*) |
+| **SQL Server** | 2019 hoặc mới hơn | Dùng để lưu trữ dữ liệu ứng dụng |
+| **Maven** | 3.9+ | Quản lý dependencies |
+| **IntelliJ IDEA / Eclipse** | Mới nhất | IDE để chạy và debug (tùy chọn) |
 
 ### Các bước cài đặt
 
@@ -220,60 +222,90 @@ cd UTEShop
 CREATE DATABASE UTEShop;
 ```
 
-##### 4.2.2. Tạo file cấu hình `config.properties`
+##### 4.2.2. Thiết lập file cấu hình `config.properties`
 
-Tạo file `src/main/resources/config.properties` với nội dung sau:
+Trong thư mục `src/main/resources/`, tạo file mới tên là `config.properties` (copy từ file mẫu `config.properties.example`) và cập nhật nội dung phù hợp với môi trường:
 
 ```properties
-# Database Configuration
-db.url=jdbc:sqlserver://localhost:1433;databaseName=UTEShop;encrypt=true;trustServerCertificate=true
-db.username=your_username
-db.password=your_password
+# ========================
+# Database Config
+# ========================
+db.url=jdbc:sqlserver://{your_servername_here}:1433;databaseName=UTEShop;encrypt=true;trustServerCertificate=true
+db.username=your_username_here
+db.password=your_password_here
 
-# JWT Secret Key
-jwt.secret=your_secret_key_here_at_least_256_bits
+# ========================
+# JWT Config
+# ========================
+jwt.signerKey=your_secret_here
+jwt.expiration=3600000
 
-# Email Configuration (Dùng để gửi email)
-mail.smtp.host=smtp.gmail.com
-mail.smtp.port=587
-mail.smtp.auth=true
-mail.smtp.starttls.enable=true
-mail.username=your_email@gmail.com
-mail.password=your_app_password
+# ========================
+# Momo config
+# ========================
+momo.partnerCode=MOMO
+momo.accessKey=F8BBA842ECF85
+momo.secretKey=K951B6PE1waDMi640xX08PD3vg6EkVlz
+momo.endpointCreate=https://test-payment.momo.vn/v2/gateway/api/create
+momo.endpointQuery=https://test-payment.momo.vn/v2/gateway/api/query
+momo.endpointRefund=https://test-payment.momo.vn/v2/gateway/api/refund
+momo.redirectUrl={your_domain}/payment/momo/return
+momo.ipnUrl={your_domain}/payment/momo/ipn
 
-# OAuth Configuration
-# Google OAuth
-google.client.id=your_google_client_id
-google.client.secret=your_google_client_secret
-google.redirect.uri=http://localhost:8080/UTEShop/google-callback
+# ========================
+# Vnpay config
+# ========================
+vnpay.vnp_Version=2.1.0
+vnpay.vnp_Command=pay
+vnpay.vnp_TmnCode=your_vnp_TmnCode_here
+vnpay.vnp_HashSecret=your_vnp_HashSecret_here
+vnpay.vnp_CurrCode=VND
+vnpay.vnp_OrderType=billpayment
+vnpay.vnp_Url=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+vnpay.vnp_Query=https://sandbox.vnpayment.vn/merchant_webapi/api/transaction
+vnpay.vnp_ReturnUrl={your_domain}/payment/vnpay/return
+vnpay.vnp_IpAddr=127.0.0.1
 
-# Facebook OAuth
-facebook.client.id=your_facebook_app_id
-facebook.client.secret=your_facebook_app_secret
-facebook.redirect.uri=http://localhost:8080/UTEShop/facebook-callback
+# ========================
+# GOOGLE OAUTH
+# ========================
+google.clientId=your_google_clientId_here
+google.clientSecret=your_google_clientSecret_here
+google.redirectUri={your_domain}/login/oauth/google/callback
+google.scope=openid email profile
 
-# Payment Gateway Configuration
-# VNPay
-vnpay.tmnCode=your_vnpay_tmn_code
-vnpay.hashSecret=your_vnpay_hash_secret
-vnpay.url=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
-vnpay.returnUrl=http://localhost:8080/UTEShop/vnpay-return
-
-# Momo
-momo.partnerCode=your_momo_partner_code
-momo.accessKey=your_momo_access_key
-momo.secretKey=your_momo_secret_key
-momo.endpoint=https://test-payment.momo.vn/v2/gateway/api/create
-momo.returnUrl=http://localhost:8080/UTEShop/momo-return
-momo.notifyUrl=http://localhost:8080/UTEShop/momo-notify
-
-# Application Configuration
-app.upload.dir=/path/to/upload/directory
+# ========================
+# FACEBOOK AUTH
+# ========================
+facebook.clientId=your_facebook_clientId_here
+facebook.clientSecret=your_facebook_clientSecret_here
+facebook.redirectUri={your_domain}/login/oauth/facebook/callback
+facebook.scope=email,public_profile
+ 
+# ========================
+# Email/SMTP Config
+# ========================
+smtp.host=smtp.gmail.com
+smtp.port=587
+smtp.from.email=your-email@gmail.com
+smtp.from.password=your-app-password
+smtp.from.name=UTEShop
 ```
+
+**Lưu ý quan trọng:**
+
+- **Không public file `config.properties`** lên Git/GitHub
+- **Momo Config:** Các giá trị `momo.partnerCode`, `momo.accessKey`, `momo.secretKey` là các giá trị test được Momo cung cấp cho môi trường sandbox. Tham khảo thêm tại: [Momo Developer](https://developers.momo.vn/v3/vi/docs/payment/guides/home)
+- **VnPay Config:** Tham khảo doc cho môi trường test tại: [VnPay APIs](https://sandbox.vnpayment.vn/apis/)
+  - Trang Merchant Admin để quản lý giao dịch: [VnPay Merchant](https://sandbox.vnpayment.vn/merchantv2/)
+  - Set IpnUrl tại: [VnPay Login](https://sandbox.vnpayment.vn/vnpaygw-sit-testing/user/login)
+- **Google OAuth:** Tham khảo tại: [Google Cloud Console](https://console.cloud.google.com/)
+- **Facebook OAuth:** Tham khảo tại: [Facebook Developers](https://developers.facebook.com/)
 
 #### 4.3. Deploy lên Application Server
 
-##### Sử dụng IDE (IntelliJ IDEA)
+<details>
+<summary><strong>Cách 1: Sử dụng IDE (IntelliJ IDEA)</strong></summary>
 
 **Bước 1:** Mở dự án trong IntelliJ IDEA
 
@@ -284,6 +316,38 @@ app.upload.dir=/path/to/upload/directory
 - Application context: `/UTEShop`
 
 **Bước 3:** Click `Run` để khởi chạy
+
+</details>
+
+<details>
+<summary><strong>Cách 2: Dùng Maven CLI</strong></summary>
+
+**Bước 1:** Build project bằng Maven
+
+```bash
+mvn clean package
+```
+
+**Bước 2:** Deploy file `.war`
+
+Sau khi build thành công, file `UTEShop-1.0-SNAPSHOT.war` sẽ được tạo trong thư mục `target/`
+
+- Copy file `.war` vào thư mục `webapps` của Tomcat
+- Khởi động Tomcat server
+
+```bash
+# Windows
+cd %CATALINA_HOME%\bin
+startup.bat
+
+# Linux/macOS
+cd $CATALINA_HOME/bin
+./startup.sh
+```
+
+Tomcat sẽ tự động deploy ứng dụng khi khởi động.
+
+</details>
 
 #### 4.4. Truy cập ứng dụng
 
