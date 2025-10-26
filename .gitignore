@@ -49,8 +49,4 @@ build/
 ### Mac OS ###
 .DS_Store
 
-### Documentation (Personal Notes) ###
-*.md
-!README.md
-
 config.properties
