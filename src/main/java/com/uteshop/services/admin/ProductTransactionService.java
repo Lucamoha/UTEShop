@@ -9,7 +9,6 @@ import java.nio.file.StandardCopyOption;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -29,7 +28,6 @@ import com.uteshop.entity.catalog.ProductImages;
 import com.uteshop.entity.catalog.ProductVariants;
 import com.uteshop.entity.catalog.Products;
 import com.uteshop.entity.catalog.VariantOptions;
-import com.uteshop.exception.DuplicateOptionCombinationException;
 import com.uteshop.exception.DuplicateSkuException;
 import com.uteshop.services.impl.admin.AttributesServiceImpl;
 import com.uteshop.services.impl.admin.ProductImagesServiceImpl;
@@ -303,20 +301,17 @@ public class ProductTransactionService {
 				}
 				
 				// Kiểm tra trùng tổ hợp options
-				if (!currentVariantOptions.isEmpty()) {
-					if (isDuplicateOptionCombination(product.getId(), currentVariantOptions, deletedIds, em)) {
-						// Lấy tên các option values để hiển thị trong message lỗi
-						StringBuilder optionNames = new StringBuilder();
-						for (int ovId : currentVariantOptions) {
-							OptionValues ov = em.find(OptionValues.class, ovId);
-							if (ov != null) {
-								if (optionNames.length() > 0) optionNames.append(", ");
-								optionNames.append(ov.getOptionType().getCode()).append(": ").append(ov.getValue());
-							}
-						}
-						throw new DuplicateOptionCombinationException(optionNames.toString());
-					}
-				}
+				/*
+				 * if (!currentVariantOptions.isEmpty()) { if
+				 * (isDuplicateOptionCombination(product.getId(), currentVariantOptions,
+				 * deletedIds, em)) { // Lấy tên các option values để hiển thị trong message lỗi
+				 * StringBuilder optionNames = new StringBuilder(); for (int ovId :
+				 * currentVariantOptions) { OptionValues ov = em.find(OptionValues.class, ovId);
+				 * if (ov != null) { if (optionNames.length() > 0) optionNames.append(", ");
+				 * optionNames.append(ov.getOptionType().getCode()).append(": ").append(ov.
+				 * getValue()); } } throw new
+				 * DuplicateOptionCombinationException(optionNames.toString()); } }
+				 */
 
 				ProductVariants variant = new ProductVariants();
 				variant.setProduct(product);
@@ -639,47 +634,39 @@ public class ProductTransactionService {
 	 * @param em EntityManager
 	 * @return true nếu tổ hợp đã tồn tại, false nếu chưa
 	 */
-	private boolean isDuplicateOptionCombination(Integer productId, List<Integer> optionValueIds, 
-			List<Integer> excludedVariantIds, EntityManager em) {
-		
-		// Query tìm các variants của product này (không bao gồm variants đã xóa)
-		String jpql = "SELECT v FROM ProductVariants v WHERE v.product.id = :productId";
-		if (excludedVariantIds != null && !excludedVariantIds.isEmpty()) {
-			jpql += " AND v.id NOT IN :excludedIds";
-		}
-		
-		var query = em.createQuery(jpql, ProductVariants.class)
-				.setParameter("productId", productId);
-		
-		if (excludedVariantIds != null && !excludedVariantIds.isEmpty()) {
-			query.setParameter("excludedIds", excludedVariantIds);
-		}
-		
-		List<ProductVariants> existingVariants = query.getResultList();
-		
-		// Sắp xếp optionValueIds để so sánh
-		List<Integer> sortedNewOptions = new ArrayList<>(optionValueIds);
-		Collections.sort(sortedNewOptions);
-		
-		// Kiểm tra từng variant hiện có
-		for (ProductVariants variant : existingVariants) {
-			// Lấy option values của variant này
-			String voJpql = "SELECT vo.optionValue.id FROM VariantOptions vo WHERE vo.variant.id = :variantId";
-			List<Integer> existingOptions = em.createQuery(voJpql, Integer.class)
-					.setParameter("variantId", variant.getId())
-					.getResultList();
-			
-			// Sắp xếp để so sánh
-			Collections.sort(existingOptions);
-			
-			// So sánh 2 danh sách
-			if (sortedNewOptions.equals(existingOptions)) {
-				System.err.println(">>> DUPLICATE OPTIONS: Variant ID " + variant.getId() 
-						+ " đã có tổ hợp options: " + existingOptions);
-				return true;
-			}
-		}
-		
-		return false;
-	}
+	/*
+	 * private boolean isDuplicateOptionCombination(Integer productId, List<Integer>
+	 * optionValueIds, List<Integer> excludedVariantIds, EntityManager em) {
+	 * 
+	 * // Query tìm các variants của product này (không bao gồm variants đã xóa)
+	 * String jpql =
+	 * "SELECT v FROM ProductVariants v WHERE v.product.id = :productId"; if
+	 * (excludedVariantIds != null && !excludedVariantIds.isEmpty()) { jpql +=
+	 * " AND v.id NOT IN :excludedIds"; }
+	 * 
+	 * var query = em.createQuery(jpql, ProductVariants.class)
+	 * .setParameter("productId", productId);
+	 * 
+	 * if (excludedVariantIds != null && !excludedVariantIds.isEmpty()) {
+	 * query.setParameter("excludedIds", excludedVariantIds); }
+	 * 
+	 * List<ProductVariants> existingVariants = query.getResultList();
+	 * 
+	 * // Sắp xếp optionValueIds để so sánh List<Integer> sortedNewOptions = new
+	 * ArrayList<>(optionValueIds); Collections.sort(sortedNewOptions);
+	 * 
+	 * // Kiểm tra từng variant hiện có for (ProductVariants variant :
+	 * existingVariants) { // Lấy option values của variant này String voJpql =
+	 * "SELECT vo.optionValue.id FROM VariantOptions vo WHERE vo.variant.id = :variantId"
+	 * ; List<Integer> existingOptions = em.createQuery(voJpql, Integer.class)
+	 * .setParameter("variantId", variant.getId()) .getResultList();
+	 * 
+	 * // Sắp xếp để so sánh Collections.sort(existingOptions);
+	 * 
+	 * // So sánh 2 danh sách if (sortedNewOptions.equals(existingOptions)) {
+	 * System.err.println(">>> DUPLICATE OPTIONS: Variant ID " + variant.getId() +
+	 * " đã có tổ hợp options: " + existingOptions); return true; } }
+	 * 
+	 * return false; }
+	 */
 }

@@ -31,9 +31,9 @@
 
 					<!-- Slug -->
 					<div class="mb-3">
-						<label class="form-label">Slug:</label> <input type="text"
-							id="slug" name="slug" class="form-control"
-							value="${product.slug}" readonly />
+						<label class="form-label">Slug (tự sinh khi nhập tên sản
+							phẩm):</label> <input type="text" id="slug" name="slug"
+							class="form-control" value="${product.slug}" readonly />
 					</div>
 
 					<!-- Mô tả -->
@@ -214,11 +214,12 @@
 												<td><input type="hidden" name="existingVariants.id"
 													value="${v.id}" /> <input type="text"
 													name="existingVariants.sku" value="${v.sku}"
-													class="form-control form-control-sm" /></td>
+													class="form-control form-control-sm" readonly /></td>
 
 												<td><input type="number" step="1"
 													name="existingVariants.price" value="${v.price.intValue()}"
-													min="1000" max="999999999" class="form-control form-control-sm" /></td>
+													min="1000" max="999999999"
+													class="form-control form-control-sm" /></td>
 
 												<td><select name="existingVariants.status"
 													class="form-select form-select-sm">
@@ -237,22 +238,19 @@
 															value="${optVId}" />
 													</c:forEach></td>
 
-												<td>Không có <!-- <button type="button"
-														class="btn btn-outline-danger btn-sm remove-variant">
-														<i class="bi bi-trash"></i> Xóa
-													</button> -->
-												</td>
+												<td>Không có</td>
 											</tr>
 										</c:when>
 										<c:otherwise>
 											<!-- New variant (from validation error) -->
 											<tr>
 												<td><input type="text" name="newVariants.sku"
-													value="${v.sku}" class="form-control form-control-sm" /></td>
+													value="${v.sku}" class="form-control form-control-sm" readonly/></td>
 
 												<td><input type="number" step="1"
 													name="newVariants.price" value="${v.price.intValue()}"
-													min="1000" max="999999999" class="form-control form-control-sm" /></td>
+													min="1000" max="999999999"
+													class="form-control form-control-sm" /></td>
 
 												<td><select name="newVariants.status"
 													class="form-select form-select-sm">
