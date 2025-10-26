@@ -21,32 +21,31 @@ public class VoucherServiceImpl implements IVoucherService {
     }
 
     @Override
-    public void save(Vouchers voucher) {
+    public void insert(Vouchers voucher) {
         if (voucher == null) {
-            throw new IllegalArgumentException("Voucher cannot be null");
+            throw new IllegalArgumentException("Voucher không thể null");
         }
-        if (voucher.getId() == null) {
-            voucherDao.insert(voucher);
-        } else {
-            voucherDao.update(voucher);
+        voucherDao.insert(voucher);
+    }
+    
+    @Override
+    public void update(Vouchers voucher) {
+        if (voucher == null) {
+            throw new IllegalArgumentException("Voucher không thể null");
         }
+        voucherDao.update(voucher);
     }
 
     @Override
     public void delete(Integer id) {
         if (id == null) {
-            throw new IllegalArgumentException("Voucher ID cannot be null");
+            throw new IllegalArgumentException("Voucher ID không thể null");
         }
         voucherDao.delete(id);
     }
 
     @Override
     public Vouchers getByCode(String code) {
-        // Giả sử DAO có method này; nếu không, implement JPQL query ở đây hoặc thêm vào DAO
-        // Để đơn giản, tôi giả sử sử dụng getAll() và filter (không hiệu quả cho prod, nhưng demo)
-        return getAll().stream()
-                .filter(v -> code.equals(v.getCode()))
-                .findFirst()
-                .orElse(null);
+        return voucherDao.findByCode(code);
     }
 }
