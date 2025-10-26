@@ -19,55 +19,72 @@ public class OrdersDaoImpl extends AbstractDao<Orders> implements IOrdersDao {
 	}
 
 	@Override
-	public BigDecimal getRevenueThisMonth() {
+	public BigDecimal getRevenueByYearAndMonthAndBranch(int year, int month, int branchId) {
 		EntityManager enma = JPAConfigs.getEntityManager();
 		try {
 			String jpql = """
-					SELECT COALESCE(SUM(o.TotalAmount), 0) 
-					FROM Orders o 
-					WHERE o.PaymentStatus = 1 
-					AND MONTH(o.UpdatedAt) = MONTH(CURRENT_DATE) 
-					AND YEAR(o.UpdatedAt) = YEAR(CURRENT_DATE)
-					""";
-			return (BigDecimal) enma.createQuery(jpql, BigDecimal.class).getSingleResult();
+					SELECT COALESCE(SUM(o.TotalAmount), 0)
+					FROM Orders o
+					WHERE o.PaymentStatus = 1
+					AND MONTH(o.UpdatedAt) = :month AND YEAR(o.UpdatedAt) = :year""";// PaymentStatus: Đơn hàng đã
+																						// thanh toán
+			if (branchId != 0) {
+				jpql += "WHERE o.Branches.Id = :branchId";
+				return (BigDecimal) enma.createQuery(jpql, BigDecimal.class).setParameter("BranchId", branchId)
+						.setParameter("month", month).setParameter("year", year).getSingleResult();
+			}
+			return (BigDecimal) enma.createQuery(jpql, BigDecimal.class).setParameter("month", month)
+					.setParameter("year", year).getSingleResult();
 		} finally {
 			enma.close();
 		}
 	}
 
 	@Override
-	public long getOrderCountThisMonth() {
+	public List<Orders> getOrdersByMonthAndBranch(int month, int branchId) {
 		EntityManager enma = JPAConfigs.getEntityManager();
 		try {
 			String jpql = """
-					SELECT COUNT(o) 
-					FROM Orders o  
-					WHERE MONTH(o.UpdatedAt) = MONTH(CURRENT_DATE) 
+					SELECT o
+					FROM Orders o
+					WHERE MONTH(o.UpdatedAt) = MONTH(CURRENT_DATE)
 					AND YEAR(o.UpdatedAt) = YEAR(CURRENT_DATE)
+					AND o.PaymentStatus = 1
 					""";
-			return (Long) enma.createQuery(jpql, Long.class).getSingleResult();
+			if (branchId != 0) {
+				jpql += "WHERE o.Branches.Id = :branchId";
+				return enma.createQuery(jpql, Orders.class).setParameter("BranchId", branchId).getResultList();
+			}
+			return enma.createQuery(jpql, Orders.class).getResultList();
 		} finally {
 			enma.close();
 		}
 	}
 
 	@Override
-	public Map<String, BigDecimal> getMonthlyRevenueByYear(int year) {
+	public Map<String, BigDecimal> getMonthlyRevenueByYearAndBranch(int year, int branchId) {
 		EntityManager enma = JPAConfigs.getEntityManager();
 		Map<String, BigDecimal> result = new LinkedHashMap<>();
 		try {
 			String sql = """
 					SELECT  MONTH(o.UpdatedAt) AS MonthNum,
-					DATENAME(MONTH, o.UpdatedAt) AS MonthLabel, 
+					DATENAME(MONTH, o.UpdatedAt) AS MonthLabel,
 					SUM(o.TotalAmount) AS Revenue
 					FROM Orders o
-					WHERE YEAR(o.UpdatedAt) = :year 
+					WHERE YEAR(o.UpdatedAt) = :year
 					AND o.PaymentStatus = 1
-					GROUP BY MONTH(o.UpdatedAt), DATENAME(MONTH, o.UpdatedAt) 
+					GROUP BY MONTH(o.UpdatedAt), DATENAME(MONTH, o.UpdatedAt)
 					ORDER BY MONTH(o.UpdatedAt)
 
 					""";
-			List<Object[]> rows = enma.createNativeQuery(sql).setParameter("year", year).getResultList();
+			List<Object[]> rows = null;
+			if (branchId != 0) {
+				sql += "WHERE o.BranchId = :branchId";//
+				rows = enma.createNativeQuery(sql).setParameter("year", year).setParameter("branchId", branchId)
+						.getResultList();
+			} else {
+				rows = enma.createNativeQuery(sql).setParameter("year", year).getResultList();
+			}
 
 			for (int i = 1; i <= 12; i++) {
 				result.put(String.format("%02d", i), BigDecimal.ZERO);
@@ -79,32 +96,39 @@ public class OrdersDaoImpl extends AbstractDao<Orders> implements IOrdersDao {
 				result.put(String.format("%02d", month), revenue);
 			}
 		} catch (Exception e) {
-	        e.printStackTrace();
-	    } finally {
+			e.printStackTrace();
+		} finally {
 			enma.close();
 		}
 		return result;
 	}
 
 	@Override
-	public Map<String, BigDecimal> getDailySalesOfMonth(int year, int month) {
+	public Map<String, BigDecimal> getDailySalesByYearAndMonthAndBranch(int year, int month, int branchId) {
 		EntityManager enma = JPAConfigs.getEntityManager();
 		Map<String, BigDecimal> result = new LinkedHashMap<>();
 		try {
 			String sql = """
-					SELECT DAY(o.UpdatedAt) AS DayNum, SUM(o.TotalAmount) AS Revenue  
+					SELECT DAY(o.UpdatedAt) AS DayNum, SUM(o.TotalAmount) AS Revenue
 					FROM Orders o
-					WHERE YEAR(o.UpdatedAt) = :year 
+					WHERE YEAR(o.UpdatedAt) = :year
 					AND MONTH (o.UpdatedAt) = :month
 					AND o.PaymentStatus = 1
 					GROUP BY DAY(o.UpdatedAt)
 					""";
-			List<Object[]> rows = enma.createNativeQuery(sql).setParameter("year", year).setParameter("month", month)
-					.getResultList();
-			
+			List<Object[]> rows = null;
+			if (branchId != 0) {
+				sql += "WHERE o.BranchId = :branchId";//
+				rows = enma.createNativeQuery(sql).setParameter("year", year).setParameter("month", month)
+						.setParameter("branchId", branchId).getResultList();
+			} else {
+				rows = enma.createNativeQuery(sql).setParameter("year", year).setParameter("month", month)
+						.getResultList();
+			}
+
 			YearMonth yearMonth = YearMonth.of(year, month);
 			int daysInMonth = yearMonth.lengthOfMonth();
-			for(int i = 1; i<= daysInMonth; i++) {
+			for (int i = 1; i <= daysInMonth; i++) {
 				result.put(String.format("%02d", i), BigDecimal.ZERO);
 			}
 

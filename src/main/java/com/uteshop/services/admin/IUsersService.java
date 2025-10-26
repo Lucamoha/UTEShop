@@ -11,8 +11,7 @@ public interface IUsersService {
 	Users findById(int id);
 	List<Users> getManagerNotManagedBranch();
 	void delete(int id);
-	long getNewCustomersThisMonth();
-	long getTotalCustomers();
-
+	List<Users> getNewCustomersByYearAndMonth(int year, int month);
+	long getTotalCustomersByYearAndMonth(int year, int month);
     void update(Users user);
 }
