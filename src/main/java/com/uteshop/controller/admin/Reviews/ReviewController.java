@@ -2,20 +2,12 @@ package com.uteshop.controller.admin.Reviews;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import com.uteshop.entity.auth.Users;
-import com.uteshop.entity.catalog.Products;
 import com.uteshop.entity.engagement.Reviews;
-import com.uteshop.services.admin.IProductsService;
 import com.uteshop.services.admin.IReviewService;
-import com.uteshop.services.admin.IUsersService;
-import com.uteshop.services.impl.admin.ProductsServiceImpl;
 import com.uteshop.services.impl.admin.ReviewServiceImpl;
-import com.uteshop.services.impl.admin.UsersServiceImpl;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -25,11 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-/**
- * Controller for Admin Reviews - handles CRUD operations via GET/POST.
- * URLs mapped to /admin/Review/Reviews/* for consistency.
- */
-@WebServlet(urlPatterns = {"/admin/Review/Reviews/list",
+@WebServlet(urlPatterns = {"/admin/Review/Reviews/searchpaginated",
         "/admin/Review/Reviews/view",
         "/admin/Review/Reviews/delete",
         "/admin/Review/Reviews/export",
@@ -44,10 +32,10 @@ public class ReviewController extends HttpServlet {
         String url = req.getRequestURI();
         IReviewService reviewService = new ReviewServiceImpl();
 
-        if (url.contains("admin/Review/Reviews/list")) {
+        if (url.contains("admin/Review/Reviews/searchpaginated")) {
             List<Reviews> listReviews = reviewService.getAll();
             req.setAttribute("listReviews", listReviews);
-            req.getRequestDispatcher("/views/admin/Review/Reviews/list.jsp").forward(req, resp);
+            req.getRequestDispatcher("/views/admin/Review/Reviews/searchpaginated.jsp").forward(req, resp);
         } else if (url.contains("/admin/Review/Reviews/export")) {
             List<Reviews> listReviews = reviewService.getAll();
             exportToExcel(listReviews, resp);
@@ -63,21 +51,14 @@ public class ReviewController extends HttpServlet {
         } else if (url.contains("/admin/Review/Reviews/delete")) {
             Integer id = Integer.valueOf(req.getParameter("id"));
             reviewService.delete(id);
-            resp.sendRedirect(req.getContextPath() + "/admin/Review/Reviews/list");
+            resp.sendRedirect(req.getContextPath() + "/admin/Review/Reviews/searchpaginated");
         } else if (url.contains("/admin/Review/Reviews/filter")) {
-            Integer rating = req.getParameter("rating") != null ? Integer.valueOf(req.getParameter("rating")) : null;
+            Integer rating = Integer.valueOf(req.getParameter("rating"));
             List<Reviews> listReviews = reviewService.getByRating(rating);
             req.setAttribute("listReviews", listReviews);
             req.setAttribute("selectedRating", rating);
-            req.getRequestDispatcher("/views/admin/Review/Reviews/list.jsp").forward(req, resp);
+            req.getRequestDispatcher("/views/admin/Review/Reviews/searchpaginated.jsp").forward(req, resp);
         }
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String url = req.getRequestURI();
-        IReviewService reviewService = new ReviewServiceImpl();
-        req.setCharacterEncoding("UTF-8");
     }
 
     private void exportToExcel(List<Reviews> reviews, HttpServletResponse response) throws IOException {

@@ -76,7 +76,7 @@
                         Cập Nhật
                     </button>
                     <!-- Nút Hủy xanh lá đậm -->
-                    <a href="${pageContext.request.contextPath}/admin/Voucher/Vouchers/list"
+                    <a href="${pageContext.request.contextPath}/admin/Voucher/Vouchers/searchpaginated"
                        class="btn btn-success btn-lg"
                        style="background-color:#1b5e20; border-color:#1b5e20;">
                         Hủy

@@ -38,7 +38,7 @@
 					<div class="collapse" id="base">
 						<ul class="nav nav-collapse">
 							<li><a
-								href="${pageContext.request.contextPath}/admin/User/Users/list">
+								href="${pageContext.request.contextPath}/admin/User/Users/searchpaginated">
 									<span class="sub-item">Quản Lý Người Dùng</span>
 							</a></li>
 						</ul>
@@ -50,7 +50,7 @@
 					<div class="collapse" id="reviewsSection">
 						<ul class="nav nav-collapse">
 							<li><a
-								href="${pageContext.request.contextPath}/admin/Review/Reviews/list">
+								href="${pageContext.request.contextPath}/admin/Review/Reviews/searchpaginated">
 									<span class="sub-item">Quản Lý Đánh Giá</span>
 							</a></li>
 						</ul>
@@ -62,7 +62,7 @@
 					<div class="collapse" id="vouchersSection">
 						<ul class="nav nav-collapse">
 							<li><a
-								href="${pageContext.request.contextPath}/admin/Voucher/Vouchers/list">
+								href="${pageContext.request.contextPath}/admin/Voucher/Vouchers/searchpaginated">
 									<span class="sub-item">Quản Lý Voucher</span>
 							</a></li>
 						</ul>

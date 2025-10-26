@@ -76,11 +76,6 @@ public class BranchesServiceImpl implements IBranchesService {
 	}
 
 	@Override
-	public List<BranchInventory> findInventoryByBranchId(Integer branchId) {
-		return branchesDaoImpl.findInventoryByBranchId(branchId);
-	}
-
-	@Override
 	public List<BranchInventory> findOrCreateInventoriesByBranchId(Integer branchId) {
 	   return branchesDaoImpl.findOrCreateInventoriesByBranchId(branchId);
 	}
@@ -88,11 +83,6 @@ public class BranchesServiceImpl implements IBranchesService {
 	@Override
 	public void update(BranchInventory branchInventory) {
 		branchInventoryDaoImpl.update(branchInventory);
-	}
-
-	@Override
-	public List<BranchInventory> createEmptyInventoriesForAllVariants() {
-		return branchesDaoImpl.createEmptyInventoriesForAllVariants();
 	}
 
 	@Override

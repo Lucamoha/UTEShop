@@ -193,8 +193,8 @@
 					<table class="table align-items-center mb-0">
 						<thead class="thead-light">
 							<tr>
-								<th scope="col">Tên sản phẩm</th>
-								<th scope="col">Số lượng đã bán</th>
+								<th scope="col" style="width: 60%;">Tên sản phẩm</th>
+								<th scope="col" style="width: 40%;">Số lượng đã bán</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -231,8 +231,8 @@
 						<table class="table align-items-center mb-0">
 							<thead class="thead-light">
 								<tr>
-									<th scope="col">Tên sản phẩm</th>
-									<th scope="col">Tồn kho</th>
+									<th scope="col" style="width: 60%;">Tên sản phẩm</th>
+									<th scope="col" style="width: 40%;">Tồn kho</th>
 								</tr>
 							</thead>
 							<tbody>

@@ -9,5 +9,4 @@ public class ValidInput {
 		//true nếu toàn số
 	    return str != null && str.matches("\\d+");
 	}
-
 }

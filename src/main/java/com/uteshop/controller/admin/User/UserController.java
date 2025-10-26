@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(urlPatterns = {"/admin/User/Users/list",
+@WebServlet(urlPatterns = {"/admin/User/Users/searchpaginated",
 							"/admin/User/Users/edit", 
 							"/admin/User/Users/view"})
 public class UserController extends HttpServlet {
@@ -28,11 +28,11 @@ public class UserController extends HttpServlet {
 		String url = req.getRequestURI();
 		IUsersService userService = new UsersServiceImpl();
 		
-		if(url.contains("admin/User/Users/list")) {
+		if(url.contains("admin/User/Users/searchpaginated")) {
 			List<Users> listUser = userService.findAll();
 			
 			req.setAttribute("listUser", listUser);
-			req.getRequestDispatcher("/views/admin/User/Users/list.jsp").forward(req, resp);
+			req.getRequestDispatcher("/views/admin/User/Users/searchpaginated.jsp").forward(req, resp);
 		}
 		else if (url.contains("edit")) {
             int id = Integer.parseInt(req.getParameter("id"));
@@ -69,7 +69,7 @@ public class UserController extends HttpServlet {
 
                 userService.update(user);
 
-                resp.sendRedirect(req.getContextPath() + "/admin/User/Users/list");
+                resp.sendRedirect(req.getContextPath() + "/admin/User/Users/searchpaginated");
             } catch (Exception e) {
                 req.setAttribute("error", "Update failed: " + e.getMessage());
                 req.getRequestDispatcher("/views/admin/User/Users/edit.jsp").forward(req, resp);

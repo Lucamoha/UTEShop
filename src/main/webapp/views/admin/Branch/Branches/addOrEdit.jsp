@@ -78,34 +78,6 @@
 
 					<div id="managerError" class="text-danger" style="display: none;"></div>
 
-					<div class="mb-3">
-						<label class="form-label">Thông Tin Tồn Kho Theo Biến Thể</label>
-						<table class="table table-bordered">
-							<thead>
-								<tr>
-									<th>SKU</th>
-									<th>Giá</th>
-									<th>Tùy chọn</th>
-									<th>Tồn kho</th>
-								</tr>
-							</thead>
-							<tbody>
-								<c:forEach var="bi" items="${inventories}">
-									<tr>
-										<td style="width: 30%;">${bi.variant.SKU}</td>
-										<td style="width: 25%;">${bi.variant.price}</td>
-										<td style="width: 25%;"><c:forEach var="opt" items="${bi.variant.options}">
-                        ${opt.optionType.code}: ${opt.optionValue.value}<br />
-											</c:forEach></td>
-										<td style="width: 20%;"><input type="number" name="stock_${bi.variant.id}"
-											value="${bi.branchStock}" class="form-control" min="0" required/></td>
-									</tr>
-								</c:forEach>
-							</tbody>
-						</table>
-
-					</div>
-
 					<div class="mt-3">
 						<button type="submit" class="btn btn-primary">
 							<i class="bi bi-save"></i> Lưu

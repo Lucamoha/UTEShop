@@ -1,4 +1,4 @@
-package com.uteshop.controller.admin.vouchers;
+package com.uteshop.controller.admin.Vouchers;
 
 import com.uteshop.configs.AppConfig;
 import com.uteshop.entity.cart.Vouchers;
@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@WebServlet(urlPatterns = { "/admin/Voucher/Vouchers/list", "/admin/Voucher/Vouchers/add",
+@WebServlet(urlPatterns = { "/admin/Voucher/Vouchers/searchpaginated", "/admin/Voucher/Vouchers/add",
 		"/admin/Voucher/Vouchers/edit", "/admin/Voucher/Vouchers/view", "/admin/Voucher/Vouchers/delete" })
 public class VoucherController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -76,10 +76,10 @@ public class VoucherController extends HttpServlet {
 
 		try {
 			switch (url) {
-			case "/admin/Voucher/Vouchers/list":
+			case "/admin/Voucher/Vouchers/searchpaginated":
 				List<Vouchers> vouchers = voucherService.getAll();
 				req.setAttribute("listVouchers", vouchers);
-				req.getRequestDispatcher("/views/admin/Voucher/Vouchers/list.jsp").forward(req, resp);
+				req.getRequestDispatcher("/views/admin/Voucher/Vouchers/searchpaginated.jsp").forward(req, resp);
 				break;
 
 			case "/admin/Voucher/Vouchers/add":
@@ -118,7 +118,7 @@ public class VoucherController extends HttpServlet {
 					throw new ServletException("Thiếu ID voucher");
 				}
 				voucherService.delete(deleteId);
-				resp.sendRedirect(req.getContextPath() + "/admin/Voucher/Vouchers/list?success=true");
+				resp.sendRedirect(req.getContextPath() + "/admin/Voucher/Vouchers/searchpaginated?success=true");
 				break;
 
 			default:
@@ -128,7 +128,7 @@ public class VoucherController extends HttpServlet {
 		} catch (ServletException e) {
 			error = e.getMessage();
 			req.setAttribute("error", error);
-			req.getRequestDispatcher("/views/admin/Voucher/Vouchers/list.jsp").forward(req, resp);
+			req.getRequestDispatcher("/views/admin/Voucher/Vouchers/searchpaginated.jsp").forward(req, resp);
 		}
 	}
 
@@ -238,7 +238,7 @@ public class VoucherController extends HttpServlet {
 				}
 			}
 
-			resp.sendRedirect(req.getContextPath() + "/admin/Voucher/Vouchers/list?success=true");
+			resp.sendRedirect(req.getContextPath() + "/admin/Voucher/Vouchers/searchpaginated?success=true");
 
 		} catch (ServletException e) {
 			error = e.getMessage();

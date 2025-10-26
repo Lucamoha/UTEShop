@@ -70,7 +70,7 @@
                         Thêm
                     </button>
                     <!-- Nút Hủy xám -->
-                    <a href="${pageContext.request.contextPath}/admin/Voucher/Vouchers/list"
+                    <a href="${pageContext.request.contextPath}/admin/Voucher/Vouchers/searchpaginated"
                        class="btn btn-secondary btn-lg">
                         Hủy
                     </a>
