@@ -12,13 +12,8 @@ public class ProductVariantsServiceImpl implements IProductsVariantsService {
 	ProductVariantsDaoImpl productVariantsDao = new ProductVariantsDaoImpl();
 
 	@Override
-	public long getLowStockCount(int threshold) {
-		return productVariantsDao.getLowStockCount(threshold);
-	}
-
-	@Override
-	public List<Object[]> getLowStockProducts(int limit, int threshold) {
-		return productVariantsDao.getLowStockProducts(limit, threshold);
+	public List<Object[]> getLowStockProducts(int threshold, int branchId) {
+		return productVariantsDao.getLowStockProducts(threshold, branchId);
 	}
 
 	@Override

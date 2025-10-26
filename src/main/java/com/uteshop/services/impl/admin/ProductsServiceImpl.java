@@ -41,8 +41,8 @@ public class ProductsServiceImpl implements IProductsService {
 		return productsDaoImpl.findByName(name);
 	}
 	@Override
-	public List<Object[]> getTopSellingProducts(int limit) {
-		return productsDaoImpl.getTopSellingProducts(limit);
+	public List<Object[]> getTopSellingProducts(int limit, int branchId) {
+		return productsDaoImpl.getTopSellingProducts(limit, branchId);
 	}
 	@Override
 	public List<Products> findAll(boolean all, int firstResult, int maxResult, String searchKeyword, String searchKeywordColumnName) {

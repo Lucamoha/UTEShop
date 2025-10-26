@@ -49,7 +49,7 @@ public class DashboardController extends HttpServlet {
 		long orderCount = ordersService.getOrdersByMonthAndBranch(currentYear, currentMonth, branchId).size();
 		long newCustomers = usersService.getNewCustomersByYearAndMonth(currentYear, currentMonth).size();
 		long totalCustomers = usersService.getTotalCustomersByYearAndMonth(currentYear, currentMonth);
-		long lowStock = productsVariantsService.getLowStockCount(10);
+		List<Object[]> lowStockList = productsVariantsService.getLowStockProducts(10, branchId);
 		List<Integer> years = new ArrayList<>();
 		for (int y = currentYear; y >= currentYear - 20; y--) {
 		    years.add(y);
@@ -59,7 +59,8 @@ public class DashboardController extends HttpServlet {
 		req.setAttribute("orderCount", orderCount);
 		req.setAttribute("newCustomers", newCustomers);
 		req.setAttribute("totalCustomers", totalCustomers);
-		req.setAttribute("lowStock", lowStock);
+		req.setAttribute("lowStockList", lowStockList);
+		req.setAttribute("lowStock", lowStockList.size());
 		req.setAttribute("branchList", branchList);
 		req.setAttribute("branchId", branchId);
 		req.setAttribute("years", years);//year để chọn trong select year
@@ -76,10 +77,7 @@ public class DashboardController extends HttpServlet {
 		req.setAttribute("selectedMonth", currentMonth);
 		req.setAttribute("selectedYear", currentYear);
 
-		List<Object[]> lowStockList = productsVariantsService.getLowStockProducts(100, 10);
-		req.setAttribute("lowStockList", lowStockList);
-
-		List<Object[]> topSellingList = productsService.getTopSellingProducts(10);
+		List<Object[]> topSellingList = productsService.getTopSellingProducts(10, branchId);
 		req.setAttribute("topSellingList", topSellingList);
 
 		req.getRequestDispatcher("/views/admin/home.jsp").forward(req, resp);
@@ -109,13 +107,14 @@ public class DashboardController extends HttpServlet {
 				.size();
 		long totalCustomers = usersService.getTotalCustomersByYearAndMonth(Integer.parseInt(year),
 				Integer.parseInt(month));
-		long lowStock = productsVariantsService.getLowStockCount(10);
+		List<Object[]> lowStockList = productsVariantsService.getLowStockProducts(10, branchId);
 
 		req.setAttribute("revenue", revenue);
 		req.setAttribute("orderCount", orderCount);
 		req.setAttribute("newCustomers", newCustomers);
 		req.setAttribute("totalCustomers", totalCustomers);
-		req.setAttribute("lowStock", lowStock);
+		req.setAttribute("lowStockList", lowStockList);
+		req.setAttribute("lowStock", lowStockList.size());
 		req.setAttribute("branchList", branchList);
 		req.setAttribute("branchId", branchId);
 		req.setAttribute("years", years);//year để chọn trong select year
@@ -132,10 +131,8 @@ public class DashboardController extends HttpServlet {
 		req.setAttribute("selectedMonth", Integer.parseInt(month));
 		req.setAttribute("selectedYear", Integer.parseInt(year));
 
-		List<Object[]> lowStockList = productsVariantsService.getLowStockProducts(100, 10);
-		req.setAttribute("lowStockList", lowStockList);
 
-		List<Object[]> topSellingList = productsService.getTopSellingProducts(10);
+		List<Object[]> topSellingList = productsService.getTopSellingProducts(10, branchId);
 		req.setAttribute("topSellingList", topSellingList);
 
 		req.getRequestDispatcher("/views/admin/home.jsp").forward(req, resp);

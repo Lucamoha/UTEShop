@@ -7,6 +7,6 @@ import com.uteshop.entity.catalog.Products;
 
 public interface IProductsDao {
 	Products findByName(String name);
-	List<Object[]> getTopSellingProducts(int limit);
+	List<Object[]> getTopSellingProducts(int limit, int branchId);
 	List<Attributes> findAttributesByCategoryId(Integer categoryId);
 }

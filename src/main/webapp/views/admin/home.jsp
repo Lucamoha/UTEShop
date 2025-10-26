@@ -190,7 +190,6 @@
 			</div>
 			<div class="card-body p-0">
 				<div class="table-responsive">
-					<!-- Projects table -->
 					<table class="table align-items-center mb-0">
 						<thead class="thead-light">
 							<tr>
@@ -206,7 +205,7 @@
 								</tr>
 							</c:forEach>
 						</tbody>
-					</table>
+					</table>		
 				</div>
 			</div>
 		</div>
