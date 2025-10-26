@@ -16,8 +16,8 @@ public class OrdersServiceImpl implements IOrdersService {
 	IOrdersDao ordersDao = new OrdersDaoImpl();
 
 	@Override
-	public List<Orders> getOrdersByMonthAndBranch(int month, int branchId) {
-		return ordersDao.getOrdersByMonthAndBranch(month, branchId);
+	public List<Orders> getOrdersByMonthAndBranch(int year, int month, int branchId) {
+		return ordersDao.getOrdersByMonthAndBranch(year, month, branchId);
 	}
 	@Override
 	public Map<String, BigDecimal> getMonthlyRevenueByYearAndBranch(int year, int branchId) {

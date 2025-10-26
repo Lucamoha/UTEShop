@@ -46,7 +46,7 @@ public class DashboardController extends HttpServlet {
 		int branchId = 0;// Tất cả chi nhánh
 		List<Branches> branchList = branchesService.findAll();
 		BigDecimal revenue = ordersService.getRevenueByYearAndMonthAndBranch(currentYear, currentMonth, branchId);
-		long orderCount = ordersService.getOrdersByMonthAndBranch(currentMonth, branchId).size();
+		long orderCount = ordersService.getOrdersByMonthAndBranch(currentYear, currentMonth, branchId).size();
 		long newCustomers = usersService.getNewCustomersByYearAndMonth(currentYear, currentMonth).size();
 		long totalCustomers = usersService.getTotalCustomersByYearAndMonth(currentYear, currentMonth);
 		long lowStock = productsVariantsService.getLowStockCount(10);
@@ -103,7 +103,7 @@ public class DashboardController extends HttpServlet {
 		List<Branches> branchList = branchesService.findAll();
 		BigDecimal revenue = ordersService.getRevenueByYearAndMonthAndBranch(Integer.parseInt(year),
 				Integer.parseInt(month), branchId);
-		long orderCount = ordersService.getOrdersByMonthAndBranch(Integer.parseInt(month), branchId).size();
+		long orderCount = ordersService.getOrdersByMonthAndBranch(Integer.parseInt(year), Integer.parseInt(month), branchId).size();
 		long newCustomers = usersService.getNewCustomersByYearAndMonth(Integer.parseInt(year), Integer.parseInt(month))
 				.size();
 		long totalCustomers = usersService.getTotalCustomersByYearAndMonth(Integer.parseInt(year),

@@ -76,7 +76,7 @@
 					</div>
 					<div class="col col-stats ms-3 ms-sm-0">
 						<div class="numbers">
-							<p class="card-category">Tổng số khách hàng</p>
+							<p class="card-category">Tổng khách hàng đến tháng ${selectedMonth}</p>
 							<h4 class="card-title">${totalCustomers}</h4>
 						</div>
 					</div>
@@ -135,7 +135,7 @@
 					</div>
 					<div class="col col-stats ms-3 ms-sm-0">
 						<div class="numbers">
-							<p class="card-category">Đơn hàng đã giao tháng
+							<p class="card-category">Đơn đã thanh toán tháng
 								${selectedMonth}</p>
 							<h4 class="card-title">${orderCount}</h4>
 						</div>

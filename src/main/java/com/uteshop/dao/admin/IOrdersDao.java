@@ -9,7 +9,7 @@ import com.uteshop.entity.order.Orders;
 public interface IOrdersDao {
 
 	BigDecimal getRevenueByYearAndMonthAndBranch(int year, int month, int branchId);
-	List<Orders> getOrdersByMonthAndBranch(int month, int branchId);
+	List<Orders> getOrdersByMonthAndBranch(int year, int month, int branchId);
 	Map<String, BigDecimal> getMonthlyRevenueByYearAndBranch(int year, int branchId);
 	Map<String, BigDecimal> getDailySalesByYearAndMonthAndBranch(int year, int month, int branchId);
 }

@@ -41,21 +41,23 @@ public class OrdersDaoImpl extends AbstractDao<Orders> implements IOrdersDao {
 	}
 
 	@Override
-	public List<Orders> getOrdersByMonthAndBranch(int month, int branchId) {
+	public List<Orders> getOrdersByMonthAndBranch(int year, int month, int branchId) {
 		EntityManager enma = JPAConfigs.getEntityManager();
 		try {
 			String jpql = """
 					SELECT o
 					FROM Orders o
-					WHERE MONTH(o.UpdatedAt) = MONTH(CURRENT_DATE)
-					AND YEAR(o.UpdatedAt) = YEAR(CURRENT_DATE)
+					WHERE MONTH(o.UpdatedAt) = :month
+					AND YEAR(o.UpdatedAt) = :year
 					AND o.PaymentStatus = 1
 					""";
 			if (branchId != 0) {
 				jpql += "WHERE o.Branches.Id = :branchId";
-				return enma.createQuery(jpql, Orders.class).setParameter("BranchId", branchId).getResultList();
+				return enma.createQuery(jpql, Orders.class).setParameter("year", year).setParameter("month", month)
+						.setParameter("BranchId", branchId).getResultList();
 			}
-			return enma.createQuery(jpql, Orders.class).getResultList();
+			return enma.createQuery(jpql, Orders.class).setParameter("year", year).setParameter("month", month)
+					.getResultList();
 		} finally {
 			enma.close();
 		}
