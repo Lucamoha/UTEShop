@@ -26,11 +26,12 @@ public class OrdersDaoImpl extends AbstractDao<Orders> implements IOrdersDao {
 					SELECT COALESCE(SUM(o.TotalAmount), 0)
 					FROM Orders o
 					WHERE o.PaymentStatus = 1
-					AND MONTH(o.UpdatedAt) = :month AND YEAR(o.UpdatedAt) = :year""";// PaymentStatus: Đơn hàng đã
+					AND MONTH(o.UpdatedAt) = :month AND YEAR(o.UpdatedAt) = :year 
+					 """;// PaymentStatus: Đơn hàng đã
 																						// thanh toán
 			if (branchId != 0) {
-				jpql += "WHERE o.Branches.Id = :branchId";
-				return (BigDecimal) enma.createQuery(jpql, BigDecimal.class).setParameter("BranchId", branchId)
+				jpql += " AND o.branch.Id = :branchId";
+				return (BigDecimal) enma.createQuery(jpql, BigDecimal.class).setParameter("branchId", branchId)
 						.setParameter("month", month).setParameter("year", year).getSingleResult();
 			}
 			return (BigDecimal) enma.createQuery(jpql, BigDecimal.class).setParameter("month", month)
@@ -49,12 +50,13 @@ public class OrdersDaoImpl extends AbstractDao<Orders> implements IOrdersDao {
 					FROM Orders o
 					WHERE MONTH(o.UpdatedAt) = :month
 					AND YEAR(o.UpdatedAt) = :year
-					AND o.PaymentStatus = 1
+					AND o.PaymentStatus = 1 
+					
 					""";
 			if (branchId != 0) {
-				jpql += "WHERE o.Branches.Id = :branchId";
+				jpql += " AND o.branch.Id = :branchId";
 				return enma.createQuery(jpql, Orders.class).setParameter("year", year).setParameter("month", month)
-						.setParameter("BranchId", branchId).getResultList();
+						.setParameter("branchId", branchId).getResultList();
 			}
 			return enma.createQuery(jpql, Orders.class).setParameter("year", year).setParameter("month", month)
 					.getResultList();
@@ -74,14 +76,23 @@ public class OrdersDaoImpl extends AbstractDao<Orders> implements IOrdersDao {
 					SUM(o.TotalAmount) AS Revenue
 					FROM Orders o
 					WHERE YEAR(o.UpdatedAt) = :year
-					AND o.PaymentStatus = 1
-					GROUP BY MONTH(o.UpdatedAt), DATENAME(MONTH, o.UpdatedAt)
-					ORDER BY MONTH(o.UpdatedAt)
-
+					AND o.PaymentStatus = 1 
+					 
 					""";
 			List<Object[]> rows = null;
 			if (branchId != 0) {
-				sql += "WHERE o.BranchId = :branchId";//
+				sql += " AND o.branchId = :branchId";//
+
+			}
+			
+			sql += """
+					
+						 GROUP BY MONTH(o.UpdatedAt), DATENAME(MONTH, o.UpdatedAt)
+						ORDER BY MONTH(o.UpdatedAt)
+					""";
+			
+
+			if (branchId != 0) {
 				rows = enma.createNativeQuery(sql).setParameter("year", year).setParameter("branchId", branchId)
 						.getResultList();
 			} else {
@@ -115,15 +126,19 @@ public class OrdersDaoImpl extends AbstractDao<Orders> implements IOrdersDao {
 					FROM Orders o
 					WHERE YEAR(o.UpdatedAt) = :year
 					AND MONTH (o.UpdatedAt) = :month
-					AND o.PaymentStatus = 1
-					GROUP BY DAY(o.UpdatedAt)
+					AND o.PaymentStatus = 1 
+					 
 					""";
 			List<Object[]> rows = null;
 			if (branchId != 0) {
-				sql += "WHERE o.BranchId = :branchId";//
+				sql += " AND o.branchId = :branchId";//
+			}
+			sql += " GROUP BY DAY(o.UpdatedAt)";
+			if (branchId != 0) {
 				rows = enma.createNativeQuery(sql).setParameter("year", year).setParameter("month", month)
 						.setParameter("branchId", branchId).getResultList();
-			} else {
+			}
+			else {
 				rows = enma.createNativeQuery(sql).setParameter("year", year).setParameter("month", month)
 						.getResultList();
 			}

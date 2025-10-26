@@ -97,9 +97,10 @@ public class DashboardController extends HttpServlet {
 		}
 
 		int branchId = 0;// Tất cả chi nhánh
-		if (branchIdStr != null && branchIdStr.isBlank()) {
+		if (branchIdStr != null && !branchIdStr.isBlank()) {
 			branchId = Integer.parseInt(branchIdStr);
 		}
+
 		List<Branches> branchList = branchesService.findAll();
 		BigDecimal revenue = ordersService.getRevenueByYearAndMonthAndBranch(Integer.parseInt(year),
 				Integer.parseInt(month), branchId);
