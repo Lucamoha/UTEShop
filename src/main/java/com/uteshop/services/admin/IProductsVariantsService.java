@@ -7,8 +7,7 @@ import com.uteshop.entity.catalog.ProductVariants;
 
 public interface IProductsVariantsService {
 	int count(String searchKeyword, String searchKeywordColumnName);
-	long getLowStockCount(int threshold);
-	List<Object[]> getLowStockProducts(int limit, int threshold);
+	List<Object[]> getLowStockProducts(int threshold, int branchId);
 	List<ProductVariantDetailsModel> getVariantsByProductId(int productId);
 	List<ProductVariantDetailsModel> getVariantDetailsById(int variantId);
 	int countVariantsByProductId(int productId);

@@ -320,7 +320,6 @@ public class ProductController extends HttpServlet {
 				resp.sendRedirect(req.getContextPath() + "/admin/Catalog/Products/searchpaginated");
 
 			} catch (DuplicateSkuException e) {
-				// Lỗi đã được rollback tự động trong service
 				e.printStackTrace();	
 				req.setAttribute("error", e.getMessage());
 				prepareFormDataForError(req, product, category, isUpdate);
@@ -328,17 +327,7 @@ public class ProductController extends HttpServlet {
 				String forwardPage = isUpdate ? "/views/admin/Catalog/Products/update.jsp"
 						: "/views/admin/Catalog/Products/add.jsp";
 				req.getRequestDispatcher(forwardPage).forward(req, resp);
-			} catch (com.uteshop.exception.DuplicateOptionCombinationException e) {
-				// Lỗi trùng tổ hợp options - rollback tự động
-				e.printStackTrace();
-				req.setAttribute("error", e.getMessage());
-				prepareFormDataForError(req, product, category, isUpdate);
-
-				String forwardPage = isUpdate ? "/views/admin/Catalog/Products/update.jsp"
-						: "/views/admin/Catalog/Products/add.jsp";
-				req.getRequestDispatcher(forwardPage).forward(req, resp);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				// Lỗi đã được rollback tự động trong service
 				e.printStackTrace();
 				req.setAttribute("error", "Đã xảy ra lỗi khi lưu sản phẩm: " + e.getMessage());

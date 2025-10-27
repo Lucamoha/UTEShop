@@ -31,9 +31,9 @@
 
 					<!-- Slug -->
 					<div class="mb-3">
-						<label class="form-label">Slug:</label> <input type="text"
-							id="slug" name="slug" class="form-control"
-							value="${product.slug}" readonly />
+						<label class="form-label">Slug (tự sinh khi nhập tên sản
+							phẩm):</label> <input type="text" id="slug" name="slug"
+							class="form-control" value="${product.slug}" readonly />
 					</div>
 
 					<!-- Mô tả -->
@@ -45,7 +45,7 @@
 					<!-- Giá gốc -->
 					<div class="mb-3">
 						<label class="form-label">Giá Gốc:</label> <input type="number"
-							name="basePrice" class="form-control" min="1000"
+							name="basePrice" class="form-control" min="1000" max="999999999"
 							value="${product.basePrice.intValue()}" required />
 					</div>
 
@@ -214,11 +214,12 @@
 												<td><input type="hidden" name="existingVariants.id"
 													value="${v.id}" /> <input type="text"
 													name="existingVariants.sku" value="${v.sku}"
-													class="form-control form-control-sm" /></td>
+													class="form-control form-control-sm" readonly /></td>
 
 												<td><input type="number" step="1"
 													name="existingVariants.price" value="${v.price.intValue()}"
-													min="1000" class="form-control form-control-sm" /></td>
+													min="1000" max="999999999"
+													class="form-control form-control-sm" /></td>
 
 												<td><select name="existingVariants.status"
 													class="form-select form-select-sm">
@@ -237,23 +238,19 @@
 															value="${optVId}" />
 													</c:forEach></td>
 
-												<td>
-													<button type="button"
-														class="btn btn-outline-danger btn-sm remove-variant">
-														<i class="bi bi-trash"></i> Xóa
-													</button>
-												</td>
+												<td>Không có</td>
 											</tr>
 										</c:when>
 										<c:otherwise>
 											<!-- New variant (from validation error) -->
 											<tr>
 												<td><input type="text" name="newVariants.sku"
-													value="${v.sku}" class="form-control form-control-sm" /></td>
+													value="${v.sku}" class="form-control form-control-sm" readonly/></td>
 
 												<td><input type="number" step="1"
 													name="newVariants.price" value="${v.price.intValue()}"
-													min="1000" class="form-control form-control-sm" /></td>
+													min="1000" max="999999999"
+													class="form-control form-control-sm" /></td>
 
 												<td><select name="newVariants.status"
 													class="form-select form-select-sm">
@@ -591,7 +588,7 @@ let deletedAttributeIds = [];
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelector("#variants-tbody").addEventListener("click", (e) => {
         // Xóa biến thể đã lưu trong DB
-        const btn = e.target.closest(".remove-variant");
+       /*  const btn = e.target.closest(".remove-variant");
         if (btn) {
             const tr = btn.closest("tr");
             const variantId = tr.getAttribute("data-variant-id");
@@ -603,7 +600,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             
             tr.remove();
-        }
+        } */
         
         // Xóa biến thể mới (chưa lưu DB) - chỉ remove khỏi DOM
         const newVariantBtn = e.target.closest(".remove-new-variant");
@@ -766,7 +763,7 @@ document.addEventListener("DOMContentLoaded", function () {
       html += '<input type="text" name="newVariants.sku" class="form-control form-control-sm" value="' + baseSKU + '" readonly>';
       html += '</td>';
       html += '<td>';
-      html += '<input type="number" name="newVariants.price" class="form-control form-control-sm" min="0" step="1" required>';
+      html += '<input type="number" name="newVariants.price" class="form-control form-control-sm" min="0" max="999999999" step="1" required>';
       html += '</td>';
       html += '<td>';
       html += '<select name="newVariants.status" class="form-select form-select-sm">';

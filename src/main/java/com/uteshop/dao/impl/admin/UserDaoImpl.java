@@ -1,5 +1,7 @@
 package com.uteshop.dao.impl.admin;
 
+import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 
 import com.uteshop.configs.JPAConfigs;
@@ -16,29 +18,21 @@ public class UserDaoImpl extends AbstractDao<Users> implements IUsersDao {
 	}
 
 	@Override
-	public long getNewCustomersThisMonth() {
-		EntityManager em = JPAConfigs.getEntityManager();
-		try {
-			String jpql = "SELECT COUNT(u) FROM Users u "
-					+ "WHERE u.UserRole = 'USER' "
-					+ "AND MONTH(u.CreatedAt) = MONTH(CURRENT_DATE) AND YEAR(u.CreatedAt) = YEAR(CURRENT_DATE)";
-			return (Long) em.createQuery(jpql, Long.class).getSingleResult();
-		} finally {
-			em.close();
-		}
-	}
-
-	@Override
-	public long getTotalCustomers() {
+	public long getTotalCustomersByYearAndMonth(int year, int month) {
+		// Tạo mốc thời gian đầu tháng kế tiếp
+		LocalDateTime beforeDate = YearMonth.of(year, month)
+		    .plusMonths(1)
+		    .atDay(1)
+		    .atStartOfDay();
+		
 		EntityManager enma = JPAConfigs.getEntityManager();
 		try {
-		
-			String jpql = "SELECT COUNT(u) FROM Users u WHERE u.UserRole = 'USER'";
-			return (Long)enma.createQuery(jpql, Long.class).getSingleResult();
+
+			String jpql = "SELECT COUNT(u) FROM Users u WHERE u.UserRole = 'USER'" + "AND u.CreatedAt < :beforeDate";
+			return (Long) enma.createQuery(jpql, Long.class).setParameter("beforeDate", beforeDate).getSingleResult();
 		} finally {
 			enma.close();
 		}
-		
 	}
 
 	@Override
@@ -56,5 +50,17 @@ public class UserDaoImpl extends AbstractDao<Users> implements IUsersDao {
 					)
 				""";
 		return enma.createQuery(jpql, Users.class).getResultList();
+	}
+
+	@Override
+	public List<Users> getNewCustomersByYearAndMonth(int year, int month) {
+		EntityManager enma = JPAConfigs.getEntityManager();
+		try {
+			String jpql = "SELECT u FROM Users u " + "WHERE u.UserRole = 'USER' " + "AND MONTH(u.CreatedAt) = "
+					+ month + " AND YEAR(u.CreatedAt) = " + year;
+			return enma.createQuery(jpql, Users.class).getResultList();
+		} finally {
+			enma.close();
+		}
 	}
 }

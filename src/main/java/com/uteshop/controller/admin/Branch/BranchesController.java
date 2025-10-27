@@ -27,7 +27,6 @@ import jakarta.servlet.http.HttpServletResponse;
 public class BranchesController extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
-
 	IBranchesService branchesService = new BranchesServiceImpl();
 	IUsersService usersService = new UsersServiceImpl();
 
@@ -62,13 +61,13 @@ public class BranchesController extends HttpServlet {
 			// Đếm tổng số bản ghi để tính tổng trang
 			int totalBranches = branchesService.count(searchKeyword, "Name");
 			int totalPages = (int) Math.ceil((double) totalBranches / size);
+			
+			System.out.println(Math.ceil((double) 10 / 6));
 
 			List<BranchDetailModel> branchDetailModels = new ArrayList<>();
 			for (Branches branch : branchList) {
-				// if (branch == null || branch.getId() == null) continue;
 				BranchDetailModel detailModel = new BranchDetailModel();
 				detailModel.setBranch(branch);
-				detailModel.setBranchInventories(branchesService.findInventoryByBranchId(branch.getId()));
 				detailModel.setTotalInventory(branchesService.countInventory(branch.getId()).intValue());
 				branchDetailModels.add(detailModel);
 			}
@@ -94,15 +93,6 @@ public class BranchesController extends HttpServlet {
 			}
 
 			req.setAttribute("branch", branch);
-
-			// Thêm danh sách tồn kho/biến thể
-			List<BranchInventory> inventories;
-			if (branch.getId() != null) {
-				inventories = branchesService.findOrCreateInventoriesByBranchId(branch.getId());
-			} else {
-				inventories = branchesService.createEmptyInventoriesForAllVariants();
-			}
-			req.setAttribute("inventories", inventories);
 			req.getRequestDispatcher("/views/admin/Branch/Branches/addOrEdit.jsp").forward(req, resp);
 
 		} else if (uri.contains("view")) {
@@ -110,7 +100,7 @@ public class BranchesController extends HttpServlet {
 			Branches branch = branchesService.findByIdFetchColumn(Integer.parseInt(id), "manager");
 			BranchDetailModel detailModel = new BranchDetailModel();
 			detailModel.setBranch(branch);
-			detailModel.setBranchInventories(branchesService.findInventoryByBranchId(branch.getId()));
+			detailModel.setBranchInventories(branchesService.findOrCreateInventoriesByBranchId(branch.getId()));
 			detailModel.setTotalInventory(branchesService.countInventory(branch.getId()).intValue());
 
 			req.setAttribute("detailModel", detailModel);
@@ -221,34 +211,6 @@ public class BranchesController extends HttpServlet {
 				message = "Thêm chi nhánh thành công!";
 				// Lấy lại entity đã có ID
 				branch = branchesService.findByName(name);
-			}
-
-			// Tạo tồn kho nếu chưa có
-			List<BranchInventory> inventories = branchesService.findOrCreateInventoriesByBranchId(branch.getId());
-
-			// Cập nhật số lượng tồn
-			for (BranchInventory bi : inventories) {
-				String paramName = "stock_" + bi.getVariant().getId();
-				String stockStr = req.getParameter(paramName);
-				if (stockStr != null && !stockStr.isBlank()) {
-					int stock = Integer.parseInt(stockStr);
-					if (stock >= 0) {
-						bi.setBranchStock(stock);
-
-						// Gán lại branch và id nếu null khi thêm mới
-						if (bi.getBranch() == null) {
-							bi.setBranch(branch);
-						}
-						if (bi.getId() == null) {
-							BranchInventory.Id bid = new BranchInventory.Id();
-							bid.setBranchId(branch.getId());
-							bid.setVariantId(bi.getVariant().getId());
-							bi.setId(bid);
-						}
-
-						branchesService.update(bi);
-					}
-				}
 			}
 
 			req.getSession().setAttribute("message", message);

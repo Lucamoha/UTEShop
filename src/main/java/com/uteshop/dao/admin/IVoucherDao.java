@@ -10,6 +10,5 @@ public interface IVoucherDao {
     void insert(Vouchers voucher);
     void update(Vouchers voucher);
     void delete(Integer id);
-    // Có thể thêm findByCode nếu cần tối ưu
     Vouchers findByCode(String code);
 }

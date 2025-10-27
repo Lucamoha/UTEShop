@@ -5,7 +5,7 @@ import java.util.List;
 import com.uteshop.entity.auth.Users;
 
 public interface IUsersDao{
-	long getNewCustomersThisMonth();
-	long getTotalCustomers();
+	List<Users> getNewCustomersByYearAndMonth(int year, int month);
+	long getTotalCustomersByYearAndMonth(int year, int month);
 	List<Users> getManagerNotManagedBranch();
 }

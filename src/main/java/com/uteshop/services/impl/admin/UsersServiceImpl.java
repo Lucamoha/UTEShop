@@ -23,14 +23,6 @@ public class UsersServiceImpl implements IUsersService {
 	{
 		userDaoImpl.delete(id);
 	}
-	@Override
-	public long getNewCustomersThisMonth() {
-		return userDaoImpl.getNewCustomersThisMonth();
-	}
-	@Override
-	public long getTotalCustomers() {
-		return userDaoImpl.getTotalCustomers();
-	}
 
     @Override
     public void update(Users user) {
@@ -40,6 +32,14 @@ public class UsersServiceImpl implements IUsersService {
     @Override
 	public List<Users> getManagerNotManagedBranch() {
 		return userDaoImpl.getManagerNotManagedBranch();
+	}
+	@Override
+	public List<Users> getNewCustomersByYearAndMonth(int year, int month) {
+		return userDaoImpl.getNewCustomersByYearAndMonth(year, month);
+	}
+	@Override
+	public long getTotalCustomersByYearAndMonth(int year, int month) {
+		return userDaoImpl.getTotalCustomersByYearAndMonth(year, month);
 	}
 
 }

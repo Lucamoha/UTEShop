@@ -18,7 +18,7 @@
                 <div class="table-responsive">
                     <a href="${pageContext.request.contextPath}/admin/User/Employees/add"
                        class="btn btn-dark mb-2">Thêm Quản Lý</a>
-                    <a href="${pageContext.request.contextPath}/admin/User/Users/list"
+                    <a href="${pageContext.request.contextPath}/admin/User/Users/searchpaginated"
                        class="btn btn-secondary mb-2 ml-3">Người Dùng</a>
                     <table class="table table-striped">
                         <thead>

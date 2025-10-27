@@ -17,37 +17,26 @@ public class ProductVariantsDaoImpl extends AbstractDao<ProductVariants> impleme
 		super(ProductVariants.class);
 	}
 
-	@Override
-	public long getLowStockCount(int threshold) {
-		EntityManager enma = JPAConfigs.getEntityManager();
-		try {
-			String sql = """
-
-					SELECT COUNT(*)
-					FROM(
-						SELECT p.Id, SUM(bi.BranchStock) AS TotalStock
-						FROM Products p
-						JOIN ProductVariants pv ON pv.ProductId = p.Id
-						JOIN BranchInventory bi ON bi.VariantId = pv.Id
-						WHERE p.Status = 1
-						GROUP BY p.Id
-						HAVING SUM(bi.BranchStock) <= :threshold
-					) AS Q
-					""";
-			return ((Number) enma.createNativeQuery(sql).setParameter("threshold", threshold).getSingleResult())
-					.longValue();
-		} finally {
-			enma.close();
-		}
-	}
+	/*
+	 * @Override public long getLowStockCount(int threshold) { EntityManager enma =
+	 * JPAConfigs.getEntityManager(); try { String sql = """
+	 * 
+	 * SELECT COUNT(*) FROM( SELECT p.Id, SUM(bi.BranchStock) AS TotalStock FROM
+	 * Products p JOIN ProductVariants pv ON pv.ProductId = p.Id JOIN
+	 * BranchInventory bi ON bi.VariantId = pv.Id WHERE p.Status = 1 GROUP BY p.Id
+	 * HAVING SUM(bi.BranchStock) <= :threshold ) AS Q """; return ((Number)
+	 * enma.createNativeQuery(sql).setParameter("threshold",
+	 * threshold).getSingleResult()) .longValue(); } finally { enma.close(); } }
+	 */
 
 	@Override
-	public List<Object[]> getLowStockProducts(int limit, int threshold) {
+	public List<Object[]> getLowStockProducts(int threshold, int branchId) {
 		EntityManager enma = JPAConfigs.getEntityManager();
-		// threshold = 5;
+
+		//threshold: ngưỡng tồn kho của variant
 		try {
 			String sql = """
-					SELECT TOP(:limit)
+					SELECT
 						p.Id AS ProductId,
 						p.Name AS ProductName,
 						SUM(bi.BranchStock) AS TotalStock
@@ -55,12 +44,25 @@ public class ProductVariantsDaoImpl extends AbstractDao<ProductVariants> impleme
 					JOIN ProductVariants pv ON pv.ProductId = p.Id
 					JOIN BranchInventory bi ON bi.VariantId = pv.Id
 					WHERE p.Status = 1
-					GROUP BY p.Id, p.Name
+
+					""";
+
+			if (branchId != 0) {
+				sql += " AND bi.branchId = :branchId";
+			}
+
+			sql += """
+					 GROUP BY p.Id, p.Name
 					HAVING SUM(bi.BranchStock) <= :threshold
 					ORDER BY SUM(bi.BranchStock) ASC
 					""";
-			return enma.createNativeQuery(sql).setParameter("limit", limit).setParameter("threshold", threshold)
-					.getResultList();
+			if (branchId != 0) {
+				return enma.createNativeQuery(sql).setParameter("threshold", threshold)
+						.setParameter("branchId", branchId).getResultList();
+			} else {
+				return enma.createNativeQuery(sql).setParameter("threshold", threshold)
+						.getResultList();
+			}
 		} finally {
 			enma.close();
 		}
@@ -144,46 +146,44 @@ public class ProductVariantsDaoImpl extends AbstractDao<ProductVariants> impleme
 	@Override
 	public void deleteAllByProductId(Integer productId) {
 		EntityManager em = JPAConfigs.getEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        try {
-            tx.begin();
-            // Lấy tất cả các biến thể thuộc productId
-            TypedQuery<ProductVariants> query = em.createQuery(
-                    "SELECT v FROM ProductVariants v WHERE v.product.id = :productId", ProductVariants.class);
-            query.setParameter("productId", productId);
-            List<ProductVariants> variants = query.getResultList();
+		EntityTransaction tx = em.getTransaction();
+		try {
+			tx.begin();
+			// Lấy tất cả các biến thể thuộc productId
+			TypedQuery<ProductVariants> query = em.createQuery(
+					"SELECT v FROM ProductVariants v WHERE v.product.id = :productId", ProductVariants.class);
+			query.setParameter("productId", productId);
+			List<ProductVariants> variants = query.getResultList();
 
-            for (ProductVariants variant : variants) {
-                // Xóa bản ghi VariantOptions liên quan trước để tránh lỗi ràng buộc khóa ngoại
-                em.createQuery("DELETE FROM VariantOptions vo WHERE vo.variant.id = :variantId")
-                  .setParameter("variantId", variant.getId())
-                  .executeUpdate();
+			for (ProductVariants variant : variants) {
+				// Xóa bản ghi VariantOptions liên quan trước để tránh lỗi ràng buộc khóa ngoại
+				em.createQuery("DELETE FROM VariantOptions vo WHERE vo.variant.id = :variantId")
+						.setParameter("variantId", variant.getId()).executeUpdate();
 
-                // Xóa chính ProductVariants
-                em.remove(em.contains(variant) ? variant : em.merge(variant));
-            }
-            tx.commit();
-            //System.out.println("Đã xóa tất cả biến thể cho productId=" + productId);
-        } catch (Exception e) {
-            tx.rollback();
-            e.printStackTrace();
-        } finally {
-            em.close();
-        }
+				// Xóa chính ProductVariants
+				em.remove(em.contains(variant) ? variant : em.merge(variant));
+			}
+			tx.commit();
+			// System.out.println("Đã xóa tất cả biến thể cho productId=" + productId);
+		} catch (Exception e) {
+			tx.rollback();
+			e.printStackTrace();
+		} finally {
+			em.close();
+		}
 	}
 
 	@Override
 	public ProductVariants findById(int variantId) {
 		return super.findById(variantId);
 	}
-	
+
 	@Override
 	public ProductVariants findBySKU(String sku) {
 		EntityManager enma = JPAConfigs.getEntityManager();
 		try {
 			String jpql = "SELECT pv FROM ProductVariants pv WHERE pv.SKU = :sku";
-			List<ProductVariants> results = enma.createQuery(jpql, ProductVariants.class)
-					.setParameter("sku", sku)
+			List<ProductVariants> results = enma.createQuery(jpql, ProductVariants.class).setParameter("sku", sku)
 					.getResultList();
 			return results.isEmpty() ? null : results.get(0);
 		} catch (Exception e) {
@@ -192,35 +192,34 @@ public class ProductVariantsDaoImpl extends AbstractDao<ProductVariants> impleme
 			enma.close();
 		}
 	}
-	
+
 	@Override
 	public List<ProductVariants> findAll() {
 		return super.findAll();
 	}
-	
+
 	@Override
 	public void update(ProductVariants variant) {
 		super.update(variant);
 	}
-	
+
 	@Override
 	public void delete(Object id) {
 		EntityManager em = JPAConfigs.getEntityManager();
 		EntityTransaction tx = em.getTransaction();
 		try {
 			tx.begin();
-			
+
 			// Xóa VariantOptions liên quan trước để tránh lỗi ràng buộc khóa ngoại
 			em.createQuery("DELETE FROM VariantOptions vo WHERE vo.variant.id = :variantId")
-			  .setParameter("variantId", id)
-			  .executeUpdate();
-			
+					.setParameter("variantId", id).executeUpdate();
+
 			// Xóa ProductVariants
 			ProductVariants variant = em.find(ProductVariants.class, id);
 			if (variant != null) {
 				em.remove(variant);
 			}
-			
+
 			tx.commit();
 		} catch (Exception e) {
 			if (tx.isActive()) {

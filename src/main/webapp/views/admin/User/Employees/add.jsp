@@ -45,7 +45,7 @@
                             style="background-color: #0d47a1; border-color: #0d47a1;">
                         Lưu
                     </button>
-                    <a href="${pageContext.request.contextPath}/admin/User/Employees/list"
+                    <a href="${pageContext.request.contextPath}/admin/User/Employees/searchpaginated"
                        class="btn btn-success btn-lg"
                        style="background-color: #1b5e20; border-color: #1b5e20;">
                         Hủy

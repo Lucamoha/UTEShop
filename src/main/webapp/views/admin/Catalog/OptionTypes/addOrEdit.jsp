@@ -21,7 +21,6 @@
 					</h2>
 				</div>
 				<div class="card-body">
-
 					<!-- Hidden ID (nếu đang edit) -->
 					<input type="hidden" name="id" value="${optionType.id}" />
 

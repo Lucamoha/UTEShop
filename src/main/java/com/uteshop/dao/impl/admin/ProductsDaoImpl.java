@@ -17,16 +17,28 @@ public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsD
 	}
 
 	@Override
-	public List<Object[]> getTopSellingProducts(int limit) {
+	public List<Object[]> getTopSellingProducts(int limit, int branchId) {
 		EntityManager enma = JPAConfigs.getEntityManager();
 		try {
 			String jpql = """
 						SELECT ot.product.Name, SUM(ot.Quantity) AS totalSold
 						FROM OrderItems ot
-						GROUP BY ot.product.Name
+
+					""";
+			if (branchId != 0) {
+				jpql += " WHERE ot.order.branch.Id = :branchId";
+			}
+			jpql += """
+
+					 	 GROUP BY ot.product.Name
 						ORDER BY totalSold DESC
 					""";
-			return enma.createQuery(jpql, Object[].class).setMaxResults(limit).getResultList();
+			if (branchId != 0) {
+				return enma.createQuery(jpql, Object[].class).setParameter("branchId", branchId).setMaxResults(limit)
+						.getResultList();
+			} else {
+				return enma.createQuery(jpql, Object[].class).setMaxResults(limit).getResultList();
+			}
 		} finally {
 			enma.close();
 		}
@@ -46,17 +58,15 @@ public class ProductsDaoImpl extends AbstractDao<Products> implements IProductsD
 	@Override
 	public List<Attributes> findAttributesByCategoryId(Integer categoryId) {
 		EntityManager em = JPAConfigs.getEntityManager();
-	    try {
-	        return em.createQuery("""
-	            SELECT DISTINCT a
-	            FROM CategoryAttributes ca
-	            JOIN ca.attribute a
-	            WHERE ca.category.Id = :categoryId
-	        """, Attributes.class)
-	        .setParameter("categoryId", categoryId)
-	        .getResultList();
-	    } finally {
-	        em.close();
-	    }
+		try {
+			return em.createQuery("""
+					    SELECT DISTINCT a
+					    FROM CategoryAttributes ca
+					    JOIN ca.attribute a
+					    WHERE ca.category.Id = :categoryId
+					""", Attributes.class).setParameter("categoryId", categoryId).getResultList();
+		} finally {
+			em.close();
+		}
 	}
 }

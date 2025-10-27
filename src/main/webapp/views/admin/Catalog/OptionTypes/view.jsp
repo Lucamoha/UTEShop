@@ -21,17 +21,14 @@
 				</table>
 			</div>
 			<div class="card-footer text-right">
-				<!-- Back -->
 				<a
 					href="${pageContext.request.contextPath}/admin/Catalog/OptionTypes/searchpaginated"
 					class="btn btn-secondary"><i class="bi bi-arrow-left-circle"></i> Trở lại</a>
 
-				<!-- Edit -->
 				<a
 					href="${pageContext.request.contextPath}/admin/Catalog/OptionTypes/saveOrUpdate?id=${optionType.id}"
 					class="btn btn-warning"><i class="bi bi-pencil-square"></i> Chỉnh sửa</a>
 
-				<!-- Delete -->
 				<a href="javascript:void(0)" class="btn btn-danger"
 					data-id="${optionType.id}" data-name="${optionType.code}"
 					onclick="showConfirmation(this)"> <i class="bi bi-trash"></i> Xóa

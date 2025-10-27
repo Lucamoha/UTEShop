@@ -15,6 +15,6 @@ public interface IProductsService {
 	List<Products> findAll(boolean all, int firstResult, int maxResult, String searchKeyword, String searchKeywordColumnName);
 	int count(String searchKeyword, String searchKeywordColumnName);
 	Products findByName(String name);
-    List<Object[]> getTopSellingProducts(int limit);
+    List<Object[]> getTopSellingProducts(int limit, int branchId);
     List<Attributes> findAttributesByCategoryId(Integer categoryId);
 }

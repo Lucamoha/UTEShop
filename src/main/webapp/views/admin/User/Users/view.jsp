@@ -36,7 +36,7 @@
                        style="background-color:#0d47a1; border-color:#0d47a1;">
                         Chỉnh Sửa
                     </a>
-                    <a href="${pageContext.request.contextPath}/admin/User/Users/list"
+                    <a href="${pageContext.request.contextPath}/admin/User/Users/searchpaginated"
                        class="btn btn-success btn-lg"
                        style="background-color:#1b5e20; border-color:#1b5e20;">
                         Quay Lại
