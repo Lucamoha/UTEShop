@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
-<div class="container mt-4">
+<div class="col mt-4">
 	<div class="card">
 		<div class="card-header">
 			<h4>Danh Sách Voucher</h4>
