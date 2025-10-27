@@ -57,8 +57,6 @@ public class UserController extends HttpServlet {
                 int id = Integer.parseInt(req.getParameter("id"));
                 Users user = userService.findById(id);
 
-                // Update fields from form parameters (adjust field names based on Users entity)
-                // Assuming common fields: username, email, fullName, phone, userRole, isActive, etc.
                 user.setFullName(req.getParameter("username"));
                 user.setEmail(req.getParameter("email"));
                 user.setFullName(req.getParameter("fullName"));
