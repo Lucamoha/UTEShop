@@ -23,18 +23,6 @@
 			</c:if>
 
 			<div class="row mt-2 mb-3">
-				<%-- <div class="col-md-6">
-					<form
-						action="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated"
-						method="get">
-						<div class="input-group">
-							<input type="text" id="searchBox" class="form-control" name="searchKeyword"
-								placeholder="Nhập từ khóa tên hoặc nói để tìm" value="${searchKeyword}">
-							<button id="startBtn">🎤 Nói</button>
-							<button class="btn btn-outline-primary">Tìm kiếm</button>
-						</div>
-					</form>
-				</div> --%>
 				<div class="col-md-6">
 					<form
 						action="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated"

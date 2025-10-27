@@ -193,13 +193,15 @@
 					<table class="table align-items-center mb-0">
 						<thead class="thead-light">
 							<tr>
+								<th scope="col" style="width: 5%;">#</th>
 								<th scope="col" style="width: 60%;">Tên sản phẩm</th>
-								<th scope="col" style="width: 40%;">Số lượng đã bán</th>
+								<th scope="col" style="width: 35%;">Số lượng đã bán</th>
 							</tr>
 						</thead>
 						<tbody>
-							<c:forEach var="sellingProduct" items="${topSellingList}">
+							<c:forEach var="sellingProduct" items="${topSellingList}" varStatus="loop">
 								<tr>
+									<th>${loop.index + 1}</th>
 									<th>${sellingProduct[0]}</th>
 									<th>${sellingProduct[1]}</th>
 								</tr>
