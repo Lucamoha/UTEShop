@@ -4,9 +4,9 @@
 
 **Hệ thống thương mại điện tử đa chức năng được phát triển bằng Java**
 
-[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
-[![Maven](https://img.shields.io/badge/Maven-3.6+-blue.svg)](https://maven.apache.org/)
-[![SQL Server](https://img.shields.io/badge/SQL%20Server-2012+-red.svg)](https://www.microsoft.com/sql-server)
+[![Java](https://img.shields.io/badge/Java-17+-orange.svg)](https://www.oracle.com/java/)
+[![Maven](https://img.shields.io/badge/Maven-3.9+-blue.svg)](https://maven.apache.org/)
+[![SQL Server](https://img.shields.io/badge/SQL%20Server-2019+-red.svg)](https://www.microsoft.com/sql-server)
 [![Tomcat](https://img.shields.io/badge/Tomcat-10+-yellow.svg)](https://tomcat.apache.org/)
 
 </div>
@@ -47,94 +47,94 @@
 
 #### Cho Khách hàng:
 
-| Chức năng | Mô tả |
-|-----------|-------|
-| **Xác thực & Bảo mật** | Đăng ký/Đăng nhập (tài khoản thông thường, Google OAuth, Facebook OAuth) |
-| **Quên mật khẩu** | Khôi phục tài khoản qua email |
-| **Quản lý hồ sơ** | Cập nhật thông tin cá nhân, quản lý địa chỉ giao hàng |
-| **Duyệt sản phẩm** | Xem danh sách sản phẩm theo danh mục, tìm kiếm, lọc theo thuộc tính |
-| **Chi tiết sản phẩm** | Xem thông tin chi tiết, hình ảnh, các biến thể (variants) |
-| **Giỏ hàng** | Thêm/Xóa/Cập nhật sản phẩm trong giỏ hàng |
-| **So sánh sản phẩm** | So sánh các sản phẩm cùng danh mục |
-| **Đặt hàng** | Tạo đơn hàng với nhiều hình thức thanh toán |
-| **Thanh toán trực tuyến** | Tích hợp VNPay và Momo Payment Gateway |
-| **Quản lý đơn hàng** | Theo dõi trạng thái, hủy/trả đơn hàng |
-| **Đánh giá & Review** | Đánh giá sản phẩm với hình ảnh/video |
+| Chức năng                 | Mô tả                                                                    |
+| ------------------------- | ------------------------------------------------------------------------ |
+| **Xác thực & Bảo mật**    | Đăng ký/Đăng nhập (tài khoản thông thường, Google OAuth, Facebook OAuth) |
+| **Quên mật khẩu**         | Khôi phục tài khoản qua email                                            |
+| **Quản lý hồ sơ**         | Cập nhật thông tin cá nhân, quản lý địa chỉ giao hàng                    |
+| **Duyệt sản phẩm**        | Xem danh sách sản phẩm theo danh mục, tìm kiếm, lọc theo thuộc tính      |
+| **Chi tiết sản phẩm**     | Xem thông tin chi tiết, hình ảnh, các biến thể (variants)                |
+| **Giỏ hàng**              | Thêm/Xóa/Cập nhật sản phẩm trong giỏ hàng                                |
+| **So sánh sản phẩm**      | So sánh các sản phẩm cùng danh mục                                       |
+| **Đặt hàng**              | Tạo đơn hàng với nhiều hình thức thanh toán                              |
+| **Thanh toán trực tuyến** | Tích hợp VNPay và Momo Payment Gateway                                   |
+| **Quản lý đơn hàng**      | Theo dõi trạng thái, hủy/trả đơn hàng                                    |
+| **Đánh giá & Review**     | Đánh giá sản phẩm với hình ảnh/video                                     |
 
 #### Cho Admin:
 
-| Chức năng | Mô tả |
-|-----------|-------|
-| **Dashboard** | Thống kê tổng quan hệ thống |
-| **Quản lý danh mục** | CRUD danh mục sản phẩm |
-| **Quản lý thuộc tính** | CRUD thuộc tính sản phẩm (attributes) |
-| **Quản lý sản phẩm** | CRUD sản phẩm, biến thể, hình ảnh |
+| Chức năng                              | Mô tả                                       |
+| -------------------------------------- | ------------------------------------------- |
+| **Dashboard**                          | Thống kê tổng quan hệ thống                 |
+| **Quản lý danh mục**                   | CRUD danh mục sản phẩm                      |
+| **Quản lý thuộc tính**                 | CRUD thuộc tính sản phẩm (attributes)       |
+| **Quản lý sản phẩm**                   | CRUD sản phẩm, biến thể, hình ảnh           |
 | **Quản lý OptionTypes & OptionValues** | Cấu hình các tùy chọn cho biến thể sản phẩm |
-| **Quản lý người dùng** | Xem, chỉnh sửa, tìm kiếm người dùng |
-| **Quản lý Review** | Duyệt, xóa đánh giá sản phẩm |
-| **Quản lý Voucher** | CRUD voucher giảm giá |
-| **Quản lý chi nhánh** | CRUD thông tin chi nhánh |
+| **Quản lý người dùng**                 | Xem, chỉnh sửa, tìm kiếm người dùng         |
+| **Quản lý Review**                     | Duyệt, xóa đánh giá sản phẩm                |
+| **Quản lý Voucher**                    | CRUD voucher giảm giá                       |
+| **Quản lý chi nhánh**                  | CRUD thông tin chi nhánh                    |
 
 #### Cho Manager:
 
-| Chức năng | Mô tả |
-|-----------|-------|
-| **Báo cáo doanh thu** | Thống kê doanh thu theo thời gian |
-| **Thống kê đơn hàng** | Phân tích trạng thái đơn hàng |
-| **Top sản phẩm** | Sản phẩm bán chạy nhất |
-| **Quản lý kho** | Import hàng loạt, xuất Excel báo cáo tồn kho |
+| Chức năng             | Mô tả                                        |
+| --------------------- | -------------------------------------------- |
+| **Báo cáo doanh thu** | Thống kê doanh thu theo thời gian            |
+| **Thống kê đơn hàng** | Phân tích trạng thái đơn hàng                |
+| **Top sản phẩm**      | Sản phẩm bán chạy nhất                       |
+| **Quản lý kho**       | Import hàng loạt, xuất Excel báo cáo tồn kho |
 
 ## 2. Các công nghệ sử dụng
 
 ### Backend
 
-| Công nghệ | Mô tả |
-|-----------|-------|
-| **Java** | Ngôn ngữ lập trình chính |
-| **Jakarta Servlet** | Xử lý HTTP requests |
-| **Jakarta JSP & JSTL** | View rendering |
-| **Hibernate** | ORM Framework |
-| **JPA (Jakarta Persistence API)** | Data persistence |
-| **Microsoft SQL Server** | Cơ sở dữ liệu quan hệ |
-| **MSSQL JDBC Driver** | Database connectivity |
+| Công nghệ                         | Mô tả                    |
+| --------------------------------- | ------------------------ |
+| **Java**                          | Ngôn ngữ lập trình chính |
+| **Jakarta Servlet**               | Xử lý HTTP requests      |
+| **Jakarta JSP & JSTL**            | View rendering           |
+| **Hibernate**                     | ORM Framework            |
+| **JPA (Jakarta Persistence API)** | Data persistence         |
+| **Microsoft SQL Server**          | Cơ sở dữ liệu quan hệ    |
+| **MSSQL JDBC Driver**             | Database connectivity    |
 
 ### Security & Authentication
 
-| Công nghệ | Mô tả |
-|-----------|-------|
-| **JWT (JSON Web Tokens)** | Token-based authentication |
-| **BCrypt** | Password hashing |
-| **ScribeJava** | OAuth authentication (Google, Facebook) |
+| Công nghệ                 | Mô tả                                   |
+| ------------------------- | --------------------------------------- |
+| **JWT (JSON Web Tokens)** | Token-based authentication              |
+| **BCrypt**                | Password hashing                        |
+| **ScribeJava**            | OAuth authentication (Google, Facebook) |
 
 ### Frontend
 
-| Công nghệ | Mô tả |
-|-----------|-------|
-| **JSP (JavaServer Pages)** | Server-side rendering |
-| **JSTL (JSP Standard Tag Library)** | Template tags |
-| **SiteMesh** | Layout & decoration framework |
-| **CSS/JavaScript** | Client-side styling và interactivity |
+| Công nghệ                           | Mô tả                                |
+| ----------------------------------- | ------------------------------------ |
+| **JSP (JavaServer Pages)**          | Server-side rendering                |
+| **JSTL (JSP Standard Tag Library)** | Template tags                        |
+| **SiteMesh**                        | Layout & decoration framework        |
+| **CSS/JavaScript**                  | Client-side styling và interactivity |
 
 ### Utilities & Libraries
 
-| Thư viện | Mục đích sử dụng |
-|----------|------------------|
-| **Lombok** | Giảm boilerplate code |
-| **Apache Commons FileUpload** | File upload handling |
-| **Apache Commons IO** | IO utilities |
-| **Gson** | JSON serialization/deserialization |
-| **Jackson** | JSON processing |
-| **Jakarta Mail** | Email sending (forgot password, notifications) |
-| **Apache POI** | Excel file processing |
-| **OpenPDF** | PDF generation |
-| **Hibernate Validator** | Bean validation |
+| Thư viện                      | Mục đích sử dụng                               |
+| ----------------------------- | ---------------------------------------------- |
+| **Lombok**                    | Giảm boilerplate code                          |
+| **Apache Commons FileUpload** | File upload handling                           |
+| **Apache Commons IO**         | IO utilities                                   |
+| **Gson**                      | JSON serialization/deserialization             |
+| **Jackson**                   | JSON processing                                |
+| **Jakarta Mail**              | Email sending (forgot password, notifications) |
+| **Apache POI**                | Excel file processing                          |
+| **OpenPDF**                   | PDF generation                                 |
+| **Hibernate Validator**       | Bean validation                                |
 
 ### Build Tool & Application Server
 
-| Công cụ | Mô tả |
-|---------|-------|
-| **Apache Maven** | Dependency management và build automation |
-| **Apache Tomcat 10+** | Jakarta EE compatible application server |
+| Công cụ               | Mô tả                                     |
+| --------------------- | ----------------------------------------- |
+| **Apache Maven**      | Dependency management và build automation |
+| **Apache Tomcat 10+** | Jakarta EE compatible application server  |
 
 ## 3. Cấu trúc thư mục
 
@@ -173,7 +173,7 @@ UTEShop/
 │       ├── resources/
 │       │   ├── META-INF/
 │       │   │   └── persistence.xml             # JPA configuration
-│       │   └── config.properties               # Application configuration 
+│       │   └── config.properties               # Application configuration
 │       └── webapp/
 │           ├── WEB-INF/
 │           │   ├── web.xml                     # Web application descriptor
@@ -188,7 +188,7 @@ UTEShop/
 ├── pom.xml                                     # Maven project configuration
 ├── mvnw                                        # Maven wrapper script (Unix)
 ├── mvnw.cmd                                    # Maven wrapper script (Windows)
-└── README.md                                   # Project documentation 
+└── README.md                                   # Project documentation
 ```
 
 ## 4. Cách chạy dự án
@@ -197,13 +197,13 @@ UTEShop/
 
 Trước khi cài đặt, cần chuẩn bị các công cụ sau:
 
-| Thành phần | Phiên bản khuyến nghị | Ghi chú |
-|------------|----------------------|---------|
-| **JDK** | 17+ | Thiết lập biến môi trường |
-| **Apache Tomcat** | 10.1.x | Servlet API 5.0 (phù hợp với jakarta.*) |
-| **SQL Server** | 2019 hoặc mới hơn | Dùng để lưu trữ dữ liệu ứng dụng |
-| **Maven** | 3.9+ | Quản lý dependencies |
-| **IntelliJ IDEA / Eclipse** | Mới nhất | IDE để chạy và debug (tùy chọn) |
+| Thành phần                  | Phiên bản khuyến nghị | Ghi chú                                  |
+| --------------------------- | --------------------- | ---------------------------------------- |
+| **JDK**                     | 17+                   | Thiết lập biến môi trường                |
+| **Apache Tomcat**           | 10.1.x                | Servlet API 5.0 (phù hợp với jakarta.\*) |
+| **SQL Server**              | 2019 hoặc mới hơn     | Dùng để lưu trữ dữ liệu ứng dụng         |
+| **Maven**                   | 3.9+                  | Quản lý dependencies                     |
+| **IntelliJ IDEA / Eclipse** | Mới nhất              | IDE để chạy và debug (tùy chọn)          |
 
 ### Các bước cài đặt
 
@@ -281,7 +281,7 @@ facebook.clientId=your_facebook_clientId_here
 facebook.clientSecret=your_facebook_clientSecret_here
 facebook.redirectUri={your_domain}/login/oauth/facebook/callback
 facebook.scope=email,public_profile
- 
+
 # ========================
 # Email/SMTP Config
 # ========================
@@ -310,6 +310,7 @@ smtp.from.name=UTEShop
 **Bước 1:** Mở dự án trong IntelliJ IDEA
 
 **Bước 2:** Cấu hình Tomcat server
+
 - Vào `Run` → `Edit Configurations` → `Add New Configuration` → `Tomcat Server` → `Local`
 - Chọn Tomcat installation directory
 - Trong tab `Deployment`, add artifact: `UTEShop:war exploded`
@@ -353,10 +354,10 @@ Tomcat sẽ tự động deploy ứng dụng khi khởi động.
 
 Mở trình duyệt và truy cập các URL sau:
 
-| Trang | URL |
-|-------|-----|
-| **Trang chủ** | http://localhost:8080/UTEShop/ |
-| **Admin Panel** | http://localhost:8080/UTEShop/admin/dashboard |
+| Trang             | URL                                           |
+| ----------------- | --------------------------------------------- |
+| **Trang chủ**     | http://localhost:8080/UTEShop/                |
+| **Admin Panel**   | http://localhost:8080/UTEShop/admin/dashboard |
 | **Manager Panel** | http://localhost:8080/UTEShop/manager/reports |
 
 ---
@@ -364,11 +365,10 @@ Mở trình duyệt và truy cập các URL sau:
 ## 5. Video Demo chạy dự án
 
 ```
-Link video: 
+Link video:
 ```
 
 **Nội dung video demo bao gồm:**
-
 
 ---
 
@@ -376,12 +376,12 @@ Link video:
 
 Dự án được phát triển bởi nhóm sinh viên Đại học Sư phạm Kỹ thuật TP.HCM (UTE):
 
-| Thành viên | GitHub |
-|------------|--------|
-| **Trần Triều Dương** | [@Lucamoha](https://github.com/Lucamoha) |
-| **Võ Lê Khánh Duy** | [@DuyVo-2005](https://github.com/DuyVo-2005) |
-| **Văn Phú Hiền** | [@VanPhuHien](https://github.com/VanPhuHien) |
-| **Nguyễn Văn Kế** | [@nvk3005](https://github.com/nvk3005) |
+| Thành viên           | GitHub                                       |
+| -------------------- | -------------------------------------------- |
+| **Trần Triều Dương** | [@Lucamoha](https://github.com/Lucamoha)     |
+| **Võ Lê Khánh Duy**  | [@DuyVo-2005](https://github.com/DuyVo-2005) |
+| **Văn Phú Hiền**     | [@VanPhuHien](https://github.com/VanPhuHien) |
+| **Nguyễn Văn Kế**    | [@nvk3005](https://github.com/nvk3005)       |
 
 ---
 
@@ -389,7 +389,6 @@ Dự án được phát triển bởi nhóm sinh viên Đại học Sư phạm K
 
 **UTEShop** - Website bán sản phẩm công nghệ của Apple
 
-Đồ án Lập trình Web | Năm học 2024-2025
+Đồ án Lập trình WEB
 
 </div>
-

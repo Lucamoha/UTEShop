@@ -44,12 +44,12 @@ public class LoginController extends HttpServlet {
             // Lấy role thực tế từ database
             String role = user.getUserRole() != null ? user.getUserRole() : "USER";
 
-            // Tạo JWT token
-            String token = JWTUtil.generateToken(email, role);
-
             // Kiểm tra checkbox "remember me"
             String remember = req.getParameter("remember");
             boolean rememberMe = (remember != null);
+
+            // Tạo JWT token
+            String token = JWTUtil.generateToken(email, role, rememberMe);
 
             // Lưu token vào Cookie
             JWTUtil.addTokenToCookie(resp, token, rememberMe);
