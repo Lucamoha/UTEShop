@@ -23,14 +23,31 @@
 			</c:if>
 
 			<div class="row mt-2 mb-3">
+				<%-- <div class="col-md-6">
+					<form
+						action="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated"
+						method="get">
+						<div class="input-group">
+							<input type="text" id="searchBox" class="form-control" name="searchKeyword"
+								placeholder="Nhập từ khóa tên hoặc nói để tìm" value="${searchKeyword}">
+							<button id="startBtn">🎤 Nói</button>
+							<button class="btn btn-outline-primary">Tìm kiếm</button>
+						</div>
+					</form>
+				</div> --%>
 				<div class="col-md-6">
 					<form
 						action="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated"
 						method="get">
 						<div class="input-group">
-							<input type="text" class="form-control" name="searchKeyword"
-								placeholder="Nhập từ khóa tên để tìm" value="${searchKeyword}">
-							<button class="btn btn-outline-primary">Tìm kiếm</button>
+							<input type="text" id="searchBox" class="form-control"
+								name="searchKeyword"
+								placeholder="Nhập từ khóa tên hoặc nói để tìm"
+								value="${searchKeyword}">
+							<button id="startBtn" type="button"
+								class="btn btn-outline-secondary">🎤 Nói</button>
+							<button class="btn btn-outline-primary" type="submit">Tìm
+								kiếm</button>
 						</div>
 					</form>
 				</div>
@@ -161,6 +178,47 @@
 		</div>
 	</div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  if (!('webkitSpeechRecognition' in window)) {
+    console.warn("Trình duyệt không hỗ trợ Web Speech API");
+    return;
+  }
+
+  const recognition = new webkitSpeechRecognition();
+  recognition.lang = 'vi-VN';
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  const searchBox = document.getElementById('searchBox');
+  const startBtn = document.getElementById('startBtn');
+
+  startBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    recognition.start();
+    startBtn.textContent = "🎧 Đang nghe...";
+  });
+
+  recognition.onresult = (event) => {
+	let text = event.results[0][0].transcript;
+    
+ 	// Xóa dấu câu ở cuối nếu có (?, ., !) do lên giọng
+    text = text.trim().replace(/[?.!]+$/g, "");
+    
+    searchBox.value = text;
+  };
+
+  recognition.onerror = (e) => {
+    console.error("Speech recognition error:", e);
+    alert("Không thể nhận diện giọng nói (" + e.error + ")");
+  };
+
+  recognition.onend = () => {
+    startBtn.textContent = "🎤 Nói";
+  };
+});
+</script>
 
 <!-- Script xác nhận xóa -->
 <script>
