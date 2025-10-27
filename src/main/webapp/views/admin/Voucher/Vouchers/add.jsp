@@ -41,8 +41,10 @@
 
 					<div class="mb-3">
 						<label for="value" class="form-label">Giá Trị *</label> <input
-							type="number" step="0.01" class="form-control" id="value"
-							name="value" value="${voucher.value}" required>
+							type="number" step="1" class="form-control" id="value"
+							name="value"
+							value="${voucher.value}"
+							required>
 					</div>
 
 					<div class="mb-3">
@@ -69,7 +71,9 @@
 						<label class="form-check-label" for="isActive">Hoạt Động</label>
 					</div>
 
-					<button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Lưu</button>
+					<button type="submit" class="btn btn-primary">
+						<i class="bi bi-save"></i> Lưu
+					</button>
 					<a
 						href="${pageContext.request.contextPath}/admin/Voucher/Vouchers/searchpaginated"
 						class="btn btn-secondary"><i class="bi bi-x-circle"></i> Hủy</a>
@@ -78,3 +82,28 @@
 		</form>
 	</div>
 </section>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function() {
+		const typeSelect = document.getElementById("type");
+		const valueInput = document.getElementById("value");
+
+		function updateValueConstraints() {
+			if (typeSelect.value === "1") {
+				//Giảm theo %
+				valueInput.min = 0;
+				valueInput.max = 90;
+				valueInput.placeholder = "0 - 90 (%)";
+			} else {
+				//Giảm theo số tiền
+				valueInput.min = 1000;
+				valueInput.max = 999999999;
+				valueInput.placeholder = "Từ 1,000 đến 999,999,999 (VNĐ)";
+			}
+		}
+
+		//Cập nhật khi load và khi thay đổi loại
+		updateValueConstraints();
+		typeSelect.addEventListener("change", updateValueConstraints);
+	});
+</script>

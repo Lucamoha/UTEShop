@@ -35,7 +35,7 @@
 								<th>Mã</th>
 								<th>Giá Trị</th>
 								<th>Lượt Dùng Tối Đa</th>
-								<th>Lượt Đã Sử Dụng</th>
+								<th>Lượt Đã Dùng</th>
 								<th>Trạng Thái</th>
 								<th>Hành Động</th>
 							</tr>
@@ -47,11 +47,11 @@
 									<td><c:choose>
 											<c:when test="${voucher.type == 1}">
 												<fmt:formatNumber value="${voucher.value}"
-													maxFractionDigits="2" />%
+													maxFractionDigits="0" />%
                                         </c:when>
 											<c:when test="${voucher.type == 2}">
 												<fmt:formatNumber value="${voucher.value}" type="currency"
-													currencySymbol="₫" />
+													maxFractionDigits="0" currencySymbol="₫" />
 											</c:when>
 											<c:otherwise>
                                             ${voucher.value} (Loại không xác định)
