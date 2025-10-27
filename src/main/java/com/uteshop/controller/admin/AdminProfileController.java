@@ -1,8 +1,9 @@
 package com.uteshop.controller.admin;
 
 import com.uteshop.entity.auth.Users;
-import com.uteshop.services.impl.web.UsersServiceImpl;
-import com.uteshop.services.web.IUsersService;
+import com.uteshop.services.impl.web.account.UsersServiceImpl;
+import com.uteshop.services.web.account.IUsersService;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
