@@ -92,8 +92,9 @@
 			src="${pageContext.request.contextPath}/templates/admin/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
 
 		<!-- Chart JS -->
-		<script
-			src="${pageContext.request.contextPath}/templates/admin/js/plugin/chart.js/chart.min.js"></script>
+		<%-- <script
+			src="${pageContext.request.contextPath}/templates/admin/js/plugin/chart.js/chart.min.js"></script> --%>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 		<!-- jQuery Sparkline -->
 		<script
@@ -128,8 +129,6 @@
 		<!-- Kaiadmin DEMO methods, don't include it in your project! -->
 		<script
 			src="${pageContext.request.contextPath}/templates/admin/js/setting-demo.js"></script>
-		<%-- <script
-			src="${pageContext.request.contextPath}/templates/admin/js/demo.js"></script> --%>
 		
 		<!-- Script để tự động expand menu và highlight active item -->
 		<script>

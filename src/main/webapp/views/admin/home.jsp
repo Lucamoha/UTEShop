@@ -251,22 +251,18 @@
 	</div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-	const revenueLabels = JSON
-			.parse('${revenueLabels != null ? revenueLabels : "[]"}');
-	const revenueValues = JSON.parse(
-			'${revenueValues != null ? revenueValues : "[]"}').map(Number);
-	const dailyLabels = JSON
-			.parse('${dailyLabels != null ? dailyLabels : "[]"}');
-	const dailyValues = JSON.parse(
-			'${dailyValues != null ? dailyValues : "[]"}').map(Number);
+	const revenueLabels = ${revenueLabels != null ? revenueLabels : "[]"};
+	const revenueValues = ${revenueValues != null ? revenueValues : "[]"}; 
+	const dailyLabels = ${dailyLabels != null ? dailyLabels : "[]"};
+	const dailyValues = ${dailyValues != null ? dailyValues : "[]"};
 
 	console.log(revenueValues);
 
 	document.addEventListener("DOMContentLoaded", function() {
 		// BIỂU ĐỒ DOANH THU THEO THÁNG
 		const ctxRevenue = document.getElementById('revenueChart');
+		Chart.defaults.scale.ticks.callback = undefined;
 		new Chart(ctxRevenue, {
 			type : 'line',
 			data : {
@@ -288,12 +284,9 @@
 					y : {
 						beginAtZero : true,
 						ticks : {
-							callback : function(value, index, values) {
-								if (typeof value !== 'number')
-									return value;
-								return value.toString().replace(
-										/\B(?=(\d{3})+(?!\d))/g, ".")
-										+ ' ₫';
+							callback: function(value) {
+								console.log('Tick value:', value);
+							    return new Intl.NumberFormat('vi-VN').format(Number(value)) + ' VND';
 							}
 						}
 					}
@@ -307,9 +300,7 @@
 									label += ': ';
 								}
 								const value = context.parsed.y;
-								label += value.toString().replace(
-										/\B(?=(\d{3})+(?!\d))/g, ".")
-										+ ' ₫';
+								label += value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' VND';
 								return label;
 							}
 						}
@@ -345,13 +336,9 @@
 					y : {
 						beginAtZero : true,
 						ticks : {
-							callback : function(value, index, values) {
-								if (typeof value !== 'number')
-									return value;
-								return value.toString().replace(
-										/\B(?=(\d{3})+(?!\d))/g, ".")
-										+ ' ₫';
-							}
+							callback: function(value) {
+							    return new Intl.NumberFormat('vi-VN').format(Number(value)) + ' VND';
+							  }
 						}
 					}
 				},
@@ -364,9 +351,7 @@
 									label += ': ';
 								}
 								const value = context.parsed.y;
-								label += value.toString().replace(
-										/\B(?=(\d{3})+(?!\d))/g, ".")
-										+ ' ₫';
+								label += value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' VND';
 								return label;
 							}
 						}
