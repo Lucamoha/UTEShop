@@ -14,7 +14,8 @@ import java.util.Date;
 
 public class JWTUtil {
     private static final String SIGNER_KEY = JWTConfigs.getSignerKey();
-    private static final long EXPIRATION_TIME = JWTConfigs.getExpiration();
+    private static final long EXPIRATION_TIME = JWTConfigs.getExpiration(); // 1 giờ
+    private static final long REMEMBER_ME_EXPIRATION = 7 * 24 * 60 * 60 * 1000L; // 7 ngày
     private static final String JWT_COOKIE_NAME = "JWT_TOKEN";
 
     private static Key getSigningKey() {
@@ -22,14 +23,26 @@ public class JWTUtil {
     }
 
     /**
-     * Tạo JWT token với email và role
+     * Tạo JWT token với email và role (mặc định 1 giờ)
      */
     public static String generateToken(String email, String role) {
+        return generateToken(email, role, false);
+    }
+
+    /**
+     * Tạo JWT token với email, role và tùy chọn remember me
+     * 
+     * @param email Email của user
+     * @param role Role của user
+     * @param rememberMe true = 7 ngày, false = 1 giờ
+     */
+    public static String generateToken(String email, String role, boolean rememberMe) {
+        long expirationTime = rememberMe ? REMEMBER_ME_EXPIRATION : EXPIRATION_TIME;
         return Jwts.builder()
                 .subject(email)
                 .claim("role", role)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .expiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(getSigningKey())
                 .compact();
     }
