@@ -90,3 +90,28 @@
 		</form>
 	</div>
 </section>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function() {
+		const typeSelect = document.getElementById("type");
+		const valueInput = document.getElementById("value");
+
+		function updateValueConstraints() {
+			if (typeSelect.value === "1") {
+				//Giảm theo %
+				valueInput.min = 0;
+				valueInput.max = 90;
+				valueInput.placeholder = "0 - 90 (%)";
+			} else {
+				//Giảm theo số tiền
+				valueInput.min = 1000;
+				valueInput.max = 999999999;
+				valueInput.placeholder = "Từ 1,000 đến 999,999,999 (VNĐ)";
+			}
+		}
+
+		//Cập nhật khi load và khi thay đổi loại
+		updateValueConstraints();
+		typeSelect.addEventListener("change", updateValueConstraints);
+	});
+</script>

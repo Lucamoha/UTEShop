@@ -67,11 +67,10 @@
 									</a><a
 										href="${pageContext.request.contextPath}/admin/Voucher/Vouchers/edit?id=${voucher.id}"
 										class="btn btn-outline-warning btn-sm" title="Sửa"> <i
-											class="bi bi-pencil-square"></i></a> <a
-										href="${pageContext.request.contextPath}/admin/Voucher/Vouchers/delete?id=${voucher.id}"
-										class="btn btn-outline-danger btn-sm"
-										onclick="return confirm('Xóa?')" title="Xóa"> <i
-											class="bi bi-trash"></i>
+											class="bi bi-pencil-square"></i></a> <a href="javascript:void(0)"
+										class="btn btn-outline-danger btn-sm" data-id="${voucher.id}"
+										data-name="${voucher.code}" onclick="showConfirmation(this)"
+										title="Xóa"> <i class="bi bi-trash"></i>
 									</a></td>
 								</tr>
 							</c:forEach>
@@ -83,3 +82,42 @@
 		</div>
 	</div>
 </div>
+
+<!-- Modal xác nhận xóa -->
+<div class="modal fade" id="confirmationId" tabindex="-1"
+	aria-labelledby="confirmationLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="confirmationLabel">Xác Nhận Xóa</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal"
+					aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				Bạn có chắc muốn xóa voucher có mã <b>"<span id="VoucherCode"></span>"
+				</b>?
+			</div>
+			<div class="modal-footer">
+				<a id="yesOption" href="#" class="btn btn-danger">Có</a>
+				<button type="button" class="btn btn-secondary"
+					data-bs-dismiss="modal">Không</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Script xác nhận xóa -->
+<script>
+	function showConfirmation(el) {
+		var id = el.getAttribute("data-id");
+		var code = el.getAttribute("data-name");
+		document.getElementById("VoucherCode").innerText = code;
+		document.getElementById("yesOption").setAttribute(
+				"href",
+				'${pageContext.request.contextPath}/admin/Voucher/Vouchers/delete?id='
+						+ id);
+		var modal = new bootstrap.Modal(document
+				.getElementById('confirmationId'));
+		modal.show();
+	}
+</script>
