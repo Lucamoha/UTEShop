@@ -107,32 +107,6 @@
 						</table>
 					</div>
 				</c:if>
-
-				<!-- Phân trang -->
-				<c:if test="${totalPages > 1}">
-					<nav aria-label="Page navigation">
-						<ul class="pagination justify-content-center">
-
-							<li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-								<a class="page-link"
-								href="${pageContext.request.contextPath}/admin/Catalog/Categories/searchpaginated?page=1&size=${size}">First</a>
-							</li>
-
-							<c:forEach begin="1" end="${totalPages}" var="i">
-								<li class="page-item ${i == currentPage ? 'active' : ''}"><a
-									class="page-link"
-									href="${pageContext.request.contextPath}/admin/Catalog/Categories/searchpaginated?page=${i}&size=${size}">
-										${i} </a></li>
-							</c:forEach>
-
-							<li
-								class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
-								<a class="page-link"
-								href="${pageContext.request.contextPath}/admin/Catalog/Categories/searchpaginated?page=${totalPages}&size=${size}">Last</a>
-							</li>
-						</ul>
-					</nav>
-				</c:if>
 			</div>
 		</div>
 	</div>
@@ -162,31 +136,34 @@
 </section>
 
 <script>
-  function showConfirmation (el, type) {
-    var name = el.getAttribute("data-name");
-    var url = '';
+	function showConfirmation(el, type) {
+		var name = el.getAttribute("data-name");
+		var url = '';
 
-    const typeLabelMap = {
-      category : "danh mục",
-      categoryAttribute : "thuộc tính danh mục"
-    };
+		const typeLabelMap = {
+			category : "danh mục",
+			categoryAttribute : "thuộc tính danh mục"
+		};
 
-    document.getElementById("deleteTargetType").innerText = typeLabelMap[type] || "đối tượng";
-    document.getElementById("deleteTargetName").innerText = name;
+		document.getElementById("deleteTargetType").innerText = typeLabelMap[type]
+				|| "đối tượng";
+		document.getElementById("deleteTargetName").innerText = name;
 
-    if (type === "category") {
-      var id = el.getAttribute("data-id");
-      url = '${pageContext.request.contextPath}/admin/Catalog/Categories/delete?id=' + id;
-    } else if (type === "categoryAttribute") {
-      var categoryId = el.getAttribute("data-category-id");
-      var attributeId = el.getAttribute("data-attribute-id");
-      console.log("categoryId:", categoryId, "attributeId:", attributeId);
-      url = '${pageContext.request.contextPath}/admin/Catalog/Categories/deleteCategoryAttribute?categoryId='+ categoryId + '&attributeId=' + attributeId;
-    }
+		if (type === "category") {
+			var id = el.getAttribute("data-id");
+			url = '${pageContext.request.contextPath}/admin/Catalog/Categories/delete?id='
+					+ id;
+		} else if (type === "categoryAttribute") {
+			var categoryId = el.getAttribute("data-category-id");
+			var attributeId = el.getAttribute("data-attribute-id");
+			console.log("categoryId:", categoryId, "attributeId:", attributeId);
+			url = '${pageContext.request.contextPath}/admin/Catalog/Categories/deleteCategoryAttribute?categoryId='
+					+ categoryId + '&attributeId=' + attributeId;
+		}
 
-    document.getElementById("yesOption").setAttribute("href", url);
-    var modal = new bootstrap.Modal(document
-			.getElementById('confirmationId'));
-	modal.show();
-  }
+		document.getElementById("yesOption").setAttribute("href", url);
+		var modal = new bootstrap.Modal(document
+				.getElementById('confirmationId'));
+		modal.show();
+	}
 </script>

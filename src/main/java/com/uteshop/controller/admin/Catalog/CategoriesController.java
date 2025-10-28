@@ -87,34 +87,10 @@ public class CategoriesController extends HttpServlet {
 			req.setAttribute("categoryList", categoryList);
 			req.getRequestDispatcher("/views/admin/Catalog/Categories/addOrEdit.jsp").forward(req, resp);
 		} else if (uri.contains("view")) {
-			int page = 1;
-			int size = 6;
-
-			if (req.getParameter("page") != null) {
-				page = Integer.parseInt(req.getParameter("page"));
-			}
-			if (req.getParameter("size") != null) {
-				size = Integer.parseInt(req.getParameter("size"));
-			}
-
-			String searchKeyword = "";
-
-			// Tính offset (vị trí bắt đầu)
-			int firstResult = (page - 1) * size;
-
 			String id = req.getParameter("id");
-			Categories category = categoriesService.findByIdFetchColumns(Integer.parseInt(id), firstResult, size,
+			Categories category = categoriesService.findByIdFetchColumns(Integer.parseInt(id),
 					new ArrayList<>(List.of("parent", "categoryAttributes", "categoryAttributes.attribute")));
-
-			// Đếm tổng số bản ghi để tính tổng trang
-			int totalCategories = categoriesService.count(searchKeyword, "Name");
-			int totalPages = (int) Math.ceil((double) totalCategories / size);
-
 			req.setAttribute("category", category);
-			req.setAttribute("currentPage", page);
-			req.setAttribute("totalPages", totalPages);
-			req.setAttribute("size", size);
-			req.setAttribute("searchKeyword", searchKeyword);
 			req.getRequestDispatcher("/views/admin/Catalog/Categories/view.jsp").forward(req, resp);
 		} else if (uri.contains("deleteCategoryAttribute")) {
 			String categoryId = req.getParameter("categoryId");
