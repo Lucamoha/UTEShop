@@ -70,7 +70,7 @@
 | **Quản lý thuộc tính**                 | CRUD thuộc tính sản phẩm (attributes)       |
 | **Quản lý sản phẩm**                   | CRUD sản phẩm, biến thể, hình ảnh           |
 | **Quản lý OptionTypes & OptionValues** | Cấu hình các tùy chọn cho biến thể sản phẩm |
-| **Quản lý người dùng**                 | Xem, chỉnh sửa, tìm kiếm người dùng         |
+| **Quản lý người dùng**                 | Xem, chỉnh sửa người dùng         		   |
 | **Quản lý Review**                     | Duyệt, xóa đánh giá sản phẩm                |
 | **Quản lý Voucher**                    | CRUD voucher giảm giá                       |
 | **Quản lý chi nhánh**                  | CRUD thông tin chi nhánh                    |
