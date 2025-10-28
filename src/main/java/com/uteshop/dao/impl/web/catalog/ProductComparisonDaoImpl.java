@@ -147,7 +147,13 @@ public class ProductComparisonDaoImpl implements IProductComparisonDao {
             } else if (dataType == 2) { // Number
                 return valueNumber != null ? valueNumber.toString() : "N/A";
             } else if (dataType == 3) { // Boolean
-                return valueText != null ? valueText : "N/A";
+                if (valueNumber != null) {
+                    if (valueNumber.compareTo(BigDecimal.ONE) == 0) {
+                        return "Có";
+                    } else if (valueNumber.compareTo(BigDecimal.ZERO) == 0) {
+                        return "Không";
+                    }
+                }
             }
             
             return "N/A";

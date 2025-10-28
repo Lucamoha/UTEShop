@@ -565,7 +565,7 @@
 
                             <div class="block2-txt flex-w p-t-14">
                                 <div class="block2-txt-child1 flex-col-l">
-                                    <a href="${pageContext.request.contextPath}/product-detail?id=${product.id}"
+                                    <a href="${pageContext.request.contextPath}/product-detail?product=${product.slug}"
                                        class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
                                             ${product.name}
                                     </a>

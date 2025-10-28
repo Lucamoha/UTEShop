@@ -353,14 +353,7 @@
                                             </c:choose>
                                         </c:when>
                                         <c:when test="${attr.dataType == 3}">
-                                            <c:choose>
-                                                <c:when test="${attr.product1Value == '1'}">
-                                                    Có
-                                                </c:when>
-                                                <c:otherwise>
-                                                    Không
-                                                </c:otherwise>
-                                            </c:choose>
+                                            ${attr.product1Value}
                                         </c:when>
                                         <c:otherwise>
                                             ${attr.product1Value}
@@ -429,14 +422,7 @@
                                             </c:choose>
                                         </c:when>
                                         <c:when test="${attr.dataType == 3}">
-                                            <c:choose>
-                                                <c:when test="${attr.product2Value == '1'}">
-                                                    Có
-                                                </c:when>
-                                                <c:otherwise>
-                                                    Không
-                                                </c:otherwise>
-                                            </c:choose>
+                                            ${attr.product2Value}
                                         </c:when>
                                         <c:otherwise>
                                             ${attr.product2Value}
