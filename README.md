@@ -376,9 +376,9 @@ Tài khoản demo:
 
 ## 5. Video Demo chạy dự án
 
-```
-Link video:
-```
+<a href="https://drive.google.com/file/d/1p0X8A11ivFlVPwnK65IqrRNQYXPosrCY/view?usp=drive_link">
+  <img src="thumbnail.png" alt="Demo Video" width="600">
+</a>
 
 **Nội dung video demo bao gồm:**
 
