@@ -218,9 +218,7 @@ cd UTEShop
 
 ##### 4.2.1. Tạo database trong SQL Server
 
-```sql
-CREATE DATABASE UTEShop;
-```
+Trong thư mục `src/main/resources/database`, thực thi script `UTEShop.sql`
 
 ##### 4.2.2. Thiết lập file cấu hình `config.properties`
 
