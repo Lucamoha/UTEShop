@@ -95,7 +95,7 @@ public class LoginController extends HttpServlet {
         } else {
             if (user != null && user.getIsActive() == false) {
                 req.setAttribute("error", "Tài khoản của bạn đã bị vô hiệu hóa!");
-            }  else if (user != null) {
+            }  else {
                 req.setAttribute("error", "Email hoặc mật khẩu không đúng!");
             }
             req.setAttribute("email", email); // Giữ lại email đã nhập
