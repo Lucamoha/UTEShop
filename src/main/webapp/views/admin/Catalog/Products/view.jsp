@@ -3,6 +3,11 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
+<%
+java.time.format.DateTimeFormatter fullFormatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+pageContext.setAttribute("fullFormatter", fullFormatter);
+%>
+
 <section class="row">
 	<div class="col-12 mt-4">
 		<div class="card">
@@ -29,7 +34,8 @@
 					</tr>
 					<tr>
 						<th>Giá Gốc</th>
-						<td>${product.basePrice}</td>
+						<td><fmt:formatNumber value="${product.basePrice}"
+								type="number" maxFractionDigits="0" groupingUsed="true" /> VND</td>
 					</tr>
 					<tr>
 						<th>Trạng Thái</th>
@@ -46,11 +52,11 @@
 					</tr>
 					<tr>
 						<th>Ngày Tạo</th>
-						<td>${product.createdAt}</td>
+						<td>${product.createdAt.format(fullFormatter)}</td>
 					</tr>
 					<tr>
 						<th>Ngày Cập Nhật</th>
-						<td>${product.updatedAt}</td>
+						<td>${product.updatedAt.format(fullFormatter)}</td>
 					</tr>
 				</table>
 			</div>
@@ -100,7 +106,6 @@
 							<c:forEach var="attr" items="${productAttributes}">
 								<tr>
 									<td>${attr.name}</td>
-									<%-- <td>${attr.displayValue}</td> --%>
 
 									<td><c:choose>
 											<c:when test="${attr.dataType == 3}">
@@ -140,7 +145,7 @@
 								<tr>
 									<td>${v.sku}</td>
 									<td><fmt:formatNumber value="${v.price}" type="number"
-											maxFractionDigits="0" groupingUsed="true" />VND</td>
+											maxFractionDigits="0" groupingUsed="true" /> VND</td>
 									<td><c:choose>
 											<c:when test="${v.status}">
 												<span class="badge bg-success">Đang bán</span>

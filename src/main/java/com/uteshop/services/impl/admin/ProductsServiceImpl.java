@@ -260,7 +260,7 @@ public class ProductsServiceImpl implements IProductsService {
 	@Override
 	public ProductVariants findVariantBySKU(EntityManager enma, String sku, List<Integer> deletedIds) {
 		try {
-			return findVariantBySKU(enma, sku, deletedIds);
+			return productsDao.findVariantBySKU(enma, sku, deletedIds);
 		} catch (Exception e) {
 			return null;
 		}
@@ -303,7 +303,7 @@ public class ProductsServiceImpl implements IProductsService {
 					if (!newSKU.equals(oldSKU)) {
 						// SKU đã thay đổi - thêm SKU cũ vào danh sách released
 						releasedSkus.add(oldSKU);
-						System.out.println(">>> SKU đã thay đổi: " + oldSKU + " → " + newSKU);
+						System.out.println(">>> SKU đã thay đổi: " + oldSKU + " -> " + newSKU);
 
 						ProductVariants existingVariant = findVariantBySKU(enma, newSKU, deletedIds);
 						if (existingVariant != null) {
