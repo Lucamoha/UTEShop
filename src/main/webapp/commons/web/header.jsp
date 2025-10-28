@@ -82,10 +82,12 @@
         <div class="wrap-menu-desktop">
             <nav class="limiter-menu-desktop container">
                 <!-- Logo desktop -->
-                <a href="#" class="logo">
+                <a href="#">
                     <img
                             src="${pageContext.request.contextPath}/templates/images/icons/logo-01.png"
                             alt="IMG-LOGO"
+                            width="200"
+                            height="auto"
                     />
                 </a>
 

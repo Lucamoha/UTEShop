@@ -285,7 +285,7 @@
                 noUiSlider.create(priceSlider, {
                   start: [currentMin, currentMax],
                   connect: true,
-                  step: 1000000,
+                  step: 1000,
                   range: {
                     'min': minPrice,
                     'max': maxPrice
