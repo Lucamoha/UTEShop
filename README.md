@@ -363,6 +363,15 @@ Mở trình duyệt và truy cập các URL sau:
 | **Admin Panel**   | http://localhost:8080/UTEShop/admin/dashboard |
 | **Manager Panel** | http://localhost:8080/UTEShop/manager/dashboard |
 
+Tài khoản demo:
+
+| Tài khoản               | Mật khẩu |
+|-------------------------|----------|
+| **admin@demo.test**     | 123      |
+| **manager@demo.test**   | 123      |
+| **manager2@demo.test**  | 123      |
+| **user@demo.test**      | 123      |
+
 ---
 
 ## 5. Video Demo chạy dự án
