@@ -4,33 +4,6 @@
 	xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
 	version="3.0">
 <persistence-unit name="dataSource">
-<class>com.uteshop.entity.auth.Users</class>
-<class>com.uteshop.entity.auth.UserTokens</class>
-<class>com.uteshop.entity.auth.Addresses</class>
-<class>com.uteshop.entity.catalog.Categories</class>
-<class>com.uteshop.entity.catalog.Attributes</class>
-<class>com.uteshop.entity.catalog.CategoryAttributes</class>
-<class>com.uteshop.entity.catalog.Products</class>
-<class>com.uteshop.entity.catalog.ProductAttributeValues</class>
-<class>com.uteshop.entity.catalog.ProductVariants</class>
-<class>com.uteshop.entity.catalog.OptionTypes</class>
-<class>com.uteshop.entity.catalog.OptionValues</class>
-<class>com.uteshop.entity.catalog.VariantOptions</class>
-<class>com.uteshop.entity.catalog.ProductImages</class>
-<class>com.uteshop.entity.engagement.Favorites</class>
-<class>com.uteshop.entity.engagement.CompareLists</class>
-<class>com.uteshop.entity.engagement.CompareItems</class>
-<class>com.uteshop.entity.cart.Carts</class>
-<class>com.uteshop.entity.cart.CartItems</class>
-<class>com.uteshop.entity.order.Orders</class>
-<class>com.uteshop.entity.order.OrderItems</class>
-<class>com.uteshop.entity.Shipments</class>
-<class>com.uteshop.entity.Payments</class>
-<class>com.uteshop.entity.Discounts</class>
-<class>com.uteshop.entity.Vouchers</class>
-<class>com.uteshop.entity.engagement.Reviews</class>
-<class>com.uteshop.entity.engagement.ReviewMedia</class>
-<class>com.uteshop.entity.SystemSettings</class>
 <properties>
 <property name="jakarta.persistence.jdbc.driver"
 value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />

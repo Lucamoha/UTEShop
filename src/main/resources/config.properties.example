@@ -54,6 +54,20 @@ facebook.redirectUri={your_domain}/login/oauth/facebook/callback
 facebook.scope=email,public_profile
 
 # ========================
+# Email/SMTP Config
+# ========================
+smtp.host=smtp.gmail.com
+smtp.port=587
+smtp.from.email=your-email@gmail.com
+smtp.from.password=your-app-password
+smtp.from.name=UTEShop
+
+# ========================
+# Upload Directory
+# ========================
+upload.dir=uploads
+
+# ========================
 # User Roles
 # ========================
 users.role.user=USER
@@ -67,15 +81,6 @@ user_token.type.verify_email=1
 user_token.type.reset_password=2
 
 # ========================
-# Email/SMTP Config
-# ========================
-smtp.host=smtp.gmail.com
-smtp.port=587
-smtp.from.email=your-email@gmail.com
-smtp.from.password=your-app-password
-smtp.from.name=UTEShop
-
-# ========================
 # Attribute DataType
 # ========================
 attributes.datatype.text=1
@@ -87,11 +92,6 @@ attributes.datatype.boolean=3
 # ========================
 product.status.inactive=0
 product.status.active=1
-
-# ========================
-# Upload Directory
-# ========================
-upload.dir=uploads
 
 # ========================
 # Order Status Mapping
@@ -109,15 +109,6 @@ orders.status.returned=5
 payment.status.unpaid=0
 payment.status.paid=1
 payment.status.refunded=2
-
-# ========================
-# Shipments Status Mapping
-# ========================
-shipments.status.preparing=0
-shipments.status.picked=1
-shipments.status.in_transit=2
-shipments.status.delivered=3
-shipments.status.failed=4
 
 # ========================
 # Payments Method Mapping

@@ -290,6 +290,11 @@ smtp.port=587
 smtp.from.email=your-email@gmail.com
 smtp.from.password=your-app-password
 smtp.from.name=UTEShop
+
+# ========================
+# Upload Directory
+# ========================
+upload.dir={Your Upload Directory}
 ```
 
 **Lưu ý quan trọng:**
@@ -358,7 +363,7 @@ Mở trình duyệt và truy cập các URL sau:
 | ----------------- | --------------------------------------------- |
 | **Trang chủ**     | http://localhost:8080/UTEShop/                |
 | **Admin Panel**   | http://localhost:8080/UTEShop/admin/dashboard |
-| **Manager Panel** | http://localhost:8080/UTEShop/manager/reports |
+| **Manager Panel** | http://localhost:8080/UTEShop/manager/dashboard |
 
 ---
 
