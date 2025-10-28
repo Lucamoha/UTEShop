@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Objects;
 
 import com.uteshop.dto.admin.BranchDetailModel;
-import com.uteshop.entity.branch.BranchInventory;
 import com.uteshop.entity.branch.Branches;
 import com.uteshop.services.admin.IBranchesService;
 import com.uteshop.services.admin.IUsersService;

@@ -17,18 +17,6 @@ public class ProductVariantsDaoImpl extends AbstractDao<ProductVariants> impleme
 		super(ProductVariants.class);
 	}
 
-	/*
-	 * @Override public long getLowStockCount(int threshold) { EntityManager enma =
-	 * JPAConfigs.getEntityManager(); try { String sql = """
-	 * 
-	 * SELECT COUNT(*) FROM( SELECT p.Id, SUM(bi.BranchStock) AS TotalStock FROM
-	 * Products p JOIN ProductVariants pv ON pv.ProductId = p.Id JOIN
-	 * BranchInventory bi ON bi.VariantId = pv.Id WHERE p.Status = 1 GROUP BY p.Id
-	 * HAVING SUM(bi.BranchStock) <= :threshold ) AS Q """; return ((Number)
-	 * enma.createNativeQuery(sql).setParameter("threshold",
-	 * threshold).getSingleResult()) .longValue(); } finally { enma.close(); } }
-	 */
-
 	@Override
 	public List<Object[]> getLowStockProducts(int threshold, int branchId) {
 		EntityManager enma = JPAConfigs.getEntityManager();

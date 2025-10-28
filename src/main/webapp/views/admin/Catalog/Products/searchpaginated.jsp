@@ -23,7 +23,7 @@
 			</c:if>
 
 			<div class="row mt-2 mb-3">
-				<div class="col-md-6">
+				<div class="col-md-8">
 					<form
 						action="${pageContext.request.contextPath}/admin/Catalog/Products/searchpaginated"
 						method="get">
@@ -40,7 +40,7 @@
 					</form>
 				</div>
 
-				<div class="col-md-6">
+				<div class="col-md-4">
 					<div class="float-end">
 						<a class="btn btn-outline-success"
 							href="${pageContext.request.contextPath}/admin/Catalog/Products/saveOrUpdate"><i

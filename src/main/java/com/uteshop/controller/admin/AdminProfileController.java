@@ -16,7 +16,11 @@ import java.io.IOException;
 @WebServlet(urlPatterns = {"/admin/profile", "/admin/profile/*"})
 public class AdminProfileController extends HttpServlet {
     
-    private final IUsersService usersService = new UsersServiceImpl();
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private final IUsersService usersService = new UsersServiceImpl();
     
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

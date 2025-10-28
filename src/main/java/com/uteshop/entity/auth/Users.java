@@ -85,4 +85,12 @@ public class Users implements Serializable {
 	public int hashCode() {
 		return getClass().hashCode();
 	}
+	
+	//getter ảo dùng xác đinh khách hàng mới
+	public boolean isNewCustomerThisYearThisMonth() {
+	    if (!"USER".equals(this.UserRole) || this.CreatedAt == null) return false;
+	    LocalDateTime now = LocalDateTime.now();
+	    return this.CreatedAt.getMonthValue() == now.getMonthValue()
+	        && this.CreatedAt.getYear() == now.getYear();
+	}
 }

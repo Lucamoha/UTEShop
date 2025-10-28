@@ -1,6 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="jakarta.tags.core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<jsp:useBean id="now" class="java.util.Date" />
+<fmt:formatDate value="${now}" pattern="MM" var="thisMonth" />
 
 <section class="row">
 	<div class="col mt-4">
@@ -20,6 +24,7 @@
 					<table class="table table-striped align-middle text-center">
 						<thead class="table-dark">
 							<tr>
+								<th>ID</th>
 								<th>Họ Tên</th>
 								<th>Email</th>
 								<th>Trạng Thái</th>
@@ -30,7 +35,12 @@
 						<tbody>
 							<c:forEach items="${listUser}" var="item">
 								<tr>
-									<td>${item.fullName}</td>
+									<td>${item.id}</td>
+									<td>${item.fullName}
+										<c:if test="${item.newCustomerThisYearThisMonth}">
+							                <span class="badge bg-success ms-2">New Customer</span>
+							            </c:if>
+									</td>
 									<td>${item.email}</td>
 									<td><c:choose>
 											<c:when test="${item.isActive}">
@@ -52,7 +62,6 @@
 						</tbody>
 					</table>
 				</div>
-
 			</div>
 		</div>
 	</div>
