@@ -380,8 +380,6 @@ Tài khoản demo:
   <img src="thumbnail.png" alt="Demo Video" width="600">
 </a>
 
-**Nội dung video demo bao gồm:**
-
 ---
 
 ## 6. Đóng góp
