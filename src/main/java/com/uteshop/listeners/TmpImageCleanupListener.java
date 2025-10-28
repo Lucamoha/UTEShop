@@ -4,6 +4,7 @@ import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.time.Instant;
@@ -18,14 +19,43 @@ public class TmpImageCleanupListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        String tmpPath = sce.getServletContext().getRealPath("/uploads/tmp");
-        Path tmpDir = Paths.get(tmpPath);
+    	// Lấy đường dẫn tới src/main/webapp/uploads/tmp
+    	String realPath = sce.getServletContext().getRealPath("/uploads/tmp");
+        String uploadRoot;
+        
+        if (realPath != null && realPath.contains(".metadata")) {
+            // Xử lý đường dẫn Eclipse server: .metadata\.plugins\...\wtpwebapps\UTEShop\\uploads
+            int metadataIndex = realPath.indexOf(".metadata");
+            String workspaceRoot = realPath.substring(0, metadataIndex);
+            
+            // Tìm tên project
+            String projectName = "UTEShop";
+            if (realPath.contains("wtpwebapps")) {
+                int wtpIndex = realPath.indexOf("wtpwebapps") + "wtpwebapps".length() + 1;
+                int uploadIndex = realPath.indexOf(File.separator + "uploads", wtpIndex);
+                if (uploadIndex > wtpIndex) {
+                    projectName = realPath.substring(wtpIndex, uploadIndex);
+                }
+            }
+            
+            uploadRoot = workspaceRoot + projectName + File.separator + "src" + File.separator + 
+                       "main" + File.separator + "webapp" + File.separator + "uploads";
+        } else if (realPath != null && realPath.contains("target")) {
+            // Xử lý đường dẫn Maven target
+            String projectRoot = realPath.substring(0, realPath.indexOf("target"));
+            uploadRoot = projectRoot + "src" + File.separator + "main" + File.separator + 
+                       "webapp" + File.separator + "uploads";
+        } else {
+            uploadRoot = realPath;
+        }       
+        
+        Path uploadPath = Paths.get(uploadRoot, "tmp");
 
         // Tạo thread định kỳ
         scheduler = Executors.newSingleThreadScheduledExecutor();
-        scheduler.scheduleAtFixedRate(() -> cleanupOldFiles(tmpDir), 0, 24, TimeUnit.HOURS);
+        scheduler.scheduleAtFixedRate(() -> cleanupOldFiles(uploadPath), 0, 24, TimeUnit.HOURS);
 
-        System.out.println("[TmpImageCleanup] Đã bật dọn ảnh tạm mỗi 24h tại: " + tmpDir);
+        //System.out.println("[TmpImageCleanup] Đã bật dọn ảnh tạm mỗi 24h tại: " + uploadPath);
     }
 
     private void cleanupOldFiles(Path tmpDir) {
