@@ -158,10 +158,10 @@ public class AttributesDaoImpl implements IAttributesDao {
                         displayValue = "N/A";
                     }
                 } else if (dataType == 3) { // Boolean
-                    if (valueText != null) {
-                        if ("1".equals(valueText)) {
+                    if (valueNumber != null) {
+                        if (valueNumber.compareTo(java.math.BigDecimal.ONE) == 0) {
                             displayValue = "Có";
-                        } else if ("0".equals(valueText)) {
+                        } else if (valueNumber.compareTo(java.math.BigDecimal.ZERO) == 0) {
                             displayValue = "Không";
                         } else {
                             displayValue = valueText;
