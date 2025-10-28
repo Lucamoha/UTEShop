@@ -1,5 +1,8 @@
 package com.uteshop.filters;
 
+import com.uteshop.dao.impl.web.account.UserDaoImpl;
+import com.uteshop.dao.web.account.IUsersDao;
+import com.uteshop.entity.auth.Users;
 import com.uteshop.util.JWTUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.*;
@@ -99,6 +102,23 @@ public class JWTAuthenticationFilter implements Filter {
                 Claims claims = JWTUtil.validateToken(token);
                 String email = claims.getSubject();
                 String role = claims.get("role", String.class);
+
+                // Kiểm tra trạng thái isActive từ database 
+                IUsersDao userDao = new UserDaoImpl();
+                Users currentUser = userDao.getUserByEmail(email);
+                
+                // Kiểm tra tài khoản có tồn tại và có bị vô hiệu hóa
+                if (currentUser == null || currentUser.getIsActive() == null || !currentUser.getIsActive()) {
+                    JWTUtil.removeTokenFromCookie(resp);
+                    if (isAjaxRequest(req, path)) {
+                        resp.setContentType("application/json;charset=UTF-8");
+                        resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        resp.getWriter().write("{\"success\": false, \"needLogin\": true, \"message\": \"Tài khoản của bạn đã bị vô hiệu hóa\"}");
+                    } else {
+                        redirectToLogin(req, resp, "Tài khoản của bạn đã bị vô hiệu hóa");
+                    }
+                    return;
+                }
 
                 // Lưu thông tin user vào request attribute
                 req.setAttribute("authenticatedEmail", email);

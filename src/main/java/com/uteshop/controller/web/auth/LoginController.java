@@ -40,7 +40,7 @@ public class LoginController extends HttpServlet {
         }
 
         Users user = userService.findByEmail(email);
-        if (user != null && BCrypt.checkpw(password, user.getPasswordHash())) {
+        if (user != null && BCrypt.checkpw(password, user.getPasswordHash()) && user.getIsActive() == true) {
             // Lấy role thực tế từ database
             String role = user.getUserRole() != null ? user.getUserRole() : "USER";
 
@@ -93,7 +93,11 @@ public class LoginController extends HttpServlet {
                 }
             }
         } else {
-            req.setAttribute("error", "Email hoặc mật khẩu không đúng!");
+            if (user != null && user.getIsActive() == false) {
+                req.setAttribute("error", "Tài khoản của bạn đã bị vô hiệu hóa!");
+            }  else if (user != null) {
+                req.setAttribute("error", "Email hoặc mật khẩu không đúng!");
+            }
             req.setAttribute("email", email); // Giữ lại email đã nhập
             req.getRequestDispatcher("/views/web/login.jsp").forward(req, resp);
         }
