@@ -214,7 +214,7 @@
 												<td><input type="hidden" name="existingVariants.id"
 													value="${v.id}" /> <input type="text"
 													name="existingVariants.sku" value="${v.sku}"
-													class="form-control form-control-sm" readonly /></td>
+													class="form-control form-control-sm" /></td>
 
 												<td><input type="number" step="1"
 													name="existingVariants.price" value="${v.price.intValue()}"
@@ -245,7 +245,7 @@
 											<!-- New variant (from validation error) -->
 											<tr>
 												<td><input type="text" name="newVariants.sku"
-													value="${v.sku}" class="form-control form-control-sm" readonly/></td>
+													value="${v.sku}" class="form-control form-control-sm"/></td>
 
 												<td><input type="number" step="1"
 													name="newVariants.price" value="${v.price.intValue()}"
@@ -760,7 +760,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       
       html += '<td>';
-      html += '<input type="text" name="newVariants.sku" class="form-control form-control-sm" value="' + baseSKU + '" readonly>';
+      html += '<input type="text" name="newVariants.sku" class="form-control form-control-sm" value="' + baseSKU + '">';
       html += '</td>';
       html += '<td>';
       html += '<input type="number" name="newVariants.price" class="form-control form-control-sm" min="0" max="999999999" step="1" required>';

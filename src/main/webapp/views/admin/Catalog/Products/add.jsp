@@ -632,7 +632,7 @@ document.addEventListener("DOMContentLoaded", function () {
       
       html += `
         <td>
-          <input type="text" name="newVariants.sku" class="form-control form-control-sm" value="\${baseSKU}" readonly>
+          <input type="text" name="newVariants.sku" class="form-control form-control-sm" value="\${baseSKU}">
         </td>
         <td>
           <input type="number" name="newVariants.price" class="form-control form-control-sm" min="0" step="0.01" required>
